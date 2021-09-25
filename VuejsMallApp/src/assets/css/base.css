@@ -1,0 +1,59 @@
+﻿
+/* #region 重置默认*/
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Microsoft YaHei';
+}
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+/* #endregion */
+
+
+/* #region 通用类*/
+.hide {
+  display: none;
+}
+
+.fl {
+  float: left !important;
+}
+
+.fr {
+  float: right !important;
+}
+
+.clr {
+  clear: both;
+}
+
+.txtAL {
+  text-align: left;
+}
+
+.txtAC {
+  text-align: center;
+}
+
+.txtAR {
+  text-align: right;
+}
+
+.safeWidth {
+  margin: 0px auto;
+}
+/* #endregion */
+
+
+/*#region 警示提示*/
+.txtWarm {
+  color: red;
+  font-size: 13px;
+}
+/*#endregion*/
