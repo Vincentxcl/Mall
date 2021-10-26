@@ -1,25 +1,24 @@
-﻿
-const path = require("path");
+
+const path = require("path");//引入path模块
 function resolve(dir) {
-	return path.join(__dirname, dir);
+  return path.join(__dirname, dir);//path.join(__dirname, dir)设置绝对路径
 }
 
 module.exports = {
-	pages: {
-		index: {
-			entry: "src/main.js"
-		}
-	},
-	lintOnSave: true,
+  lintOnSave: true,
+  pages: {
+    index: {
+      entry: "src/main.js"
+    }
+  },
 
-	chainWebpack: config => {
-		config.resolve.alias
-			.set("@", resolve("src"))
-			.set("assets", resolve("src/assets"))
-			.set("components", resolve("src/components"))
-			.set("netWork", resolve("src/netWork"))
-			.set("pages", resolve("src/pages"))
-			.set("router", resolve("src/router"))
-			.set("store", resolve("src/store"))
-	},
+  chainWebpack: config => {
+    config.resolve.alias
+      .set("@", resolve("./src"))
+      .set("assets", resolve("./src/assets"))
+      .set("common", resolve("./src/common"))
+      .set("components", resolve("./src/components"))
+      .set("netWork", resolve("./src/netWork"))
+      .set("pages", resolve("./src/pages"))
+  },
 };

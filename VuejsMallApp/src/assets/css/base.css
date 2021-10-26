@@ -1,12 +1,35 @@
-﻿
+@import "./normalize.css";
+
+/*#region 变量*/
+:root {
+  --color-text: #666;
+  --color-high-text: #ff5777;
+  --color-tint: #ff8198;
+  --color-background: #fff;
+  --font-size: 14px;
+  --line-height: 1.5;
+}
+/*#endregion*/
+
 /* #region 重置默认*/
-* {
+*, *::before, *::after {
   margin: 0px;
   padding: 0px;
-  font-family: 'Microsoft YaHei';
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: var(--color-background);
+  color: var(--color-text);
+  width: 100vw;
+  margin: 0px auto;
 }
 
 a {
+  color: var(--color-text);
   text-decoration: none;
 }
 
@@ -22,31 +45,24 @@ ul {
 }
 
 .fl {
-  float: left !important;
+  float: left;
 }
 
 .fr {
-  float: right !important;
+  float: right;
+}
+
+.clr::after {
+  clear: both;
+  content: "";
+  display: block;
+  width: 0px;
+  height: 0px;
+  visibility: hidden;
 }
 
 .clr {
-  clear: both;
-}
-
-.txtAL {
-  text-align: left;
-}
-
-.txtAC {
-  text-align: center;
-}
-
-.txtAR {
-  text-align: right;
-}
-
-.safeWidth {
-  margin: 0px auto;
+  zoom: 1;
 }
 /* #endregion */
 

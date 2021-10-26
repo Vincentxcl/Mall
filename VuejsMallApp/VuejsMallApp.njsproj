@@ -29,17 +29,149 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include=".editorconfig" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
+    <Content Include="src\assets\css\album\iconfont.css" />
+    <Content Include="src\assets\css\album\iconfont.ttf" />
+    <Content Include="src\assets\css\backTop\iconfont.css" />
+    <Content Include="src\assets\css\backTop\iconfont.ttf" />
     <Content Include="src\assets\css\base.css" />
-    <Content Include="src\components\Home.vue" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\assets\css\checkButton\iconfont.css" />
+    <Content Include="src\assets\css\checkButton\iconfont.ttf" />
+    <Content Include="src\assets\css\detailHeadBar\iconfont.css" />
+    <Content Include="src\assets\css\detailHeadBar\iconfont.ttf" />
+    <Content Include="src\assets\css\detailShop\iconfont.css" />
+    <Content Include="src\assets\css\detailShop\iconfont.ttf" />
+    <Content Include="src\assets\css\detailTitle\iconfont.css" />
+    <Content Include="src\assets\css\detailTitle\iconfont.ttf" />
+    <Content Include="src\assets\css\normalize.css" />
+    <Content Include="src\assets\css\navBar\iconfont.css" />
+    <Content Include="src\assets\css\navBar\iconfont.ttf" />
+    <Content Include="src\assets\img\detailBottomBar\cart.png" />
+    <Content Include="src\assets\img\detailBottomBar\detail_bottom.png" />
+    <Content Include="src\assets\img\home\recommend_bg.jpg" />
+    <Content Include="src\common\utils.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\album\common\PageBtn.vue" />
+    <Content Include="src\components\album\imgsList\ImgsList.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\album\minSwiper\index.js" />
+    <Content Include="src\components\album\swiper\index.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\album\swiper\SwiperContainer.vue" />
+    <Content Include="src\components\album\shortCut\index.js" />
+    <Content Include="src\components\album\shortCut\ShortCutBar.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\album\shortCut\ShortCutItem.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\album\minSwiper\Swiper.vue" />
+    <Content Include="src\components\album\minSwiper\SwiperItem.vue" />
+    <Content Include="src\components\album\swiper\SwiperSlide.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\backTop\BackTop.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\checkButton\CheckButton.vue" />
+    <Content Include="src\components\goods\goodsItem.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\goods\goodsList.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\headBar\Index.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\common\mixins.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\navBar\MallNavBar.vue" />
+    <Content Include="src\components\navBar\common\NavBar.vue" />
+    <Content Include="src\components\navBar\common\NavBarItem.vue" />
+    <Content Include="src\components\numberButton\NumberButton.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\scroll\scroll.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\tabCtrl\TabCtrl.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\plugins\toast\index.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\plugins\toast\Toast.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\netWork\ajax.js" />
+    <Content Include="src\netWork\detailGit.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\netWork\homeGit.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\cart\Cart.vue" />
+    <Content Include="src\pages\cart\parts\CartCalculate.vue" />
+    <Content Include="src\pages\cart\parts\CartList.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\category\Category.vue" />
+    <Content Include="src\netWork\home.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\Detail.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailBottomBar.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailComment.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailHeadBar.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailImgsList.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailParams.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailRecommendation.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailShop.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailSwiper.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\detail\parts\DetailTitle.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\home\Home.vue" />
+    <Content Include="src\pages\home\parts\HomeRecommendList.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\home\parts\HomeSwiper.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\home\parts\HomeProduction.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\profile\Profile.vue" />
     <Content Include="src\router\index.js" />
-    <Content Include="src\store\Index.js" />
-    <Content Include="src\store\moduleA.js" />
+    <Content Include="src\store\index.js" />
+    <Content Include="src\store\cart.js" />
     <Content Include="vue.config.js" />
   </ItemGroup>
   <ItemGroup>
@@ -48,10 +180,45 @@
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
     <Folder Include="src\assets\css\" />
+    <Folder Include="src\assets\css\album\" />
+    <Folder Include="src\assets\css\navBar\" />
+    <Folder Include="src\assets\css\backTop\" />
+    <Folder Include="src\assets\css\detailHeadBar\" />
+    <Folder Include="src\assets\css\detailTitle\" />
+    <Folder Include="src\assets\css\detailShop\" />
+    <Folder Include="src\assets\css\checkButton\" />
     <Folder Include="src\assets\img\" />
+    <Folder Include="src\assets\img\detailBottomBar\" />
+    <Folder Include="src\assets\img\home\" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\album\" />
+    <Folder Include="src\components\album\common\" />
+    <Folder Include="src\components\album\minSwiper\" />
+    <Folder Include="src\components\album\imgsList\" />
+    <Folder Include="src\components\album\swiper\" />
+    <Folder Include="src\components\album\shortCut\" />
+    <Folder Include="src\components\checkButton\" />
+    <Folder Include="src\components\headBar\" />
+    <Folder Include="src\components\goods\" />
+    <Folder Include="src\components\backTop\" />
+    <Folder Include="src\plugins\toast\" />
+    <Folder Include="src\components\numberButton\" />
+    <Folder Include="src\components\scroll\" />
+    <Folder Include="src\components\tabCtrl\" />
+    <Folder Include="src\components\navBar\common\" />
+    <Folder Include="src\components\navBar\" />
     <Folder Include="src\netWork\" />
+    <Folder Include="src\common\" />
+    <Folder Include="src\plugins\" />
     <Folder Include="src\pages\" />
+    <Folder Include="src\pages\cart\" />
+    <Folder Include="src\pages\cart\parts\" />
+    <Folder Include="src\pages\category\" />
+    <Folder Include="src\pages\detail\parts\" />
+    <Folder Include="src\pages\home\" />
+    <Folder Include="src\pages\home\parts\" />
+    <Folder Include="src\pages\detail\" />
+    <Folder Include="src\pages\profile\" />
     <Folder Include="src\router\" />
     <Folder Include="src\store\" />
   </ItemGroup>
