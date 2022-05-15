@@ -1,0 +1,21 @@
+@font-face {
+  font-family: "iconfont"; /* Project id  */
+  src: url('iconfont.ttf?t=1632730701816') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-qianhou1:before {
+  content: "\e640";
+}
+
+.icon-qianhou2:before {
+  content: "\e641";
+}
+

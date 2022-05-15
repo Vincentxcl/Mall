@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import MallNavBar from "components/navBar/MallNavBar.vue";
+  import MallNavBar from "components/navBar/index.vue";
 
   export default {
     name: 'app',

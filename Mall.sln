@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VuejsMallApp", "VuejsMallApp\VuejsMallApp.njsproj", "{AB2C22DB-CAA5-4120-A93B-B21EB1695963}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VueCpnTest", "VueCpnTest\VueCpnTest.njsproj", "{7AF88DAF-EF6E-468F-A3D5-248BCF02286D}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "OA", "OA\OA.njsproj", "{D6732BA8-9B57-4093-8F41-CC128C664B02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AB2C22DB-CAA5-4120-A93B-B21EB1695963}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB2C22DB-CAA5-4120-A93B-B21EB1695963}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB2C22DB-CAA5-4120-A93B-B21EB1695963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AF88DAF-EF6E-468F-A3D5-248BCF02286D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AF88DAF-EF6E-468F-A3D5-248BCF02286D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AF88DAF-EF6E-468F-A3D5-248BCF02286D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AF88DAF-EF6E-468F-A3D5-248BCF02286D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6732BA8-9B57-4093-8F41-CC128C664B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6732BA8-9B57-4093-8F41-CC128C664B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6732BA8-9B57-4093-8F41-CC128C664B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6732BA8-9B57-4093-8F41-CC128C664B02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

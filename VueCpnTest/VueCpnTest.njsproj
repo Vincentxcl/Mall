@@ -1,0 +1,247 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>VueCpnTest</Name>
+    <RootNamespace>VueCpnTest</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>7af88daf-ef6e-468f-a3d5-248bcf02286d</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>node_modules\@vue\cli-service\bin\vue-cli-service.js</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <NodejsPort>1337</NodejsPort>
+    <StartWebBrowser>true</StartWebBrowser>
+    <ScriptArguments>serve</ScriptArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="public\favicon.ico" />
+    <Content Include="public\index.html" />
+    <Content Include="src\App.vue" />
+    <Content Include="src\assets\cssBase\base.css" />
+    <Content Include="src\assets\cssBase\icons\iconfont.css" />
+    <Content Include="src\assets\cssBase\icons\iconfont.ttf" />
+    <Content Include="src\assets\cssBase\icons\iconfont.woff" />
+    <Content Include="src\assets\cssBase\icons\iconfont.woff2" />
+    <Content Include="src\assets\cssBase\normalize.css" />
+    <Content Include="src\common\directives\resize.js" />
+    <Content Include="src\common\directives\drag.js" />
+    <Content Include="src\common\helper\convertHelper.js" />
+    <Content Include="src\common\helper\cookiesHelper.js" />
+    <Content Include="src\common\helper\funcHelper.js" />
+    <Content Include="src\common\helper\imageHelper.js" />
+    <Content Include="src\common\helper\netWorkHelper.js" />
+    <Content Include="src\common\helper\randomHelper.js" />
+    <Content Include="src\common\MVVM.js" />
+    <Content Include="src\common\plugins\mask\index.js" />
+    <Content Include="src\common\plugins\mask\maskDiv.vue" />
+    <Content Include="src\common\plugins\toast\index.js" />
+    <Content Include="src\common\plugins\toast\toast.vue" />
+    <Content Include="src\components\0Demo\component1.vue" />
+    <Content Include="src\components\album\Displayer.vue" />
+    <Content Include="src\components\album\ImageBtn.vue" />
+    <Content Include="src\components\album\Index.vue" />
+    <Content Include="src\components\album\NumberBtn.vue" />
+    <Content Include="src\components\album\RadioBtn.vue" />
+    <Content Include="src\components\album\Slider.vue" />
+    <Content Include="src\components\dialog\index.vue" />
+    <Content Include="src\components\getBackPwd\index.vue" />
+    <Content Include="src\components\getBackPwd\parts\challenge.vue" />
+    <Content Include="src\components\getBackPwd\parts\response.vue" />
+    <Content Include="src\components\getBackPwd\parts\setPwd.vue" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Content Include="src\components\grid\index.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\grid\parts\row.vue" />
+    <Content Include="src\components\pagination\s2.vue" />
+    <Content Include="src\components\gridView\index.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\dialog\container.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\gridView\parts\horizontalBar.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\widgets\icons\pageNext.vue" />
+    <Content Include="src\components\widgets\icons\pagePrevious.vue" />
+    <Content Include="src\components\widgets\icons\pageLast.vue" />
+    <Content Include="src\components\widgets\icons\pageFirst.vue" />
+    <Content Include="src\components\widgets\icons\add.vue" />
+    <Content Include="src\components\widgets\icons\delete.vue" />
+    <Content Include="src\components\widgets\icons\edit.vue" />
+    <Content Include="src\netWork\list.js" />
+    <Content Include="src\pages\cart\Cart.vue" />
+    <Content Include="src\pages\category\Category.vue" />
+    <Content Include="src\pages\category\parts\TestChildren.vue" />
+    <Content Include="src\pages\category\parts\TestFather.vue" />
+    <Content Include="src\pages\home\Home.vue" />
+    <Content Include="src\pages\home\parts\appSettingForm.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\pages\profile\Profile.vue" />
+    <Content Include="src\router\index.js" />
+    <Content Include="src\store\Index.js" />
+    <Content Include="src\store\moduleA.js" />
+    <Content Include="vue.config.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="dist\" />
+    <Folder Include="public\" />
+    <Folder Include="src\" />
+    <Folder Include="src\assets\" />
+    <Folder Include="src\assets\building\" />
+    <Folder Include="src\assets\cssBase\" />
+    <Folder Include="src\assets\cssBase\icons\" />
+    <Folder Include="src\assets\css\" />
+    <Folder Include="src\assets\css\album\" />
+    <Folder Include="src\common\" />
+    <Folder Include="src\common\directives\" />
+    <Folder Include="src\common\helper\" />
+    <Folder Include="src\common\plugins\" />
+    <Folder Include="src\common\plugins\mask\" />
+    <Folder Include="src\common\plugins\toast\" />
+    <Folder Include="src\components\" />
+    <Folder Include="src\components\0Demo\" />
+    <Folder Include="src\components\album\" />
+    <Folder Include="src\components\dialog\" />
+    <Folder Include="src\components\getBackPwd\" />
+    <Folder Include="src\components\getBackPwd\parts\" />
+    <Folder Include="src\components\grid\parts\" />
+    <Folder Include="src\components\imgClipper\" />
+    <Folder Include="src\components\grid\" />
+    <Folder Include="src\components\pagination\" />
+    <Folder Include="src\components\gridView\parts\" />
+    <Folder Include="src\components\login\" />
+    <Folder Include="src\components\navBar\" />
+    <Folder Include="src\components\navBar\parts\" />
+    <Folder Include="src\components\gridView\" />
+    <Folder Include="src\components\register\" />
+    <Folder Include="src\components\schedule\" />
+    <Folder Include="src\components\schedule\parts\" />
+    <Folder Include="src\components\scroll\" />
+    <Folder Include="src\components\setTimeOut\" />
+    <Folder Include="src\components\uploader\" />
+    <Folder Include="src\components\uploader\parts\" />
+    <Folder Include="src\components\UserList\" />
+    <Folder Include="src\components\verificationCode\" />
+    <Folder Include="src\components\widgets\" />
+    <Folder Include="src\components\widgets\icons\" />
+    <Folder Include="src\netWork\" />
+    <Folder Include="src\pages\" />
+    <Folder Include="src\pages\cart\" />
+    <Folder Include="src\pages\category\" />
+    <Folder Include="src\pages\category\parts\" />
+    <Folder Include="src\pages\home\" />
+    <Folder Include="src\pages\home\parts\" />
+    <Folder Include="src\pages\profile\" />
+    <Folder Include="src\router\" />
+    <Folder Include="src\store\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="babel.config.js" />
+    <Content Include="src\components\imgClipper\index.vue" />
+    <Content Include="src\components\login\index.vue" />
+    <Content Include="src\components\navBar\index.vue" />
+    <Content Include="src\components\navBar\parts\navBar.vue" />
+    <Content Include="src\components\navBar\parts\navBarItem.vue" />
+    <Content Include="src\components\register\index.vue" />
+    <Content Include="src\components\schedule\parts\body.vue" />
+    <Content Include="src\components\schedule\parts\foot.vue" />
+    <Content Include="src\components\schedule\parts\header.vue" />
+    <Content Include="src\components\schedule\parts\item.vue" />
+    <Content Include="src\components\schedule\index.vue" />
+    <Content Include="src\components\scroll\scroll.v1.vue" />
+    <Content Include="src\components\scroll\scroll.v2.vue" />
+    <Content Include="src\components\setTimeOut\SetTimeOut.vue" />
+    <Content Include="src\components\uploader\imgUploader.clipper.v1.vue" />
+    <Content Include="src\components\uploader\imgUploader.v1.vue" />
+    <Content Include="src\components\uploader\parts\fileHolder.vue" />
+    <Content Include="src\components\UserList\Index.vue" />
+    <Content Include="src\components\UserList\List.vue" />
+    <Content Include="src\components\UserList\Search.vue" />
+    <Content Include="src\components\verificationCode\index.simplify.vue" />
+    <Content Include="src\components\verificationCode\index.vue" />
+    <Content Include="src\components\widgets\button.vue" />
+    <Content Include="src\components\widgets\flicker.vue" />
+    <Content Include="src\components\widgets\icons\account.vue" />
+    <Content Include="src\components\widgets\icons\cart.vue" />
+    <Content Include="src\components\widgets\icons\category.vue" />
+    <Content Include="src\components\widgets\icons\clip.vue" />
+    <Content Include="src\components\widgets\icons\close.vue" />
+    <Content Include="src\components\widgets\icons\email.vue" />
+    <Content Include="src\components\widgets\icons\enlarge.vue" />
+    <Content Include="src\components\widgets\icons\home.vue" />
+    <Content Include="src\components\widgets\icons\imgUploader.vue" />
+    <Content Include="src\components\widgets\icons\password.vue" />
+    <Content Include="src\components\widgets\icons\passwordConfirm.vue" />
+    <Content Include="src\components\widgets\icons\phone.vue" />
+    <Content Include="src\components\widgets\icons\refresh.vue" />
+    <Content Include="src\components\widgets\icons\shrink.vue" />
+    <Content Include="src\components\widgets\icons\verification.vue" />
+    <Content Include="src\components\pagination\s1.vue" />
+    <Content Include="src\components\widgets\textbox.icon.vue" />
+    <Content Include="src\components\widgets\textbox.vue" />
+    <Content Include="src\main.js" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+      npm run build
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

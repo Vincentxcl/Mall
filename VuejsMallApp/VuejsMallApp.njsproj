@@ -48,6 +48,8 @@
     <Content Include="src\assets\css\detailShop\iconfont.ttf" />
     <Content Include="src\assets\css\detailTitle\iconfont.css" />
     <Content Include="src\assets\css\detailTitle\iconfont.ttf" />
+    <Content Include="src\assets\css\icons\iconfont.css" />
+    <Content Include="src\assets\css\icons\iconfont.ttf" />
     <Content Include="src\assets\css\normalize.css" />
     <Content Include="src\assets\css\navBar\iconfont.css" />
     <Content Include="src\assets\css\navBar\iconfont.ttf" />
@@ -94,9 +96,9 @@
     <Content Include="src\common\mixins.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\components\navBar\MallNavBar.vue" />
-    <Content Include="src\components\navBar\common\NavBar.vue" />
-    <Content Include="src\components\navBar\common\NavBarItem.vue" />
+    <Content Include="src\components\navBar\index.vue" />
+    <Content Include="src\components\navBar\parts\navBar.vue" />
+    <Content Include="src\components\navBar\parts\navBarItem.vue" />
     <Content Include="src\components\numberButton\NumberButton.vue">
       <SubType>Code</SubType>
     </Content>
@@ -106,6 +108,18 @@
     <Content Include="src\components\tabCtrl\TabCtrl.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\widgets\flicker.vue" />
+    <Content Include="src\components\widgets\icons\profile.vue" />
+    <Content Include="src\components\widgets\icons\cart.vue" />
+    <Content Include="src\components\widgets\icons\category.vue" />
+    <Content Include="src\components\widgets\icons\home.vue" />
+    <Content Include="src\components\widgets\icons\account.vue" />
+    <Content Include="src\components\widgets\icons\close.vue" />
+    <Content Include="src\components\widgets\icons\password.vue" />
+    <Content Include="src\components\widgets\icons\refresh.vue" />
+    <Content Include="src\components\widgets\icons\verification.vue" />
+    <Content Include="src\components\widgets\pagination.vue" />
+    <Content Include="src\components\widgets\textbox.vue" />
     <Content Include="src\plugins\toast\index.js">
       <SubType>Code</SubType>
     </Content>
@@ -181,6 +195,7 @@
     <Folder Include="src\assets\" />
     <Folder Include="src\assets\css\" />
     <Folder Include="src\assets\css\album\" />
+    <Folder Include="src\assets\css\icons\" />
     <Folder Include="src\assets\css\navBar\" />
     <Folder Include="src\assets\css\backTop\" />
     <Folder Include="src\assets\css\detailHeadBar\" />
@@ -201,11 +216,13 @@
     <Folder Include="src\components\headBar\" />
     <Folder Include="src\components\goods\" />
     <Folder Include="src\components\backTop\" />
+    <Folder Include="src\components\widgets\" />
+    <Folder Include="src\components\widgets\icons\" />
     <Folder Include="src\plugins\toast\" />
     <Folder Include="src\components\numberButton\" />
     <Folder Include="src\components\scroll\" />
     <Folder Include="src\components\tabCtrl\" />
-    <Folder Include="src\components\navBar\common\" />
+    <Folder Include="src\components\navBar\parts\" />
     <Folder Include="src\components\navBar\" />
     <Folder Include="src\netWork\" />
     <Folder Include="src\common\" />

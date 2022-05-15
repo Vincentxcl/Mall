@@ -34,7 +34,7 @@ export default {
   },
   actions: {
     toList(context, payload) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         let item = context.state.list.find(current => current.id == payload.id);
         if (item != undefined) {
           item.count++;

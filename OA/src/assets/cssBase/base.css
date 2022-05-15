@@ -1,0 +1,76 @@
+@import './normalize.css';
+
+/*#region 变量*/
+:root {
+  --color-text: #666;
+  --color-high-text: #ff5777;
+  --color-tint: #ff8198;
+  --color-brand:#409EFF;
+  --color-success: #67c23a;
+  --color-warning: #E6A23C;
+  --color-danger: #F56C6C;
+  --color-background: #fff;
+  --font-size: 14px;
+  --line-height: 1.5;
+}
+/*#endregion*/
+
+/* #region 重置默认*/
+*,
+*::before,
+*::after {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: var(--color-background);
+  color: var(--color-text);
+  width: 100vw;
+  margin: 0px auto;
+}
+
+a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+img {
+  display: block; /*4px question*/
+}
+
+ul {
+  list-style: none;
+}
+/* #endregion */
+
+/* #region 通用类*/
+.hide {
+  display: none;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+.clr::after {
+  clear: both;
+  content: '';
+  display: block;
+  width: 0px;
+  height: 0px;
+  visibility: hidden;
+}
+
+.clr {
+  zoom: 1;
+}
+/* #endregion */

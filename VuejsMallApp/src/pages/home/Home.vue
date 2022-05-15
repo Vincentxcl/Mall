@@ -3,7 +3,7 @@
     <head-bar>
       <p slot="middle">购物街</p>
     </head-bar>
-    <back-top @click.native="backTopClick" v-show="showBackTop"></back-top>
+    <back-top @click.native="backTopClick" v-show="isShowBackTop"></back-top>
     <tab-ctrl :list="goodsNameList" v-model="goodsObjIndex" v-show="showFixedTabCtrl" class="fixedTabCtrl"></tab-ctrl>
     <scroll ref="scroll" :probe-type="3" :pull-up-load="true" @position="scrollPosition" @pullingUp="scrollPullUp">
       <home-swiper :list="banners" @homeSwiperImgLoad="homeSwiperImgOnLoad"></home-swiper>
@@ -86,7 +86,7 @@
       },
       scrollPosition(val) {
         this.showFixedTabCtrl = val.y <= -(this.tabCtrlOffsetTop - 44);
-        this.showBackTop = val.y < -this.tabCtrlOffsetTop;
+        this.isShowBackTop = val.y < -this.tabCtrlOffsetTop;
         this.goods[this.goodsObjIndex].positionY = this.showFixedTabCtrl ? val.y : 0;
       },
       scrollPullUp() {
@@ -102,6 +102,7 @@
             console.log(error);
           });
       },
+      //here-->>>>>>>>>>>>>>>>>>>>
       getData(type) {
         requestData(type, this.goods[type].pageIndex + 1)
           .then(res => {
