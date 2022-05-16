@@ -1,7 +1,6 @@
 ﻿import axios from 'axios';
 import { getAjaxInstance } from 'common/helper/netWorkHelper.js';
 
-
 let cancel; // 用于保存取消请求的函数
 const ajax = getAjaxInstance('userManager');
 
@@ -16,27 +15,18 @@ ajax.interceptors.request.use((config) => {
   return config;
 });
 
-// 添加响应拦截器
+// 响应拦截器
 ajax.interceptors.response.use(
-  (response) => {
+  (res) => {
+    // 响应为200时做的事
     cancel = null;
-    return response;
+    return res;
+  },
+  (error) => {
+    // 响应不是2xx时做的事
+    cancel = null;
+    return Promise.reject(error);
   }
-  // (error) => {
-  //   if (axios.isCancel(error)) {
-  //     // 取消请求的错误
-  //     console.log('请求取消的错误', error.message); // 做出相应的处理
-  //     // 中断 promise 链接
-  //     return new Promise(() => {});
-  //   }
-  //   // 请求出错了
-  //   else {
-  //     cancel = null;
-  //     // 将错误向下传递
-  //     // throw error
-  //     return Promise.reject(error);
-  //   }
-  // }
 );
 
 export function tryLogin(data) {

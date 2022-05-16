@@ -46,6 +46,11 @@
         }
       }
     },
+    //移除站点地图，站点node
+    RemoveSiteMap(state) {
+      state._siteMap = {};
+      state._siteNodes = [];
+    },
     //添加访问过的节点(后置路由守卫)
     AddUsedSiteNodes(state, payLoad) {
       let o = state._usedSiteNodes.find((val) => val.id == payLoad.id);
@@ -57,9 +62,17 @@
     RemoveUsedSiteNode(state, payLoad) {
       state._usedSiteNodes.splice(payLoad, 1);
     },
+    //移除所有访问过的节点
+    RemoveAllUsedSiteNodes(state) {
+      state._usedSiteNodes = [];
+    },
     //配置站点菜单
     SetSiteMenu(state, payLoad) {
       state._siteMenu = payLoad;
+    },
+    //移除站点菜单
+    RemoveSiteMenu(state) {
+      state._siteMenu = {};
     },
     //当前路径(后置路由守卫)
     SetCurrentPath(state, payLoad) {

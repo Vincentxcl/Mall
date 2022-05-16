@@ -18,14 +18,21 @@ export default {
   name: 'AvatarInfo',
   methods: {
     logout() {
+      //注销服务器登陆身份
       login
         .logout()
         .then(() => {
-          deleteCookie('user');
-          deleteCookie('userAuth');
-          this.$router.push({ name: 'login' });
+          this.$toast.show({ type: 'success', text: '退出成功' });
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          let str = JSON.stringify(error.response.data.errors);
+          this.$toast.show({ type: 'warning', text: error.response.status + '退出异常' + str });
+        });
+
+      //删除本地账号，跳转
+      deleteCookie('user');
+      deleteCookie('userAuth');
+      this.$router.push({ name: 'login' });
     }
   },
   components: {

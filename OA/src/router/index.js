@@ -36,22 +36,25 @@ const routes = [
     name: 'login',
     path: '/login',
     component: login,
-    //  Bug已解决 当token已经过期，不能进入home，然后home又跳回来，但是以下逻辑认为token为存在，又要跳home
     beforeEnter: (to, from, next) => {
       let auth = getCookie('userAuth');
+      //令牌不存在
       if (auth == undefined || auth.trim() == '') {
         next();
-        return;
       }
-
-      let payload = decodeJwtPayload(auth);
-      let isExpired = payload.exp < new Date();
-      if (isExpired) {
-        next();
-        return;
+      //令牌存在
+      else {
+        let payload = decodeJwtPayload(auth);
+        let isExpired = payload.exp < new Date();
+        //1.已过期
+        if (isExpired) {
+          next();
+        }
+        //2.未过期
+        else {
+          next('home');
+        }
       }
-
-      next('home');
     }
   },
   {
@@ -181,7 +184,7 @@ const routes = [
           next();
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error,'Home路由守卫提示');
           router.app.$toast.show({ type: 'warning', text: '路由守卫提示,无法加载,请重新<a href="/login">登录</a>' });
         });
     }

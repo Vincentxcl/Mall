@@ -2,7 +2,7 @@
   <div class="searchSettingItemResult">
     <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection">
       <!-- selection column -->
-      <grid-field type="selection" width="50" fixed="left" align="center"> </grid-field>
+      <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
       <grid-field v-if="showEdit || showDel" fixed="left" label="操作" width="100" align="center">
         <template slot-scope="item">
@@ -84,6 +84,16 @@ export default {
     },
     iconDel() {
       return appsetting.systemIcon.toolIcon.del;
+    },
+    showSelection() {
+      let isShow = false;
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      if (parentNode) {
+        if (parentNode.children.value.find((val) => val.id == 613)) {
+          isShow = true;
+        }
+      }
+      return isShow;
     },
     showDetail() {
       let isShow = false;

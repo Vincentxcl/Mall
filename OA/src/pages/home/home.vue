@@ -95,6 +95,13 @@ export default {
       automaticallyRefreshToken('userAuth');
     });
   },
+  beforeRouteLeave(to, from, next) {
+    //清除Vue站点内容
+    this.$store.commit('RemoveSiteMap');
+    this.$store.commit('RemoveSiteMenu');
+    this.$store.commit('RemoveAllUsedSiteNodes');
+    next();
+  },
   components: {
     AsideBar,
     Top,
