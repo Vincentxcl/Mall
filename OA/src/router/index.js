@@ -14,8 +14,8 @@ const partA = () => import('../pages/home/children/category/partA.vue');
 const partB = () => import('../pages/home/children/category/partB.vue');
 const profile = () => import('../pages/home/children/profile/Profile.vue');
 const userList = () => import('../pages/home/children/userManagement/userList/userList.vue');
-const roleList = () => import('../pages/home/children/userManagement/roleList/roleList.vue');
 
+//#region 系统参数
 const sysParameter = () => import('../pages/home/children/appsetting/sysParameter/sysParameter.vue');
 const sysParameterList = () => import('../pages/home/children/appsetting/sysParameter/children/sysParameterList.vue');
 const searchSettingItem = () => import('../pages/home/children/appsetting/sysParameter/children/searchSettingItem.vue');
@@ -23,6 +23,17 @@ const searchSettingItemResult = () => import('../pages/home/children/appsetting/
 const settingItemDetail = () => import('../pages/home/children/appsetting/sysParameter/children/settingItemDetail.vue');
 const createSettingItem = () => import('../pages/home/children/appsetting/sysParameter/children/createSettingItem.vue');
 const editSettingItem = () => import('../pages/home/children/appsetting/sysParameter/children/editSettingItem.vue');
+//#endregion
+
+//#region 角色
+const role = () => import('../pages/home/children/userManagement/role/role.vue');
+const roleList = () => import('../pages/home/children/userManagement/role//children/roleList.vue');
+const searchRole = () => import('../pages/home/children/userManagement/role//children/searchRole.vue');
+const searchRoleResult = () => import('../pages/home/children/userManagement/role//children/searchRoleResult.vue');
+const roleDetail = () => import('../pages/home/children/userManagement/role//children/roleDetail.vue');
+const createRole = () => import('../pages/home/children/userManagement/role//children/createRole.vue');
+const editRole = () => import('../pages/home/children/userManagement/role//children/editRole.vue');
+//#endregion
 
 const actionList = () => import('../pages/home/children/appsetting/actionList/actionList.vue');
 const logList = () => import('../pages/home/children/appsetting/logList/logList.vue');
@@ -102,10 +113,54 @@ const routes = [
         meta: {}
       },
       {
-        name: 'roleList',
-        path: 'roleList',
-        component: roleList,
-        meta: {}
+        name: 'role',
+        path: 'role',
+        component: role,
+        meta: {},
+        children: [
+          {
+            name: 'roleList',
+            path: 'list',
+            component: roleList,
+            meta: {}
+          },
+          {
+            name: 'searchRole',
+            path: 'search',
+            component: searchRole,
+            meta: {}
+          },
+          {
+            name: 'searchRoleResult',
+            path: 'searchresult',
+            component: searchRoleResult,
+            props($route) {
+              return {
+                content: $route.query.content
+              };
+            },
+            meta: {}
+          },
+          {
+            name: 'roleDetail',
+            path: 'detail/:id',
+            component: roleDetail,
+            props: true,
+            meta: {}
+          },
+          {
+            name: 'createRole',
+            path: 'create',
+            component: createRole,
+            meta: {}
+          },
+          {
+            name: 'editRole',
+            path: 'edit',
+            component: editRole,
+            meta: {}
+          }
+        ]
       },
       {
         name: 'sysParameter',
@@ -184,7 +239,7 @@ const routes = [
           next();
         })
         .catch((error) => {
-          console.log(error,'Home路由守卫提示');
+          console.log(error, 'Home路由守卫提示');
           router.app.$toast.show({ type: 'warning', text: '路由守卫提示,无法加载,请重新<a href="/login">登录</a>' });
         });
     }

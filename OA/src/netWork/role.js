@@ -1,64 +1,49 @@
-﻿import axios from 'axios';
-import { getAjaxInstance } from 'common/helper/netWorkHelper.js';
-import { tryGetToken } from 'common/helper/tokenHelper.js';
+﻿import { getAjaxInstanceWithDefaultInterceptor } from 'common/helper/netWorkHelper.js';
 
-
-let cancel; // 用于保存取消请求的函数
-const ajax = getAjaxInstance('userManager');
-
-// 添加请求拦截器
-ajax.interceptors.request.use((config) => {
-  // 准备发请求之前, 取消未完成的请求
-  if (typeof cancel === 'function') {
-    cancel(); // 取消请求
+export function requestData(queryObj, vm) {
+  if (typeof queryObj != 'object') {
+    throw new Error('In the function requestData, a parameter queryObj must be a object, but got a error type ' + typeof queryObj);
   }
-  // 添加一个 cancelToken 配置
-  config.cancelToken = new axios.CancelToken((func) => (cancel = func));
 
-  tryGetToken('userAuth').then((res) => {
-    config.headers.Authorization = 'Bearer ' + res;
-  });
+  // 构建查询参数对象
+  let params = {
+    ver: '1.0'
+  };
 
-  return config;
-});
-
-// 添加响应拦截器
-ajax.interceptors.response.use(
-  (response) => {
-    cancel = null;
-    return response;
+  let props = ['id', 'name', 'search', 'pageIndex', 'pageSize', 'orderBy', 'fields'];
+  for (let prop of props) {
+    if (Reflect.get(queryObj, prop) != undefined) {
+      params[prop] = Reflect.get(queryObj, prop);
+    }
   }
-  // (error) => {
-  //   if (axios.isCancel(error)) {
-  //     // 取消请求的错误
-  //     console.log('请求取消的错误', error.message); // 做出相应的处理
-  //     // 中断 promise 链接
-  //     return new Promise(() => {});
-  //   }
-  //   // 请求出错了
-  //   else {
-  //     cancel = null;
-  //     // 将错误向下传递
-  //     // throw error
-  //     return Promise.reject(error);
-  //   }
-  // }
-);
 
-export function requestData(pageIndex) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'get',
     url: 'role',
+    headers: {
+      Accept: 'application/json'
+    },
+    params: params
+  });
+}
+
+export function requestItem(id, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'get',
+    url: 'role/' + id,
+    headers: {
+      Accept: 'application/json'
+    },
     params: {
-      pageIndex: pageIndex,
-      pageSize: 20,
-      orderBy: 'establish desc',
       ver: '1.0'
     }
   });
 }
 
-export function postData(dto) {
+export function postData(dto, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'post',
     url: 'role',
@@ -72,7 +57,8 @@ export function postData(dto) {
   });
 }
 
-export function patchObj(id, patch) {
+export function patchObj(id, patch, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'patch',
     url: 'role/' + id,
@@ -86,7 +72,8 @@ export function patchObj(id, patch) {
   });
 }
 
-export function deleteObj(id) {
+export function deleteObj(id, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'delete',
     url: 'role/' + id,
@@ -96,7 +83,8 @@ export function deleteObj(id) {
   });
 }
 
-export function deleteObjs(ids) {
+export function deleteObjs(ids, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'delete',
     url: 'roles/' + ids,

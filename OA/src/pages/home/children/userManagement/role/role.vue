@@ -1,5 +1,5 @@
 <template>
-  <div class="sysParameter">
+  <div class="role">
     <div class="topBar">
       <main-tool-bar :items="toolBarItems" @click="toolItemsClick"></main-tool-bar>
     </div>
@@ -14,10 +14,10 @@ import { computedToolBarItem } from 'common/mixins/computedToolBarItems.js';
 import { redirectChildRoute } from 'common/mixins/redirectChildRoute.js';
 import MainToolBar from 'components/navigation/stl.v1/mainToolBar.vue';
 
-import { deleteObj, deleteObjs } from 'netWork/appSetting.js';
+import { deleteObj, deleteObjs } from 'netWork/role.js';
 
 export default {
-  name: 'SysParameter',
+  name: 'Role',
   mixins: [computedToolBarItem, redirectChildRoute],
   data() {
     return {
@@ -26,34 +26,34 @@ export default {
   },
   computed: {
     pageIndex() {
-      return this.$store.getters['sysParameter/pageIndex'];
+      return this.$store.getters['role/pageIndex'];
     },
     readOnlySelectedObj() {
-      return this.$store.getters['sysParameter/readOnlySelectedObj'];
+      return this.$store.getters['role/readOnlySelectedObj'];
     },
     selection() {
-      return this.$store.getters['sysParameter/selection'];
+      return this.$store.getters['role/selection'];
     }
   },
   methods: {
     toolItemsClick(e) {
       switch (e.id) {
-        case 613:
+        case 525:
           {
             this.deleteItemsClick();
           }
           break;
-        case 618:
+        case 526:
           {
             this.editItemClick();
           }
           break;
-        case 619:
+        case 527:
           {
             this.deleteItemClick();
           }
           break;
-        case 6111:
+        case 5211:
           {
             this.refreshClick();
           }
@@ -72,9 +72,9 @@ export default {
         })
           .then(() => {
             deleteObj(this.readOnlySelectedObj.id, this).then(() => {
-              this.$store.dispatch('sysParameter/getDataList', this.pageIndex + 1); //刷新当前页
+              this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
               this.$toast.show({ type: 'success', text: '删除成功' });
-              this.$router.push({ name: 'sysParameterList' });
+              this.$router.push({ name: 'roleList' });
             });
           })
           .catch(() => {});
@@ -91,11 +91,11 @@ export default {
         })
           .then(() => {
             deleteObjs(ids, this).then(() => {
-              this.$store.dispatch('sysParameter/getDataList', this.pageIndex + 1); //刷新当前页
+              this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
               this.$toast.show({ type: 'success', text: '删除成功' });
               //跳转回主要管理列表
-              if (this.$route.name != 'sysParameterList') {
-                this.$router.push({ name: 'sysParameterList' });
+              if (this.$route.name != 'roleList') {
+                this.$router.push({ name: 'roleList' });
               }
             });
           })
@@ -108,17 +108,17 @@ export default {
     },
     editItemClick() {
       if (this.readOnlySelectedObj) {
-        this.$router.push({ name: 'editSettingItem' });
+        this.$router.push({ name: 'editRole' });
       }
     },
     refreshClick() {
-      this.$store.dispatch('sysParameter/getDataList', this.pageIndex + 1); //刷新当前页
+      this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
       this.$toast.show({ type: 'success', text: '刷新成功' });
     }
   },
   beforeDestroy() {
     //清空store
-    this.$store.commit('sysParameter/SetSelection', []);
+    this.$store.commit('role/SetSelection', []);
   },
   components: {
     MainToolBar
@@ -127,7 +127,7 @@ export default {
 </script>
 
 <style scoped>
-.sysParameter {
+.role {
   width: 100%;
   height: 100%;
 }

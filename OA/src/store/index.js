@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 import navigation from './navigation.js';
 import user from './user.js';
 import sysParameter from './sysParameter.js';
+import role from './role.js';
+
 
 Vue.use(Vuex);
 
@@ -10,7 +12,8 @@ Vue.use(Vuex);
 const modules = {
   navigation,
   user,
-  sysParameter
+  sysParameter,
+  role
 };
 
 export default new Vuex.Store({

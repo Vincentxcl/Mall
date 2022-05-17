@@ -1,19 +1,11 @@
 <template>
-  <div class="editSettingItem">
+  <div class="editRole">
     <div class="grid">
       <table>
         <tr>
           <td class="ttl">名称:</td>
           <td>
-            <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[0-9a-zA-Z]{0,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">属性:</td>
-          <td>
-            <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
+            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{0,32}$/g">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
             </textbox>
           </td>
@@ -29,7 +21,7 @@
         <tr>
           <td class="ttl">说明:</td>
           <td>
-            <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,128}$/">
+            <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,64}$/">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
             </textbox>
           </td>
@@ -54,14 +46,13 @@ import Btn from 'components/button/btn.vue';
 
 import store from 'store/index.js'; // import the store
 import { getDifferent, deepClone } from 'common/helper/convertHelper';
-import { patchObj } from 'netWork/appSetting.js';
+import { patchObj } from 'netWork/role.js';
 
 export default {
-  name: 'EditSettingItem',
+  name: 'EditRole',
   data() {
     return {
-      title: '',
-      value: '',
+      name: '',
       ord: 0,
       description: '',
       isForbidden: false, //btn是否可用
@@ -71,20 +62,20 @@ export default {
   },
   computed: {
     pageIndex() {
-      return this.$store.getters['sysParameter/pageIndex'];
+      return this.$store.getters['role/pageIndex'];
     },
     selectedObj() {
-      return this.$store.getters['sysParameter/selectedObj'];
+      return this.$store.getters['role/selectedObj'];
     },
     readOnlySelectedObj() {
-      return this.$store.getters['sysParameter/readOnlySelectedObj'];
+      return this.$store.getters['role/readOnlySelectedObj'];
     }
   },
   methods: {
     //将对象的属性分别填入组件的data
     fill(obj) {
       if (typeof obj == 'object') {
-        let ttls = ['title', 'value', 'description', 'ord'];
+        let ttls = ['name', 'description', 'ord'];
         for (let item of ttls) {
           if (Reflect.get(obj, item) != undefined) {
             this[item] = Reflect.get(obj, item);
@@ -93,24 +84,22 @@ export default {
       }
     },
     clear() {
-      this.$refs.title.clear();
-      this.$refs.value.clear();
+      this.$refs.name.clear();
       this.$refs.ord.clear();
       this.$refs.description.clear();
       this.isForbidden = false;
       this.message = '';
-      this.$store.dispatch('sysParameter/setSelectedObj', null);
+      this.$store.dispatch('role/setSelectedObj', null);
     },
     back() {
       this.$router.push({
-        name: 'sysParameterList'
+        name: 'roleList'
       });
     },
     submit() {
-      if (this.$refs.title.check() && this.$refs.value.check() && this.$refs.ord.check() && this.$refs.description.check()) {
+      if (this.$refs.name.check() && this.$refs.ord.check() && this.$refs.description.check()) {
         let obj = {
-          title: this.title,
-          value: this.value,
+          name: this.name,
           description: this.description
         };
         if (this.ord) {
@@ -143,7 +132,7 @@ export default {
       //提交修改
       patchObj(this.readOnlySelectedObj.id, operations, this)
         .then(() => {
-          this.$store.dispatch('sysParameter/getDataList', this.pageIndex + 1); //刷新当前页
+          this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
           this.$toast.show({ type: 'success', text: '修改成功' });
           this.back();
         })
@@ -166,12 +155,12 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     //不能直接通过this访问$store
-    if (store.getters['sysParameter/selectedObj']) {
+    if (store.getters['role/selectedObj']) {
       next();
     }
   },
   beforeRouteLeave(to, from, next) {
-    let arr = ['sysParameterList', 'createSettingItem'];
+    let arr = ['roleList', 'createRole'];
 
     if (this.isAccomplished) {
       this.clear();
@@ -201,7 +190,7 @@ export default {
             temp[prop] = Reflect.get(this, prop);
           }
         }
-        this.$store.commit('sysParameter/SetSelectedObj', temp);
+        this.$store.commit('role/SetSelectedObj', temp);
       }
       next();
     }
@@ -214,96 +203,96 @@ export default {
 </script>
 
 <style>
-div.editSettingItem div.grid {
+div.editRole div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
 /* #region table圆角 */
-div.editSettingItem table {
+div.editRole table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.editSettingItem table td {
+div.editRole table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.editSettingItem table tr:first-child td:first-child {
+div.editRole table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.editSettingItem table tr:first-child td:last-child {
+div.editRole table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.editSettingItem table tr:last-child td:first-child {
+div.editRole table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.editSettingItem table tr:last-child td:last-child {
+div.editRole table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.editSettingItem table tr td:first-child {
+div.editRole table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.editSettingItem table tr:last-child td {
+div.editRole table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.editSettingItem table tr td:first-child {
+div.editRole table tr td:first-child {
   width: 150px;
 }
 
-div.editSettingItem div.grid .textBox {
+div.editRole div.grid .textBox {
   width: 100%;
 }
 
-div.editSettingItem div.grid input {
+div.editRole div.grid input {
   width: 60%;
   min-width: 400px;
 }
 
-div.editSettingItem div.grid textarea {
+div.editRole div.grid textarea {
   width: 60%;
   min-width: 400px;
   height: 100px;
 }
 
-div.editSettingItem div.grid div.tip {
+div.editRole div.grid div.tip {
   display: inline-block;
   color: var(--color-danger);
 }
 
-div.editSettingItem div.ctrl {
+div.editRole div.ctrl {
   display: flex;
 }
 
-div.editSettingItem div.ctrl > div {
+div.editRole div.ctrl > div {
   width: 50%;
 }
 
-div.editSettingItem div.ctrl > div:first-child {
+div.editRole div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.editSettingItem div.ctrl button {
+div.editRole div.ctrl button {
   margin: 0px 5px;
 }
 
-div.editSettingItem div.ctrl button.isForbidden {
+div.editRole div.ctrl button.isForbidden {
   cursor: not-allowed;
 }
 
-div.editSettingItem div.message {
+div.editRole div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);

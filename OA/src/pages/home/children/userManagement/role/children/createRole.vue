@@ -1,19 +1,11 @@
 <template>
-  <div class="createSettingItem">
+  <div class="createRole">
     <div class="grid">
       <table>
         <tr>
           <td class="ttl">名称:</td>
           <td>
-            <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[0-9a-zA-Z]{0,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">属性:</td>
-          <td>
-            <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
+            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{0,32}$/g">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
             </textbox>
           </td>
@@ -29,7 +21,7 @@
         <tr>
           <td class="ttl">说明:</td>
           <td>
-            <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,128}$/">
+            <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,64}$/">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
             </textbox>
           </td>
@@ -52,14 +44,13 @@
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 
-import { postData } from 'netWork/appSetting.js';
+import { postData } from 'netWork/role.js';
 
 export default {
   name: 'CreateSettingItem',
   data() {
     return {
-      title: '',
-      value: '',
+      name: '',
       ord: 0,
       description: '',
       isForbidden: false,
@@ -68,8 +59,7 @@ export default {
   },
   methods: {
     clear() {
-      this.$refs.title.clear();
-      this.$refs.value.clear();
+      this.$refs.name.clear();
       this.$refs.ord.clear();
       this.$refs.description.clear();
       this.message = '';
@@ -77,14 +67,13 @@ export default {
     },
     back() {
       this.$router.push({
-        name: 'sysParameterList'
+        name: 'roleList'
       });
     },
     submit() {
-      if (this.$refs.title.check() && this.$refs.value.check() && this.$refs.ord.check() && this.$refs.description.check()) {
+      if (this.$refs.name.check() && this.$refs.ord.check() && this.$refs.description.check()) {
         let obj = {
-          title: this.title,
-          value: this.value,
+          name: this.name,
           description: this.description
         };
         if (this.ord) {
@@ -119,96 +108,96 @@ export default {
 </script>
 
 <style>
-div.createSettingItem div.grid {
+div.createRole div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
 /* #region table圆角 */
-div.createSettingItem table {
+div.createRole table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.createSettingItem table td {
+div.createRole table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.createSettingItem table tr:first-child td:first-child {
+div.createRole table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.createSettingItem table tr:first-child td:last-child {
+div.createRole table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.createSettingItem table tr:last-child td:first-child {
+div.createRole table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.createSettingItem table tr:last-child td:last-child {
+div.createRole table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.createSettingItem table tr td:first-child {
+div.createRole table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.createSettingItem table tr:last-child td {
+div.createRole table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.createSettingItem table tr td:first-child {
+div.createRole table tr td:first-child {
   width: 150px;
 }
 
-div.createSettingItem div.grid .textBox {
+div.createRole div.grid .textBox {
   width: 100%;
 }
 
-div.createSettingItem div.grid input {
+div.createRole div.grid input {
   width: 60%;
   min-width: 400px;
 }
 
-div.createSettingItem div.grid textarea {
+div.createRole div.grid textarea {
   width: 60%;
   min-width: 400px;
   height: 100px;
 }
 
-div.createSettingItem div.grid div.tip {
+div.createRole div.grid div.tip {
   display: inline-block;
   color: var(--color-danger);
 }
 
-div.createSettingItem div.ctrl {
+div.createRole div.ctrl {
   display: flex;
 }
 
-div.createSettingItem div.ctrl > div {
+div.createRole div.ctrl > div {
   width: 50%;
 }
 
-div.createSettingItem div.ctrl > div:first-child {
+div.createRole div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.createSettingItem div.ctrl button {
+div.createRole div.ctrl button {
   margin: 0px 5px;
 }
 
-div.createSettingItem div.ctrl button.isForbidden {
+div.createRole div.ctrl button.isForbidden {
   cursor: not-allowed;
 }
 
-div.createSettingItem div.message {
+div.createRole div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);

@@ -1,5 +1,5 @@
 <template>
-  <div class="searchSettingItemResult">
+  <div class="searchRoleResult">
     <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
@@ -29,25 +29,19 @@ import GridField from 'components/grid/oa.v3/GridField.vue';
 import Pagination from 'components/pagination/v2/Pagination.vue';
 
 import appsetting from 'config/appsettings.json';
-import { requestData,deleteObj } from 'netWork/appSetting.js';
+import { requestData, deleteObj } from 'netWork/role.js';
 
 import { trimInObj } from 'common/helper/convertHelper';
 
 export default {
-  name: 'SearchSettingItemResult',
+  name: 'SearchRoleResult',
   data() {
     return {
       headItem: [
         {
-          prop: 'title',
+          prop: 'name',
           label: '名称',
           width: '200',
-          align: 'center'
-        },
-        {
-          prop: 'value',
-          label: '值',
-          width: '80',
           align: 'center'
         },
         {
@@ -86,9 +80,9 @@ export default {
     },
     showSelection() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 613)) {
+        if (parentNode.children.value.find((val) => val.id == 525)) {
           isShow = true;
         }
       }
@@ -96,9 +90,9 @@ export default {
     },
     showDetail() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 616)) {
+        if (parentNode.children.value.find((val) => val.id == 528)) {
           isShow = true;
         }
       }
@@ -106,9 +100,9 @@ export default {
     },
     showEdit() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 614)) {
+        if (parentNode.children.value.find((val) => val.id == 529)) {
           isShow = true;
         }
       }
@@ -116,9 +110,9 @@ export default {
     },
     showDel() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 615)) {
+        if (parentNode.children.value.find((val) => val.id == 5210)) {
           isShow = true;
         }
       }
@@ -144,27 +138,27 @@ export default {
     },
     //将选中项目提交至store
     setSysParamsSelection(e) {
-      this.$store.commit('sysParameter/SetSelection', e);
+      this.$store.commit('role/SetSelection', e);
     },
     getDetail(e) {
-      this.$store.dispatch('sysParameter/setSelectedObj', trimInObj(e));
+      this.$store.dispatch('role/setSelectedObj', trimInObj(e));
       this.$router.push({
-        name: 'settingItemDetail',
+        name: 'roleDetail',
         params: {
           id: e.id
         }
       });
     },
     editItem(e) {
-      this.$store.dispatch('sysParameter/setSelectedObj', trimInObj(e));
+      this.$store.dispatch('role/setSelectedObj', trimInObj(e));
       this.$router.push({
-        name: 'editSettingItem'
+        name: 'editRole'
       });
     },
     deleteItem(e) {
       this.$confirm({
         type: 'warning',
-        content: '是否删除 ' + e.title + ' ?',
+        content: '是否删除 ' + e.name + ' ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
@@ -180,7 +174,7 @@ export default {
             };
             this.getDataList(queryObj).then(() => {
               // 2.刷新 主列表的当前页
-              this.$store.dispatch('sysParameter/getDataList', this.$store.getters['sysParameter/pageIndex'] + 1);
+              this.$store.dispatch('role/getDataList', this.$store.getters['role/pageIndex'] + 1);
               this.$toast.show({ type: 'success', text: '删除成功' });
             });
           });
@@ -213,7 +207,7 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    this.$store.commit('sysParameter/SetSelection', []); //退出时删除
+    this.$store.commit('role/SetSelection', []); //退出时删除
     next();
   },
   components: {
@@ -226,7 +220,7 @@ export default {
 </script>
 
 <style scoped>
-.searchSettingItemResult {
+.searchRoleResult {
   width: 100%;
   height: 100%;
 }

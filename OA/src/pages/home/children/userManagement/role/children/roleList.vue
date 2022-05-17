@@ -1,5 +1,5 @@
 <template>
-  <div class="searchSettingItemResult">
+  <div class="roleList">
     <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
@@ -16,7 +16,7 @@
     </grid-view>
 
     <div class="bottomBar">
-      <pagination v-model="pageIndex" :pageCount="pageCount"></pagination>
+      <pagination v-model="index" :pageCount="pageCount"></pagination>
       <div class="total">总记录:{{ totalCount }}</div>
     </div>
   </div>
@@ -29,25 +29,19 @@ import GridField from 'components/grid/oa.v3/GridField.vue';
 import Pagination from 'components/pagination/v2/Pagination.vue';
 
 import appsetting from 'config/appsettings.json';
-import { requestData,deleteObj } from 'netWork/appSetting.js';
-
+import { deleteObj } from 'netWork/role.js';
 import { trimInObj } from 'common/helper/convertHelper';
 
 export default {
-  name: 'SearchSettingItemResult',
+  name: 'RoleList',
   data() {
     return {
+      index: 0, //页码
       headItem: [
         {
-          prop: 'title',
+          prop: 'name',
           label: '名称',
           width: '200',
-          align: 'center'
-        },
-        {
-          prop: 'value',
-          label: '值',
-          width: '80',
           align: 'center'
         },
         {
@@ -61,18 +55,8 @@ export default {
           width: '50',
           align: 'center'
         }
-      ],
-      pageIndex: 0,
-      totalCount: 1,
-      pageCount: 1,
-      dataList: []
+      ]
     };
-  },
-  props: {
-    content: {
-      type: String,
-      required: true
-    }
   },
   computed: {
     iconDetail() {
@@ -86,9 +70,9 @@ export default {
     },
     showSelection() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 613)) {
+        if (parentNode.children.value.find((val) => val.id == 525)) {
           isShow = true;
         }
       }
@@ -96,9 +80,9 @@ export default {
     },
     showDetail() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 616)) {
+        if (parentNode.children.value.find((val) => val.id == 528)) {
           isShow = true;
         }
       }
@@ -106,9 +90,9 @@ export default {
     },
     showEdit() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 614)) {
+        if (parentNode.children.value.find((val) => val.id == 529)) {
           isShow = true;
         }
       }
@@ -116,105 +100,77 @@ export default {
     },
     showDel() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParameter');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 615)) {
+        if (parentNode.children.value.find((val) => val.id == 5210)) {
           isShow = true;
         }
       }
       return isShow;
+    },
+    pageIndex() {
+      return this.$store.getters['role/pageIndex'];
+    },
+    totalCount() {
+      return this.$store.getters['role/totalCount'];
+    },
+    pageCount() {
+      return this.$store.getters['role/pageCount'];
+    },
+    dataList() {
+      return this.$store.getters['role/dataList'];
     }
   },
   methods: {
-    getDataList(queryObj) {
-      return requestData(queryObj, this).then((res) => {
-        //数据 及排序
-        this.dataList = res.data.sort((a, b) => {
-          if (a.establish > b.establish) return -1;
-          else if (a.establish < b.establish) return 1;
-          else return 0;
-        });
-        //页码
-        let page = JSON.parse(res.headers['x-pagination']);
-        //提交
-        this.pageIndex = page.pageIndex - 1;
-        this.totalCount = page.totalCount;
-        this.pageCount = page.pageCount;
-      });
-    },
     //将选中项目提交至store
     setSysParamsSelection(e) {
-      this.$store.commit('sysParameter/SetSelection', e);
+      this.$store.commit('role/SetSelection', e);
     },
     getDetail(e) {
-      this.$store.dispatch('sysParameter/setSelectedObj', trimInObj(e));
+      this.$store.dispatch('role/setSelectedObj', trimInObj(e));
       this.$router.push({
-        name: 'settingItemDetail',
+        name: 'roleDetail',
         params: {
           id: e.id
         }
       });
     },
     editItem(e) {
-      this.$store.dispatch('sysParameter/setSelectedObj', trimInObj(e));
+      this.$store.dispatch('role/setSelectedObj', trimInObj(e));
       this.$router.push({
-        name: 'editSettingItem'
+        name: 'editRole'
       });
     },
     deleteItem(e) {
       this.$confirm({
         type: 'warning',
-        content: '是否删除 ' + e.title + ' ?',
+        content: '是否删除 ' + e.name + ' ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
         .then(() => {
-          //删除
           deleteObj(e.id, this).then(() => {
-            // 1.刷新 搜索结果的当前页
-            let queryObj = {
-              pageIndex: this.pageIndex + 1,
-              pageSize: appsetting.request.pageSize,
-              orderBy: 'establish desc',
-              search: this.content
-            };
-            this.getDataList(queryObj).then(() => {
-              // 2.刷新 主列表的当前页
-              this.$store.dispatch('sysParameter/getDataList', this.$store.getters['sysParameter/pageIndex'] + 1);
-              this.$toast.show({ type: 'success', text: '删除成功' });
-            });
+            this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
+            this.$toast.show({ type: 'success', text: '删除成功' });
           });
         })
         .catch(() => {});
     }
   },
+  created() {
+    this.$store.dispatch('role/getDataList', 1); //创建该组件时，默认获取首页
+  },
   watch: {
     pageIndex: {
       handler(current) {
-        let queryObj = {
-          pageIndex: current + 1,
-          pageSize: 20,
-          orderBy: 'establish desc',
-          search: this.content
-        };
-        this.getDataList(queryObj);
+        this.index = current; //通知pagination
+      }
+    },
+    index: {
+      handler(current) {
+        this.$store.dispatch('role/getDataList', current + 1);
       }
     }
-  },
-  activated() {
-    if (this.content && this.content.trim() != '') {
-      let queryObj = {
-        pageIndex: this.pageIndex + 1,
-        pageSize: 20,
-        orderBy: 'establish desc',
-        search: this.content
-      };
-      this.getDataList(queryObj);
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    this.$store.commit('sysParameter/SetSelection', []); //退出时删除
-    next();
   },
   components: {
     Icon,
@@ -226,7 +182,7 @@ export default {
 </script>
 
 <style scoped>
-.searchSettingItemResult {
+.roleList {
   width: 100%;
   height: 100%;
 }
