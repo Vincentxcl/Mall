@@ -1,4 +1,3 @@
-import appsetting from 'config/appsettings.json';
 import axios from 'axios';
 import { getAjaxInstance } from 'common/helper/netWorkHelper.js';
 import { getCookie, setCookie } from 'common/helper/cookiesHelper';
@@ -31,7 +30,6 @@ ajax.interceptors.response.use(
     return res;
   },
   (err) => {
-    cancel = null;
     return Promise.reject(err);
   }
 );
@@ -59,16 +57,17 @@ function decodeJwtPayload(jwt) {
 //获取token，尝试从cookie或者服务器获取token，key为键名，可能有多组令牌
 async function tryGetToken(key) {
   //本地获取token
-  let token = getCookie(key);
+  let token = getCookie(key) || window.sessionStorage.getItem(key);
   // 令牌不存在
   if (token == undefined || token.trim() == '') {
-    console.log('令牌 不存在！');
+    console.log('令牌 不存在！'); //////////////////////////
     //请求token
     return new Promise((resolve, reject) => {
       requestToken()
         .then((res) => {
           console.log('没有令牌，获取了新的令牌');
           setCookie(key, res.data, 0);
+          window.sessionStorage.setItem(key, res.data);
           resolve(res.data); //执行成功时的结果，res.data就是令牌
         })
         .catch((error) => {
@@ -90,6 +89,7 @@ async function tryGetToken(key) {
           .then((res) => {
             console.log('旧的令牌，获取了新的令牌');
             setCookie(key, res.data, 0);
+            window.sessionStorage.setItem(key, res.data);
             resolve(res.data); //执行成功时的结果，res.data就是令牌
           })
           .catch((error) => {
@@ -110,22 +110,39 @@ async function tryGetToken(key) {
 function refreshToken(key) {
   requestToken()
     .then((res) => {
-      console.log('定时刷新令牌');
+      console.log('tokenHelper定时刷新令牌'); /////////////////////////
+
       setCookie(key, res.data, 0);
-      automaticallyRefreshToken(key);
+      window.sessionStorage.setItem(key, res.data);
+      //获取令牌的过期时间
+      let payload = decodeJwtPayload(res.data);
+      let remainder = payload.exp - new Date() - 30000;
+      automaticallyRefreshToken(key, remainder); //令牌有效期还剩30秒的时候，再请求新令牌
     })
     .catch(() => {
-      console.log('定时刷新，无法访问链接，链接已过期，停止刷新令牌');
+      console.log('tokenHelper定时刷新，无法访问链接，链接已过期，停止刷新令牌');
       clearInterval(handler);
     });
 }
 
 //定时刷新令牌
-function automaticallyRefreshToken(key) {
+function automaticallyRefreshToken(key, remainder) {
   clearTimeout(handler);
-  handler = setTimeout(() => {
-    refreshToken(key);
-  }, appsetting.token.refreshInterval);
+
+  let interval = remainder;
+  //第一次执行时，remainder可以不用传入
+  if (remainder == undefined) {
+    //本地获取token
+    let token = getCookie(key) || window.sessionStorage.getItem(key);
+    // 令牌不存在
+    if (token == undefined || token.trim() == '') {
+      throw new Error('automatically refresh token 令牌 不存在');
+    }
+    let payload = decodeJwtPayload(token);
+    interval = payload.exp - new Date() - 30000;
+  }
+
+  handler = setTimeout(() => refreshToken(key), interval);
 }
 
 export { tryGetToken, decodeJwtPayload, automaticallyRefreshToken };

@@ -30,7 +30,7 @@ function siteItemsBuilder(objs, jwtClaim, props) {
       let value = claim.value;
       // 判断令牌中claim是否满足该claim，如果不满足 直接过
       let jwtClaimValue = Reflect.get(jwtClaim, type);
-      if (jwtClaimValue == undefined || jwtClaimValue != value) {
+      if (jwtClaimValue == undefined || jwtClaimValue.split('/')[0] != value) {
         continue;
       }
     }

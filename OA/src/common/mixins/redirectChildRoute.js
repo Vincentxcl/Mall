@@ -32,7 +32,7 @@ const redirectChildRoute = {
   },
   beforeRouteLeave(to, from, next) {
     // 离开组件时，记录离开时的地址，当回来的时候，还可以继续访问子组件，Deactive仅在keepalive中有用，因此不用
-    this.path = this.$route.path;
+    this.path = this.$route.fullPath;//必须是全路径，包含query部分
     next();
   }
 };

@@ -1,33 +1,5 @@
 ﻿import { getAjaxInstanceWithDefaultInterceptor } from 'common/helper/netWorkHelper.js';
 
-export function requestData(queryObj, vm) {
-  if (typeof queryObj != 'object') {
-    throw new Error('In the function requestData, a parameter queryObj must be a object, but got a error type ' + typeof queryObj);
-  }
-
-  // 构建查询参数对象
-  let params = {
-    ver: '1.0'
-  };
-
-  let props = ['id', 'setting', 'search', 'pageIndex', 'pageSize', 'orderBy', 'fields'];
-  for (let prop of props) {
-    if (Reflect.get(queryObj, prop) != undefined) {
-      params[prop] = Reflect.get(queryObj, prop);
-    }
-  }
-
-  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
-  return ajax({
-    method: 'get',
-    url: 'appsetting',
-    headers: {
-      Accept: 'application/json'
-    },
-    params: params
-  });
-}
-
 export function requestItem(id, vm) {
   const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
@@ -80,6 +52,34 @@ export function deleteObj(id, vm) {
     params: {
       ver: '1.0'
     }
+  });
+}
+
+export function requestData(queryObj, vm) {
+  if (typeof queryObj != 'object') {
+    throw new Error('In the function requestData, a parameter queryObj must be a object, but got a error type ' + typeof queryObj);
+  }
+
+  // 构建查询参数对象
+  let params = {
+    ver: '1.0'
+  };
+
+  let props = ['id', 'setting', 'search', 'pageIndex', 'pageSize', 'orderBy', 'fields'];
+  for (let prop of props) {
+    if (Reflect.get(queryObj, prop) != undefined) {
+      params[prop] = Reflect.get(queryObj, prop);
+    }
+  }
+
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'get',
+    url: 'appsettings',
+    headers: {
+      Accept: 'application/json'
+    },
+    params: params
   });
 }
 

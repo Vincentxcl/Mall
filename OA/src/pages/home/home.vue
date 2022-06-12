@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <!-- part1 -->
     <div class="content">
       <aside-bar></aside-bar>
       <div>
@@ -14,6 +15,7 @@
         </section>
       </div>
     </div>
+    <!-- part2 -->
     <bottom></bottom>
   </div>
 </template>

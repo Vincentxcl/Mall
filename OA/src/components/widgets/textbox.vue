@@ -213,7 +213,6 @@ input {
   border: 1px solid lightgray;
   outline: none;
   border-radius: 2px;
-  font-size: 15px;
 }
 
 .ext {

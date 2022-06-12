@@ -27,13 +27,9 @@ export default {
 </script>
 
 <style>
-.mainToolBar {
-  font-size: 14px;
-}
-
 .mainToolBar ul > li.navItem {
   display: inline-block;
-  margin: 0px 5px;
+  margin: 0px 3px;
 }
 
 .mainToolBar ul > li.navItem:hover {
@@ -54,11 +50,13 @@ export default {
 .mainToolBar div.icon > i {
   height: 40px;
   line-height: 40px;
+  font-size: 14px;
 }
 
 .mainToolBar div.ttl {
   display: inline;
   height: 40px;
   line-height: 40px;
+  font-size: 12px;
 }
 </style>

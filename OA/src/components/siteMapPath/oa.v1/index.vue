@@ -24,7 +24,7 @@ export default {
         let arr = this.$store.getters.path.split('/');
         if (arr.length > 0) {
           for (let item of arr) {
-            let temp = this.$store.getters.siteNodes.find((val) => val.title == item);
+            let temp = this.$store.getters.siteNodes.find((val) => val.id == item);
             if (temp) {
               siteNodes.push(temp);
             }
@@ -58,6 +58,6 @@ export default {
 .siteMapNode.active {
   color: var(--color-high-text);
   text-decoration: none;
-  cursor:auto;
+  cursor: auto;
 }
 </style>

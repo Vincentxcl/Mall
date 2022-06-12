@@ -5,7 +5,7 @@ import { tryGetToken } from './tokenHelper.js';
 
 let cancel; // 用于保存取消请求的函数
 
-// 使用appsetting的配置,返回axios的实例
+// 使用appsetting的配置,返回axios的实例对象
 export function getAjaxInstance(ttl) {
   return axios.create(configs(ttl));
 }
@@ -25,6 +25,9 @@ export function getAjaxInstanceWithDefaultInterceptor(ttl, app) {
       }
       // 添加一个 cancelToken 配置
       config.cancelToken = new axios.CancelToken((func) => (cancel = func));
+
+      //有了令牌可以不需要cookie取消发送cookie
+      // config.withCredentials = false;
 
       // 2.添加令牌
       tryGetToken('userAuth')
@@ -51,14 +54,14 @@ export function getAjaxInstanceWithDefaultInterceptor(ttl, app) {
   ajaxInstance.interceptors.response.use(
     (res) => {
       // 响应为200时做的事
-      cancel = null;
+      cancel = null; //响应成功时才取消这个cancel
       return res;
     },
     (error) => {
       // 响应不是2xx时做的事
-      cancel = null;
-      let str = JSON.stringify(error.response.data.errors);
-      app.$toast.show({ type: 'warning', text: error.response.status + '错误' + str });
+      // cancel = null;//特别注意:响应不成功时不要取消，否则会自我放行，出现间隔一次又发出请求的特殊情况，比如连续10次请求，有5次成功发出
+      let str = JSON.stringify(error.response.data);
+      app.$toast.show({ type: 'warning', text: error.response.status + ' Info' + str });
       return Promise.reject(error);
     }
   );
@@ -66,7 +69,7 @@ export function getAjaxInstanceWithDefaultInterceptor(ttl, app) {
   return ajaxInstance;
 }
 
-// 自定义配置axios实例
+// 自定义配置axios实例对象
 export function buildAjax(baseSet) {
   return axios.create(baseSet);
 }

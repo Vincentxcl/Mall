@@ -1,12 +1,13 @@
 <template>
   <aside class="asideBar">
-    <h3 v-if="isCollapse">OA</h3>
-    <h3 v-else-if="!isCollapse">OA协同系统</h3>
+    <h3 v-if="isCollapse">{{ shortName }}</h3>
+    <h3 v-else>{{ fullName }}</h3>
     <nav-group :items="$store.getters.siteMenu" :isFolded="isCollapse"></nav-group>
   </aside>
 </template>
 
 <script>
+import appsetting from 'config/appsettings.json';
 import NavGroup from './parts/navGroup.vue';
 
 export default {
@@ -14,6 +15,12 @@ export default {
   computed: {
     isCollapse() {
       return this.$store.getters.isMenuCollapse;
+    },
+    fullName() {
+      return appsetting.title.full;
+    },
+    shortName() {
+      return appsetting.title.short;
     }
   },
   components: {
@@ -30,8 +37,9 @@ export default {
 .asideBar h3 {
   height: 45px;
   line-height: 45px;
-  color: white;
-  font-size: 16px;
+  color:#fff;
+  font-size: 15px;
+  font-weight: 600;
   text-align: center;
 }
 

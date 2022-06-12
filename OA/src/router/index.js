@@ -13,29 +13,48 @@ const homeIndex = () => import('../pages/home/children/homeIndex/homeIndex.vue')
 const partA = () => import('../pages/home/children/category/partA.vue');
 const partB = () => import('../pages/home/children/category/partB.vue');
 const profile = () => import('../pages/home/children/profile/Profile.vue');
-const userList = () => import('../pages/home/children/userManagement/userList/userList.vue');
+
+//#region 用户管理
+const user = () => import('../pages/home/children/userManagement/user/user.vue');
+const userList = () => import('../pages/home/children/userManagement/user/children/userList.vue');
+const searchUser = () => import('../pages/home/children/userManagement/user/children/searchUser.vue');
+const searchUserResult = () => import('../pages/home/children/userManagement/user/children/searchUserResult.vue');
+const userDetail = () => import('../pages/home/children/userManagement/user/children/userDetail.vue');
+const createUser = () => import('../pages/home/children/userManagement/user/children/createUser.vue');
+const editUser = () => import('../pages/home/children/userManagement/user/children/editUser.vue');
+//#endregion
 
 //#region 系统参数
-const sysParameter = () => import('../pages/home/children/appsetting/sysParameter/sysParameter.vue');
-const sysParameterList = () => import('../pages/home/children/appsetting/sysParameter/children/sysParameterList.vue');
-const searchSettingItem = () => import('../pages/home/children/appsetting/sysParameter/children/searchSettingItem.vue');
-const searchSettingItemResult = () => import('../pages/home/children/appsetting/sysParameter/children/searchSettingItemResult.vue');
-const settingItemDetail = () => import('../pages/home/children/appsetting/sysParameter/children/settingItemDetail.vue');
-const createSettingItem = () => import('../pages/home/children/appsetting/sysParameter/children/createSettingItem.vue');
-const editSettingItem = () => import('../pages/home/children/appsetting/sysParameter/children/editSettingItem.vue');
+const sysParams = () => import('../pages/home/children/appsetting/sysParams/sysParams.vue');
+const sysParamsList = () => import('../pages/home/children/appsetting/sysParams/children/sysParamsList.vue');
+const searchSysParams = () => import('../pages/home/children/appsetting/sysParams/children/searchSysParams.vue');
+const searchSysParamsResult = () => import('../pages/home/children/appsetting/sysParams/children/searchSysParamsResult.vue');
+const sysParamsDetail = () => import('../pages/home/children/appsetting/sysParams/children/sysParamsDetail.vue');
+const createSysParams = () => import('../pages/home/children/appsetting/sysParams/children/createSysParams.vue');
+const editSysParams = () => import('../pages/home/children/appsetting/sysParams/children/editSysParams.vue');
+//#endregion
+
+//#region 权限
+const action = () => import('../pages/home/children/appsetting/action/action.vue');
+const actionList = () => import('../pages/home/children/appsetting/action/children/actionList.vue');
+const searchAction = () => import('../pages/home/children/appsetting/action/children/searchAction.vue');
+const searchActionResult = () => import('../pages/home/children/appsetting/action/children/searchActionResult.vue');
+const actionDetail = () => import('../pages/home/children/appsetting/action/children/actionDetail.vue');
+const createAction = () => import('../pages/home/children/appsetting/action/children/createAction.vue');
+const editAction = () => import('../pages/home/children/appsetting/action/children/editAction.vue');
+const editActionRoles = () => import('../pages/home/children/appsetting/action/children/editActionRoles.vue');
 //#endregion
 
 //#region 角色
-const role = () => import('../pages/home/children/userManagement/role/role.vue');
-const roleList = () => import('../pages/home/children/userManagement/role//children/roleList.vue');
-const searchRole = () => import('../pages/home/children/userManagement/role//children/searchRole.vue');
-const searchRoleResult = () => import('../pages/home/children/userManagement/role//children/searchRoleResult.vue');
-const roleDetail = () => import('../pages/home/children/userManagement/role//children/roleDetail.vue');
-const createRole = () => import('../pages/home/children/userManagement/role//children/createRole.vue');
-const editRole = () => import('../pages/home/children/userManagement/role//children/editRole.vue');
+const role = () => import('../pages/home/children/appsetting/role/role.vue');
+const roleList = () => import('../pages/home/children/appsetting/role//children/roleList.vue');
+const searchRole = () => import('../pages/home/children/appsetting/role//children/searchRole.vue');
+const searchRoleResult = () => import('../pages/home/children/appsetting/role//children/searchRoleResult.vue');
+const roleDetail = () => import('../pages/home/children/appsetting/role//children/roleDetail.vue');
+const createRole = () => import('../pages/home/children/appsetting/role//children/createRole.vue');
+const editRole = () => import('../pages/home/children/appsetting/role//children/editRole.vue');
 //#endregion
 
-const actionList = () => import('../pages/home/children/appsetting/actionList/actionList.vue');
 const logList = () => import('../pages/home/children/appsetting/logList/logList.vue');
 
 const routes = [
@@ -101,16 +120,114 @@ const routes = [
         meta: {}
       },
       {
-        name: 'userList',
-        path: 'userList',
-        component: userList,
-        meta: {}
+        name: 'user',
+        path: 'user',
+        component: user,
+        meta: {},
+        children: [
+          {
+            name: 'userList',
+            path: 'list',
+            component: userList,
+            meta: {}
+          },
+          {
+            name: 'searchUser',
+            path: 'search',
+            component: searchUser,
+            meta: {}
+          },
+          {
+            name: 'searchUserResult',
+            path: 'searchresult',
+            component: searchUserResult,
+            props($route) {
+              return {
+                search: $route.query.search //////////////////////////////////////////////////////////
+              };
+            },
+            meta: {}
+          },
+          {
+            name: 'userDetail',
+            path: 'detail/:id',
+            component: userDetail,
+            props: true,
+            meta: {}
+          },
+          {
+            name: 'createUser',
+            path: 'create',
+            component: createUser,
+            meta: {}
+          },
+          {
+            name: 'editUser',
+            path: 'edit',
+            component: editUser,
+            meta: {}
+          }
+        ]
       },
       {
-        name: 'actionList',
-        path: 'actionList',
-        component: actionList,
-        meta: {}
+        name: 'action',
+        path: 'action',
+        component: action,
+        meta: {},
+        children: [
+          {
+            name: 'actionList',
+            path: 'list',
+            component: actionList,
+            meta: {}
+          },
+          {
+            name: 'searchAction',
+            path: 'search',
+            component: searchAction,
+            meta: {}
+          },
+          {
+            name: 'searchActionResult',
+            path: 'searchresult',
+            component: searchActionResult,
+            props($route) {
+              return {
+                search: $route.query.search,
+                name: $route.query.name,
+                controllerTtl: $route.query.controllerTtl,
+                actionTtl: $route.query.actionTtl,
+                httpMethod: $route.query.httpMethod
+              };
+            },
+            meta: {}
+          },
+          {
+            name: 'actionDetail',
+            path: 'detail/:id',
+            component: actionDetail,
+            props: true,
+            meta: {}
+          },
+          {
+            name: 'createAction',
+            path: 'create',
+            component: createAction,
+            meta: {}
+          },
+          {
+            name: 'editAction',
+            path: 'edit',
+            component: editAction,
+            meta: {}
+          },
+          {
+            name: 'editActionRoles',
+            path: 'ActionRoles',
+            component: editActionRoles,
+            meta: {}
+          }
+        ]
       },
       {
         name: 'role',
@@ -136,7 +253,7 @@ const routes = [
             component: searchRoleResult,
             props($route) {
               return {
-                content: $route.query.content
+                search: $route.query.search
               };
             },
             meta: {}
@@ -163,51 +280,51 @@ const routes = [
         ]
       },
       {
-        name: 'sysParameter',
-        path: 'sysParameter',
-        component: sysParameter,
+        name: 'sysParams',
+        path: 'sysParams',
+        component: sysParams,
         meta: {},
         children: [
           {
-            name: 'sysParameterList',
+            name: 'sysParamsList',
             path: 'list',
-            component: sysParameterList,
+            component: sysParamsList,
             meta: {}
           },
           {
-            name: 'searchSettingItem',
+            name: 'searchSysParams',
             path: 'search',
-            component: searchSettingItem,
+            component: searchSysParams,
             meta: {}
           },
           {
-            name: 'searchSettingItemResult',
+            name: 'searchSysParamsResult',
             path: 'searchresult',
-            component: searchSettingItemResult,
+            component: searchSysParamsResult,
             props($route) {
               return {
-                content: $route.query.content
+                search: $route.query.search
               };
             },
             meta: {}
           },
           {
-            name: 'settingItemDetail',
+            name: 'sysParamsDetail',
             path: 'detail/:id',
-            component: settingItemDetail,
+            component: sysParamsDetail,
             props: true,
             meta: {}
           },
           {
-            name: 'createSettingItem',
+            name: 'createSysParams',
             path: 'create',
-            component: createSettingItem,
+            component: createSysParams,
             meta: {}
           },
           {
-            name: 'editSettingItem',
+            name: 'editSysParams',
             path: 'edit',
-            component: editSettingItem,
+            component: editSysParams,
             meta: {}
           }
         ]

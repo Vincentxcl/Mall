@@ -10,7 +10,8 @@ export default {
     _dataList: [], //表数据
     _selection: [],
     _selectedObj: null, //待编辑的对象
-    _readOnlySelectedObj: null //待编辑的对象，只读，用于做patch document时,对比发生了什么变化
+    _readOnlySelectedObj: null, //待编辑的对象，只读，用于做patch document时,对比发生了什么变化
+    _orderBy: [] //保存排序对象{prop:'num',order:'asc'}
   },
   getters: {
     pageIndex(state) {
@@ -33,30 +34,51 @@ export default {
     },
     readOnlySelectedObj(state) {
       return state._readOnlySelectedObj;
+    },
+    orderBy(state) {
+      if (state._orderBy.Length == 0) {
+        return '';
+      }
+      return state._orderBy
+        .filter((item) => item.order != '') //取出有排序类型的对象
+        .map((item) => item.prop + ' ' + item.order)
+        .join(',');
     }
   },
   actions: {
+    setOrderBy(context, payload) {
+      let order = '';
+      if (payload.order) {
+        /^(asc|desc)\w+$/.exec(payload.order); //正则匹配挖字符
+        order = RegExp.$1;
+      }
+
+      //判断数组中是否有该排序对象
+      let obj = context.state._orderBy.find((item) => item.prop == payload.prop);
+      //没有时，就追加
+      if (!obj) {
+        context.state._orderBy.push({ prop: payload.prop, order: order });
+      }
+      //存在时，就修改
+      else {
+        obj.order = order;
+      }
+    },
     getDataList(context, payload) {
       let queryObj = {
         pageIndex: payload,
         pageSize: appsetting.request.pageSize,
-        orderBy: 'establish desc'
+        orderBy: context.getters.orderBy == '' ? 'establish desc' : context.getters.orderBy //默认按照创建时间排序
       };
 
       requestData(queryObj, this._vm).then((res) => {
-        //数据 及排序
-        let json = res.data.sort((a, b) => {
-          if (a.establish > b.establish) return -1;
-          else if (a.establish < b.establish) return 1;
-          else return 0;
-        });
         //页码
         let page = JSON.parse(res.headers['x-pagination']);
         //提交
         context.commit('SetPageIndex', page.pageIndex - 1);
         context.commit('SetTotalCount', page.totalCount);
         context.commit('SetPageCount', page.pageCount);
-        context.commit('SetDataList', json);
+        context.commit('SetDataList', res.data);
       });
     },
     setSelectedObj(context, payload) {

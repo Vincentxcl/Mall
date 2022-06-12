@@ -1,6 +1,6 @@
 <template>
   <div class="gridView">
-    <el-table ref="table" :data="gridData" :border="border" :stripe="stripe" style="width: 100%" height="100%" :header-row-style="headerRowStyle" :header-cell-style="headerCellStyle" @selection-change="echoSelectionChange">
+    <el-table ref="table" :data="gridData" :border="border" :stripe="stripe" :style="tableStyle" height="100%" :header-row-style="headerRowStyle" :header-cell-style="headerCellStyle" :row-style="rowStyle" :cell-style="cellStyle" @selection-change="echoSelectionChange" @sort-change="echoSortChange">
       <slot></slot>
     </el-table>
   </div>
@@ -19,6 +19,15 @@ export default {
     border: {
       type: Boolean,
       default: () => true
+    },
+    tableStyle: {
+      type: Object,
+      default() {
+        return {
+          width: '100%',
+          fontSize: 'var(--font-size)'
+        };
+      }
     },
     stripe: {
       type: Boolean,
@@ -39,11 +48,32 @@ export default {
           background: '#f2fdff'
         };
       }
+    },
+    rowStyle: {
+      type: Object,
+      default() {
+        return {
+          height: '0' //最小行高
+        };
+      }
+    },
+    cellStyle: {
+      type: Object,
+      default() {
+        return {
+          // 调整单元格行高
+          paddingTop: '9px',
+          paddingBottom: '9px'
+        };
+      }
     }
   },
   methods: {
     echoSelectionChange(e) {
       this.$emit('selection-change', e);
+    },
+    echoSortChange(e) {
+      this.$emit('sort-change', e);
     }
   }
 };

@@ -32,6 +32,7 @@ export default {
       //删除本地账号，跳转
       deleteCookie('user');
       deleteCookie('userAuth');
+      window.sessionStorage.removeItem('userAuth');
       this.$router.push({ name: 'login' });
     }
   },

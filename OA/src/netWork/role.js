@@ -1,33 +1,5 @@
 ﻿import { getAjaxInstanceWithDefaultInterceptor } from 'common/helper/netWorkHelper.js';
 
-export function requestData(queryObj, vm) {
-  if (typeof queryObj != 'object') {
-    throw new Error('In the function requestData, a parameter queryObj must be a object, but got a error type ' + typeof queryObj);
-  }
-
-  // 构建查询参数对象
-  let params = {
-    ver: '1.0'
-  };
-
-  let props = ['id', 'name', 'search', 'pageIndex', 'pageSize', 'orderBy', 'fields'];
-  for (let prop of props) {
-    if (Reflect.get(queryObj, prop) != undefined) {
-      params[prop] = Reflect.get(queryObj, prop);
-    }
-  }
-
-  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
-  return ajax({
-    method: 'get',
-    url: 'role',
-    headers: {
-      Accept: 'application/json'
-    },
-    params: params
-  });
-}
-
 export function requestItem(id, vm) {
   const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
@@ -83,11 +55,53 @@ export function deleteObj(id, vm) {
   });
 }
 
+export function requestData(queryObj, vm) {
+  if (typeof queryObj != 'object') {
+    throw new Error('In the function requestData, a parameter queryObj must be a object, but got a error type ' + typeof queryObj);
+  }
+
+  // 构建查询参数对象
+  let params = {
+    ver: '1.0'
+  };
+
+  let props = ['id', 'name', 'search', 'pageIndex', 'pageSize', 'orderBy', 'fields'];
+  for (let prop of props) {
+    if (Reflect.get(queryObj, prop) != undefined) {
+      params[prop] = Reflect.get(queryObj, prop);
+    }
+  }
+
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'get',
+    url: 'roles',
+    headers: {
+      Accept: 'application/json'
+    },
+    params: params
+  });
+}
+
 export function deleteObjs(ids, vm) {
   const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'delete',
     url: 'roles/' + ids,
+    params: {
+      ver: '1.0'
+    }
+  });
+}
+
+export function requestAllData(vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'get',
+    url: 'roles/all',
+    headers: {
+      Accept: 'application/json'
+    },
     params: {
       ver: '1.0'
     }

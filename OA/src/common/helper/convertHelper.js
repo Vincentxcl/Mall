@@ -77,7 +77,7 @@ export function deepClone(target) {
   // 遍历目标：in运算符会拿到原型上继承到的属性
   for (let attr in target) {
     // 判断属性是否在当前对象自身
-    if (target.hasOwnProperty(attr)) {
+    if (Object.prototype.hasOwnProperty.call(target, attr)) {
       // 如果值是对象或数组，就递归一下
       if (target[attr] && typeof target[attr] === 'object') {
         newObj[attr] = target[attr].constructor === Array ? [] : {};
@@ -92,4 +92,90 @@ export function deepClone(target) {
     }
   }
   return newObj;
+}
+
+//从对象中提取属性后，组成一个对象返回，忽略为undefined、空字符串的成员
+export function extractProps(obj, props) {
+  if (typeof obj == 'object' && typeof props == 'object') {
+    let newObj = {};
+    for (let prop of props) {
+      //明确为undefined 避免0或者''被作为了false
+      if (Reflect.get(obj, prop) != undefined) {
+        let val = Reflect.get(obj, prop).toString();
+        if (val.trim() == '') {
+          continue;
+        }
+        newObj[prop] = val;
+      }
+    }
+    //
+    return newObj;
+  } else {
+    throw new Error('function extractProps parameters obj and props type error');
+  }
+}
+
+//将source的部分属性props，添加至target对象。
+export function fillProps(source, target, props) {
+  if (typeof source == 'object' && typeof target == 'object') {
+    for (let prop of props) {
+      if (Reflect.get(source, prop) != undefined) {
+        target[prop] = Reflect.get(source, prop);
+      }
+    }
+  } else {
+    throw new Error('function fill parameter error,parameter source and target require type of object');
+  }
+}
+
+// 做一层判断两个数组是否相同，不支持嵌套数组
+export function equalArr(arr1, arr2) {
+  //如有一个为非数组
+  if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+    return false;
+  }
+  //如果数组长度不一样
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  //排序
+  let sortedArr1 = arr1.sort();
+  let sortedArr2 = arr2.sort();
+  //判断同样的index所对应的值是否相同
+  let count = arr1.length;
+  for (let i = 0; i < count; i++) {
+    //判断值是否相同
+    if (sortedArr1[i] != sortedArr2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function equalObject(a, b) {
+  var aProps = Object.getOwnPropertyNames(a);
+  var bProps = Object.getOwnPropertyNames(b);
+  if (aProps.length != bProps.length) {
+    return false;
+  }
+  //
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i];
+
+    var propA = a[propName];
+    var propB = b[propName];
+    // 这里忽略了值为undefined的情况
+    // 故先判断两边都有相同键名
+    if (!Object.prototype.hasOwnProperty.call(b, propName)) return false;
+    if (propA instanceof Object) {
+      if (this.isObjectValueEqual(propA, propB)) {
+        // return true     这里不能return ,后面的对象还没判断
+      } else {
+        return false;
+      }
+    } else if (propA !== propB) {
+      return false;
+    }
+  }
+  return true;
 }
