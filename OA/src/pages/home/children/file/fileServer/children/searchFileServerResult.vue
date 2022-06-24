@@ -1,6 +1,6 @@
 <template>
-  <div class="searchActionResult">
-    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection" @sort-change="setSortChange">
+  <div class="searchFileServerResult">
+    <grid-view ref="gridview" :gridData="dataList" @selection-change="setFileServerSelection" @sort-change="setSortChange">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
@@ -9,11 +9,6 @@
           <icon v-if="showDetail" :icon="iconDetail" title="明细" @click.native="getDetail(item.scope.row)"></icon>
           <icon v-if="showEdit" :icon="iconEdit" title="编辑" @click.native="editItem(item.scope.row)"></icon>
           <icon v-if="showDel" :icon="iconDel" title="删除" @click.native="deleteItem(item.scope.row)"></icon>
-        </template>
-      </grid-field>
-      <grid-field label="配置" width="70" align="center">
-        <template slot-scope="item">
-          <span class="btn" title="配置角色" @click="editActionRoles(item.scope.row)">角色</span>
         </template>
       </grid-field>
       <!-- content -->
@@ -45,41 +40,35 @@ import { method_detail_edit } from './mixins/method_detail_edit.js';
 import { computed_show } from './mixins/computed_show.js';
 
 import appsetting from 'config/appsettings.json';
-import { requestData, patchObj, deleteObj } from 'netWork/action.js';
+import { requestData, patchObj, deleteObj } from 'netWork/fileServer.js';
 
 import { extractProps } from 'common/helper/convertHelper';
 
 export default {
-  name: 'SearchSettingItemResult',
+  name: 'SearchFileServerResult',
   mixins: [computedIcons, getSetOrderBy, method_detail_edit, computed_show],
   data() {
     return {
       headItem: [
         {
-          prop: 'name',
-          label: '名称',
-          width: '150',
-          align: 'left',
-          sort: 'custom'
-        },
-        {
-          prop: 'controllerTtl',
-          label: 'Controller',
+          prop: 'ipAddress',
+          label: '地址',
           width: '200',
           align: 'left',
           sort: 'custom'
         },
         {
-          prop: 'actionTtl',
-          label: 'Action',
+          prop: 'path',
+          label: '路径',
           width: '200',
           align: 'left'
         },
         {
-          prop: 'httpMethod',
-          label: '请求方式',
-          width: '90',
-          align: 'left'
+          prop: 'diskCapacity',
+          label: '使用率',
+          width: '80',
+          align: 'center',
+          sort: 'custom'
         },
         {
           prop: 'description',
@@ -91,7 +80,6 @@ export default {
           label: '排序',
           width: '65',
           align: 'center',
-          fixed: 'right',
           sort: 'custom'
         }
       ],
@@ -102,19 +90,19 @@ export default {
     };
   },
   props: {
+    ipAddress: {
+      type: String
+    },
+    path: {
+      type: String
+    },
+    diskCapacityGreaterThanOrEqual: {
+      type: String
+    },
+    diskCapacityLessThanOrEqual: {
+      type: String
+    },
     search: {
-      type: String
-    },
-    name: {
-      type: String
-    },
-    controllerTtl: {
-      type: String
-    },
-    actionTtl: {
-      type: String
-    },
-    httpMethod: {
       type: String
     }
   },
@@ -123,7 +111,7 @@ export default {
       return requestData(queryObj, this).then((res) => {
         //页码
         let page = JSON.parse(res.headers['x-pagination']);
-        //保存至组件内的变量
+        //提交
         this.pageIndex = page.pageIndex - 1;
         this.totalCount = page.totalCount;
         this.pageCount = page.pageCount;
@@ -134,7 +122,7 @@ export default {
       this.setOrderBy(e);
       //当数据量>1时
       if (this.dataList.length > 1) {
-        let props = ['search', 'name', 'controllerTtl', 'actionTtl', 'httpMethod'];
+        let props = ['ipAddress', 'path', 'diskCapacityGreaterThanOrEqual', 'diskCapacityLessThanOrEqual', 'search'];
         let queryParams = extractProps(this, props);
         let queryObj = {
           pageIndex: this.pageIndex + 1,
@@ -145,14 +133,14 @@ export default {
         this.getDataList(queryObj);
       }
     },
-    //将选中项目提交至store
-    setSysParamsSelection(e) {
-      this.$store.commit('action/SetSelection', e);
+    setFileServerSelection(e) {
+      //将选中项目提交至store
+      this.$store.commit('fileServer/SetSelection', e);
     },
     deleteItem(e) {
       this.$confirm({
         type: 'warning',
-        content: '是否删除 ' + e.name + ' ?',
+        content: '是否删除 ' + e.ipAddress + '\\' + e.path + ' ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
@@ -160,7 +148,7 @@ export default {
           //删除
           deleteObj(e.id, this).then(() => {
             // 1.刷新 搜索结果的当前页
-            let props = ['search', 'name', 'controllerTtl', 'actionTtl', 'httpMethod'];
+            let props = ['ipAddress', 'path', 'diskCapacityGreaterThanOrEqual', 'diskCapacityLessThanOrEqual', 'search'];
             let queryParams = extractProps(this, props);
             let queryObj = {
               pageIndex: this.pageIndex + 1,
@@ -170,7 +158,7 @@ export default {
             };
             this.getDataList(queryObj).then(() => {
               // 2.刷新 主列表的当前页
-              this.$store.dispatch('action/getDataList', this.$store.getters['action/pageIndex'] + 1);
+              this.$store.dispatch('fileServer/getDataList', this.$store.getters['fileServer/pageIndex'] + 1);
               this.$toast.show({ type: 'success', text: '删除成功' });
             });
           });
@@ -181,7 +169,7 @@ export default {
       let word = !e.isEnable ? '启用' : '禁用';
       this.$confirm({
         type: 'warning',
-        content: '是否' + word + ' "' + e.name + '" ?',
+        content: '是否' + word + ' "' + e.ipAddress + '\\' + e.path + '" ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
@@ -196,7 +184,7 @@ export default {
           ];
           patchObj(e.id, operations, this).then(() => {
             // 1.刷新 搜索结果的当前页
-            let props = ['search', 'name', 'controllerTtl', 'actionTtl', 'httpMethod'];
+            let props = ['ipAddress', 'path', 'diskCapacityGreaterThanOrEqual', 'diskCapacityLessThanOrEqual', 'search'];
             let queryParams = extractProps(this, props);
             let queryObj = {
               pageIndex: this.pageIndex + 1,
@@ -206,7 +194,7 @@ export default {
             };
             this.getDataList(queryObj).then(() => {
               // 2.刷新 主列表的当前页
-              this.$store.dispatch('action/getDataList', this.$store.getters['action/pageIndex'] + 1);
+              this.$store.dispatch('fileServer/getDataList', this.$store.getters['fileServer/pageIndex'] + 1);
               this.$toast.show({ type: 'success', text: '设置成功' });
             });
           });
@@ -217,7 +205,7 @@ export default {
   watch: {
     pageIndex: {
       handler(current) {
-        let props = ['search', 'name', 'controllerTtl', 'actionTtl', 'httpMethod'];
+        let props = ['ipAddress', 'path', 'diskCapacityGreaterThanOrEqual', 'diskCapacityLessThanOrEqual', 'search'];
         let queryParams = extractProps(this, props);
         let queryObj = {
           pageIndex: current + 1,
@@ -233,7 +221,7 @@ export default {
     //判断是否从搜索页跳转而来
     if (this.$route.meta.fromSearch) {
       //构建搜索参数对象
-      let props = ['search', 'name', 'controllerTtl', 'actionTtl', 'httpMethod'];
+      let props = ['ipAddress', 'path', 'diskCapacityGreaterThanOrEqual', 'diskCapacityLessThanOrEqual', 'search'];
       let queryParams = extractProps(this, props);
       let queryObj = {
         pageIndex: 1,
@@ -246,13 +234,13 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    if (from.name == 'searchAction') {
+    if (from.name == 'searchFileServer') {
       to.meta.fromSearch = true; //使用meta中变量标识是否从搜索控件跳转过来
     }
     next();
   },
   beforeRouteLeave(to, from, next) {
-    this.$store.commit('action/SetSelection', []); //退出时删除
+    this.$store.commit('fileServer/SetSelection', []); //退出时删除
     from.meta.fromSearch = false; //重置meta fromSearch设置
     next();
   },
@@ -266,33 +254,33 @@ export default {
 </script>
 
 <style>
-.searchActionResult {
+div.searchFileServerResult {
   width: 100%;
   height: calc(100% - 40px);
 }
 
-.searchActionResult .gridView {
+.searchFileServerResult .gridView {
   height: calc(100% - 25px);
 }
 
-.searchActionResult .gridView tbody div.cell i {
+.searchFileServerResult .gridView tbody div.cell i {
   padding: 0px 3px;
 }
 
-.searchActionResult .gridView tbody div.cell i.icon-qiyong {
+.searchFileServerResult .gridView tbody div.cell i.icon-qiyong {
   color: var(--color-success);
 }
 
-.searchActionResult .gridView tbody div.cell i.icon-jinyong {
+.searchFileServerResult .gridView tbody div.cell i.icon-jinyong {
   color: var(--color-danger);
 }
 
-.searchActionResult .gridView tbody div.cell i:hover {
+.searchFileServerResult .gridView tbody div.cell i:hover {
   color: var(--color-high-text);
   cursor: pointer;
 }
 
-.searchActionResult .bottomBar {
+.searchFileServerResult .bottomBar {
   display: flex;
   width: 100%;
   height: 25px;
@@ -300,21 +288,9 @@ export default {
   background: #ebebeb;
 }
 
-.searchActionResult .bottomBar .total {
+.searchFileServerResult .bottomBar .total {
   margin-right: 30px;
   line-height: 25px;
   font-size: 14px;
-}
-
-.searchActionResult span.btn {
-  color: var(--color-brand);
-  font-size: 12px;
-  cursor: pointer;
-  text-decoration: underline;
-  margin: 0px 5px;
-}
-
-.searchActionResult span.btn:hover {
-  color: var(--color-high-text);
 }
 </style>

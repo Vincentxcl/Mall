@@ -1,12 +1,12 @@
 <template>
-  <div class="editRole">
+  <div class="editFileType">
     <div class="workbench">
       <div class="grid">
         <table>
           <tr>
             <td class="ttl">名称:</td>
             <td>
-              <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{0,32}$/g">
+              <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[\u4e00-\u9fa5\w]{1,32}$/g">
                 <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
               </textbox>
             </td>
@@ -15,6 +15,22 @@
             <td class="ttl">状态:</td>
             <td>
               <switch-btn tipOfCheck="启用" tipOfUncheck="禁用" :width="70" v-model="isEnable" />
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">格式:</td>
+            <td>
+              <textbox ref="format" v-model="format" :maxlength="64" pattern="/^[\w-\.\\/]{1,64}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">存储路径:</td>
+            <td>
+              <textbox ref="path" v-model="path" :maxlength="64" pattern="/^[\w-\.\\]{1,64}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
             </td>
           </tr>
           <tr>
@@ -28,7 +44,7 @@
           <tr>
             <td class="ttl">说明:</td>
             <td>
-              <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,64}$/">
+              <textbox ref="description" type="textarea" v-model="description" :required="false" :maxlength="128" pattern="/^.{0,128}$/">
                 <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
               </textbox>
             </td>
@@ -53,21 +69,23 @@
 
 <script>
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto';
+import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto.js';
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 import SwitchBtn from 'components/button/switchBtn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { fillProps, getDifferent, deepClone } from 'common/helper/convertHelper';
-import { patchObj } from 'netWork/role.js';
+import { patchObj } from 'netWork/fileType.js';
 
 export default {
-  name: 'EditRole',
+  name: 'EditFileType',
   mixins: [computedAssistanceBarItems, beforeRouteEnter_goto],
   data() {
     return {
-      name: '',
+      title: '',
+      format: '',
+      path: '',
       isEnable: false,
       ord: 0,
       description: '',
@@ -78,23 +96,25 @@ export default {
   },
   computed: {
     pageIndex() {
-      return this.$store.getters['role/pageIndex'];
+      return this.$store.getters['fileType/pageIndex'];
     },
     selectedObj() {
-      return this.$store.getters['role/selectedObj'];
+      return this.$store.getters['fileType/selectedObj'];
     },
     readOnlySelectedObj() {
-      return this.$store.getters['role/readOnlySelectedObj'];
+      return this.$store.getters['fileType/readOnlySelectedObj'];
     }
   },
   methods: {
     toolItemsClick(e) {
       switch (e.id) {
-        case 6391:
+        case 92101:
           {
-            this.$refs.name.clear();
-            this.isEnable = false;
+            this.$refs.title.clear();
+            this.$refs.format.clear();
+            this.$refs.path.clear();
             this.$refs.ord.clear();
+            this.isEnable = false;
             this.$refs.description.clear();
             this.isForbidden = false;
             this.message = '';
@@ -105,26 +125,30 @@ export default {
       }
     },
     clear() {
-      this.$refs.name.clear();
+      this.$refs.title.clear();
+      this.$refs.format.clear();
+      this.$refs.path.clear();
       this.$refs.ord.clear();
       this.isEnable = false;
       this.$refs.description.clear();
       this.isForbidden = false;
       this.message = '';
-      this.$store.dispatch('role/setSelectedObj', null);
+      this.$store.dispatch('fileType/setSelectedObj', null);
     },
     back() {
       this.$router.push({
-        name: 'roleList'
+        name: 'fileTypeList'
       });
     },
     validate() {
-      return this.$refs.name.check() && this.$refs.ord.check() && this.$refs.description.check();
+      return this.$refs.title.check() && this.$refs.format.check() && this.$refs.path.check() && this.$refs.ord.check() && this.$refs.description.check();
     },
     submit() {
       if (this.validate()) {
         let obj = {
-          name: this.name,
+          title: this.title,
+          format: this.format,
+          path: this.path,
           description: this.description,
           isEnable: this.isEnable
         };
@@ -158,7 +182,7 @@ export default {
       //提交修改
       patchObj(this.readOnlySelectedObj.id, operations, this)
         .then(() => {
-          this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
+          this.$store.dispatch('fileType/getDataList', this.pageIndex + 1); //刷新当前页
           this.$toast.show({ type: 'success', text: '修改成功' });
           this.back();
         })
@@ -176,12 +200,12 @@ export default {
     this.isAccomplished = false;
     // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
     if (this.selectedObj && typeof this.selectedObj == 'object') {
-      let ttls = ['name', 'description', 'isEnable', 'ord'];
+      let ttls = ['title', 'format', 'path', 'description', 'isEnable', 'ord'];
       fillProps(this.selectedObj, this, ttls);
     }
   },
   beforeRouteLeave(to, from, next) {
-    let arr = ['roleList', 'createRole'];
+    let arr = ['fileTypeList', 'createFileType'];
 
     if (this.isAccomplished) {
       this.clear();
@@ -211,7 +235,7 @@ export default {
             temp[prop] = Reflect.get(this, prop);
           }
         }
-        this.$store.commit('role/SetSelectedObj', temp);
+        this.$store.commit('fileType/SetSelectedObj', temp);
       }
       next();
     }
@@ -226,111 +250,111 @@ export default {
 </script>
 
 <style>
-div.editRole {
+div.editFileType {
   height: calc(100% - 40px);
 }
 
-div.editRole div.workbench {
+div.editFileType div.workbench {
   height: calc(100% - 25px);
   overflow: auto;
 }
 
-div.editRole div.grid {
+div.editFileType div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
 /* #region table圆角 */
-div.editRole table {
+div.editFileType table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.editRole table td {
+div.editFileType table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.editRole table tr:first-child td:first-child {
+div.editFileType table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.editRole table tr:first-child td:last-child {
+div.editFileType table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.editRole table tr:last-child td:first-child {
+div.editFileType table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.editRole table tr:last-child td:last-child {
+div.editFileType table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.editRole table tr td:first-child {
+div.editFileType table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.editRole table tr:last-child td {
+div.editFileType table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.editRole table tr td:first-child {
+div.editFileType table tr td:first-child {
   width: 150px;
 }
 
-div.editRole div.grid .textBox {
+div.editFileType div.grid .textBox {
   width: 100%;
 }
 
-div.editRole div.grid input {
+div.editFileType div.grid input {
   width: 60%;
   min-width: 400px;
 }
 
-div.editRole div.grid textarea {
+div.editFileType div.grid textarea {
   width: 60%;
   min-width: 400px;
   height: 100px;
 }
 
-div.editRole div.grid div.tip {
+div.editFileType div.grid div.tip {
   display: inline-block;
   color: var(--color-danger);
 }
 
-div.editRole div.ctrl {
+div.editFileType div.ctrl {
   display: flex;
 }
 
-div.editRole div.ctrl > div {
+div.editFileType div.ctrl > div {
   width: 50%;
 }
 
-div.editRole div.ctrl > div:first-child {
+div.editFileType div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.editRole div.ctrl button {
+div.editFileType div.ctrl button {
   margin: 0px 5px;
 }
 
-div.editRole div.ctrl button.isForbidden {
+div.editFileType div.ctrl button.isForbidden {
   cursor: not-allowed;
 }
 
-div.editRole div.message {
+div.editFileType div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);
 }
 
-div.editRole div.assistance {
+div.editFileType div.assistance {
   display: flex;
   background: #ebebeb;
   width: 100%;

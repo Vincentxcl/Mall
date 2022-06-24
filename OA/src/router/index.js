@@ -34,6 +34,26 @@ const createSysParams = () => import('../pages/home/children/appsetting/sysParam
 const editSysParams = () => import('../pages/home/children/appsetting/sysParams/children/editSysParams.vue');
 //#endregion
 
+//#region 文件服务器
+const fileServer = () => import('../pages/home/children/file/fileServer/fileServer.vue');
+const fileServerList = () => import('../pages/home/children/file/fileServer/children/fileServerList.vue');
+const searchFileServer = () => import('../pages/home/children/file/fileServer/children/searchFileServer.vue');
+const searchFileServerResult = () => import('../pages/home/children/file/fileServer/children/searchFileServerResult.vue');
+const fileServerDetail = () => import('../pages/home/children/file/fileServer/children/fileServerDetail.vue');
+const createFileServer = () => import('../pages/home/children/file/fileServer/children/createFileServer.vue');
+const editFileServer = () => import('../pages/home/children/file/fileServer/children/editFileServer.vue');
+//#endregion
+
+//#region 文件类型
+const fileType = () => import('../pages/home/children/file/fileType/fileType.vue');
+const fileTypeList = () => import('../pages/home/children/file/fileType/children/fileTypeList.vue');
+const searchFileType = () => import('../pages/home/children/file/fileType/children/searchFileType.vue');
+const searchFileTypeResult = () => import('../pages/home/children/file/fileType/children/searchFileTypeResult.vue');
+const fileTypeDetail = () => import('../pages/home/children/file/fileType/children/fileTypeDetail.vue');
+const createFileType = () => import('../pages/home/children/file/fileType/children/createFileType.vue');
+const editFileType = () => import('../pages/home/children/file/fileType/children/editFileType.vue');
+//#endregion
+
 //#region 权限
 const action = () => import('../pages/home/children/appsetting/action/action.vue');
 const actionList = () => import('../pages/home/children/appsetting/action/children/actionList.vue');
@@ -57,6 +77,7 @@ const editRole = () => import('../pages/home/children/appsetting/role//children/
 
 const logList = () => import('../pages/home/children/appsetting/logList/logList.vue');
 
+//
 const routes = [
   {
     path: '',
@@ -146,7 +167,9 @@ const routes = [
                 search: $route.query.search //////////////////////////////////////////////////////////
               };
             },
-            meta: {}
+            meta: {
+              fromSearch: false
+            }
           },
           {
             name: 'userDetail',
@@ -200,7 +223,9 @@ const routes = [
                 httpMethod: $route.query.httpMethod
               };
             },
-            meta: {}
+            meta: {
+              fromSearch: false
+            }
           },
           {
             name: 'actionDetail',
@@ -230,6 +255,118 @@ const routes = [
         ]
       },
       {
+        name: 'fileServer',
+        path: 'fileServer',
+        component: fileServer,
+        meta: {},
+        children: [
+          {
+            name: 'fileServerList',
+            path: 'list',
+            component: fileServerList,
+            meta: {}
+          },
+          {
+            name: 'searchFileServer',
+            path: 'search',
+            component: searchFileServer,
+            meta: {}
+          },
+          {
+            name: 'searchFileServerResult',
+            path: 'searchresult',
+            component: searchFileServerResult,
+            props($route) {
+              return {
+                ipAddress: $route.query.ipAddress,
+                path: $route.query.path,
+                diskCapacityGreaterThanOrEqual: $route.query.diskCapacityGreaterThanOrEqual,
+                diskCapacityLessThanOrEqual: $route.query.diskCapacityLessThanOrEqual,
+                search: $route.query.search
+              };
+            },
+            meta: {
+              fromSearch: false
+            }
+          },
+          {
+            name: 'fileServerDetail',
+            path: 'detail/:id',
+            component: fileServerDetail,
+            props: true,
+            meta: {}
+          },
+          {
+            name: 'createFileServer',
+            path: 'create',
+            component: createFileServer,
+            meta: {}
+          },
+          {
+            name: 'editFileServer',
+            path: 'edit',
+            component: editFileServer,
+            meta: {}
+          }
+        ]
+      },
+
+      {
+        name: 'fileType',
+        path: 'fileType',
+        component: fileType,
+        meta: {},
+        children: [
+          {
+            name: 'fileTypeList',
+            path: 'list',
+            component: fileTypeList,
+            meta: {}
+          },
+          {
+            name: 'searchFileType',
+            path: 'search',
+            component: searchFileType,
+            meta: {}
+          },
+          {
+            name: 'searchFileTypeResult',
+            path: 'searchresult',
+            component: searchFileTypeResult,
+            props($route) {
+              return {
+                title: $route.query.title,
+                format: $route.query.format,
+                search: $route.query.search
+              };
+            },
+            meta: {
+              fromSearch: false
+            }
+          },
+          {
+            name: 'fileTypeDetail',
+            path: 'detail/:id',
+            component: fileTypeDetail,
+            props: true,
+            meta: {}
+          },
+          {
+            name: 'createFileType',
+            path: 'create',
+            component: createFileType,
+            meta: {}
+          },
+          {
+            name: 'editFileType',
+            path: 'edit',
+            component: editFileType,
+            meta: {}
+          }
+        ]
+      },
+
+      {
         name: 'role',
         path: 'role',
         component: role,
@@ -256,7 +393,9 @@ const routes = [
                 search: $route.query.search
               };
             },
-            meta: {}
+            meta: {
+              fromSearch: false
+            }
           },
           {
             name: 'roleDetail',
@@ -306,7 +445,9 @@ const routes = [
                 search: $route.query.search
               };
             },
-            meta: {}
+            meta: {
+              fromSearch: false
+            }
           },
           {
             name: 'sysParamsDetail',
@@ -338,6 +479,7 @@ const routes = [
     ],
     redirect: '/home/index',
     beforeEnter: (to, from, next) => {
+      //登陆验证，请求远端或者加载本地令牌
       tryGetToken('userAuth')
         .then((res) => {
           let claims = decodeJwtPayload(res);
@@ -351,7 +493,7 @@ const routes = [
           let siteMenu = siteNodesBuilder(siteMap, 'menuItem', siteMenuNodeProps);
           router.app.$store.commit('SetSiteMenu', siteMenu);
 
-          //账号///////////////
+          //账号//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           router.app.$store.commit('SetAccount', claims.Account);
           next();
         })

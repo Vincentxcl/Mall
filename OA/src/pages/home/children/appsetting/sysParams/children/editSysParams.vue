@@ -12,6 +12,12 @@
             </td>
           </tr>
           <tr>
+            <td class="ttl">状态:</td>
+            <td>
+              <switch-btn tipOfCheck="启用" tipOfUncheck="禁用" :width="70" v-model="isEnable" />
+            </td>
+          </tr>
+          <tr>
             <td class="ttl">属性:</td>
             <td>
               <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
@@ -58,6 +64,7 @@ import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarI
 import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto.js';
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
+import SwitchBtn from 'components/button/switchBtn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { fillProps, getDifferent, deepClone } from 'common/helper/convertHelper';
@@ -70,6 +77,7 @@ export default {
     return {
       title: '',
       value: '',
+      isEnable: false,
       ord: 0,
       description: '',
       isForbidden: false, //btn是否可用
@@ -96,6 +104,7 @@ export default {
             this.$refs.title.clear();
             this.$refs.value.clear();
             this.$refs.ord.clear();
+            this.isEnable = false;
             this.$refs.description.clear();
             this.isForbidden = false;
             this.message = '';
@@ -109,6 +118,7 @@ export default {
       this.$refs.title.clear();
       this.$refs.value.clear();
       this.$refs.ord.clear();
+      this.isEnable = false;
       this.$refs.description.clear();
       this.isForbidden = false;
       this.message = '';
@@ -127,7 +137,8 @@ export default {
         let obj = {
           title: this.title,
           value: this.value,
-          description: this.description
+          description: this.description,
+          isEnable: this.isEnable
         };
         if (this.ord) {
           obj.ord = this.ord;
@@ -177,7 +188,7 @@ export default {
     this.isAccomplished = false;
     // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
     if (this.selectedObj && typeof this.selectedObj == 'object') {
-      let ttls = ['title', 'value', 'description', 'ord'];
+      let ttls = ['title', 'value', 'description', 'isEnable', 'ord'];
       fillProps(this.selectedObj, this, ttls);
     }
   },
@@ -219,6 +230,7 @@ export default {
   },
   components: {
     Textbox,
+    SwitchBtn,
     Btn,
     AssistanceToolBar
   }

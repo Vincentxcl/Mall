@@ -1,5 +1,5 @@
 import * as base from 'common/store/baseModule.js';
-import * as appSetting from 'netWork/appSetting.js';
+import * as fileServer from 'netWork/fileServer.js';
 import appsettings from 'config/appsettings.json';
 
 export default {
@@ -11,7 +11,7 @@ export default {
     ...new base.gettersModule()
   },
   actions: {
-    ...new base.actionsModules(appsettings, appSetting)
+    ...new base.actionsModules(appsettings, fileServer)
   },
   mutations: {
     ...new base.mutationsModule()

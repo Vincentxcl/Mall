@@ -1,82 +1,96 @@
 <template>
   <div class="editAction">
-    <div class="grid">
-      <table>
-        <tr>
-          <td class="ttl">名称:</td>
-          <td>
-            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[\u4e00-\u9fa5A-Za-z0-9_]{1,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">控制器:</td>
-          <td>
-            <textbox ref="controllerTtl" v-model="controllerTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">方法:</td>
-          <td>
-            <textbox ref="actionTtl" v-model="actionTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">请求方式:</td>
-          <td>
-            <selectbox ref="httpMethod" v-model="httpMethod" :options="httpMethodList">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </selectbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">排序:</td>
-          <td>
-            <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">说明:</td>
-          <td>
-            <textbox ref="description" type="textarea" v-model="description" :maxlength="64" :required="false" pattern="/^.{0,64}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-      </table>
+    <div class="workbench">
+      <div class="grid">
+        <table>
+          <tr>
+            <td class="ttl">名称:</td>
+            <td>
+              <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[\u4e00-\u9fa5A-Za-z0-9_]{1,32}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">状态:</td>
+            <td>
+              <switch-btn tipOfCheck="启用" tipOfUncheck="禁用" :width="70" v-model="isEnable" />
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">控制器:</td>
+            <td>
+              <textbox ref="controllerTtl" v-model="controllerTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">方法:</td>
+            <td>
+              <textbox ref="actionTtl" v-model="actionTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">请求方式:</td>
+            <td>
+              <selectbox ref="httpMethod" v-model="httpMethod" :options="httpMethodList">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </selectbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">排序:</td>
+            <td>
+              <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">说明:</td>
+            <td>
+              <textbox ref="description" type="textarea" v-model="description" :maxlength="64" :required="false" pattern="/^.{0,64}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="ctrl">
+        <div>
+          <div class="message">{{ message }}</div>
+          <btn type="brand" :isForbidden="isForbidden" @click="submit">保存</btn>
+        </div>
+        <div>
+          <btn type="normal" @click="back">返回</btn>
+        </div>
+      </div>
     </div>
-    <div class="ctrl">
-      <div>
-        <div class="message">{{ message }}</div>
-        <btn type="brand" :isForbidden="isForbidden" @click="submit">保存</btn>
-      </div>
-      <div>
-        <btn type="normal" @click="back">返回</btn>
-      </div>
+    <div class="assistance">
+      <assistance-tool-bar :items="assistanceBarItems" @click="toolItemsClick"></assistance-tool-bar>
     </div>
   </div>
 </template>
 
 <script>
+import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
 import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto';
 import appsetting from 'config/appsettings.json';
 import Textbox from 'components/widgets/textbox.vue';
 import Selectbox from 'components/widgets/selectbox.vue';
 import Btn from 'components/button/btn.vue';
+import SwitchBtn from 'components/button/switchBtn.vue';
+import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { fillProps, getDifferent, deepClone } from 'common/helper/convertHelper';
 import { patchObj } from 'netWork/action.js';
 
 export default {
   name: 'EditAction',
-  mixins: [beforeRouteEnter_goto],
+  mixins: [computedAssistanceBarItems, beforeRouteEnter_goto],
   data() {
     return {
       name: '',
@@ -84,6 +98,7 @@ export default {
       actionTtl: '',
       httpMethod: undefined,
       description: null,
+      isEnable: false,
       ord: null,
       isForbidden: false, //btn是否可用
       message: '',
@@ -105,11 +120,31 @@ export default {
     }
   },
   methods: {
+    toolItemsClick(e) {
+      switch (e.id) {
+        case 62101:
+          {
+            this.$refs.name.clear();
+            this.$refs.controllerTtl.clear();
+            this.$refs.actionTtl.clear();
+            this.$refs.httpMethod.clear();
+            this.isEnable = false;
+            this.$refs.ord.clear();
+            this.$refs.description.clear();
+            this.isForbidden = false;
+            this.message = '';
+          }
+          break;
+        default:
+          break;
+      }
+    },
     clear() {
       this.$refs.name.clear();
       this.$refs.controllerTtl.clear();
       this.$refs.actionTtl.clear();
       this.$refs.httpMethod.clear();
+      this.isEnable = false;
       this.$refs.ord.clear();
       this.$refs.description.clear();
       this.isForbidden = false;
@@ -130,7 +165,8 @@ export default {
           name: this.name,
           controllerTtl: this.controllerTtl,
           actionTtl: this.actionTtl,
-          httpMethod: this.httpMethod
+          httpMethod: this.httpMethod,
+          isEnable: this.isEnable
         };
         if (this.description) {
           obj.description = this.description;
@@ -183,7 +219,7 @@ export default {
     this.isAccomplished = false;
     // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
     if (this.selectedObj && typeof this.selectedObj == 'object') {
-      let ttls = ['name', 'controllerTtl', 'actionTtl', 'httpMethod', 'description', 'ord'];
+      let ttls = ['name', 'controllerTtl', 'actionTtl', 'httpMethod', 'description', 'isEnable', 'ord'];
       fillProps(this.selectedObj, this, ttls);
     }
   },
@@ -225,8 +261,10 @@ export default {
   },
   components: {
     Textbox,
+    SwitchBtn,
     Selectbox,
-    Btn
+    Btn,
+    AssistanceToolBar
   }
 };
 </script>
@@ -234,6 +272,11 @@ export default {
 <style>
 div.editAction {
   height: calc(100% - 40px);
+}
+
+div.editAction div.workbench {
+  height: calc(100% - 25px);
+  overflow: auto;
 }
 
 div.editAction div.grid {
@@ -333,5 +376,13 @@ div.editAction div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);
+}
+
+div.editAction div.assistance {
+  display: flex;
+  background: #ebebeb;
+  width: 100%;
+  min-width: 600px;
+  height: 25px;
 }
 </style>

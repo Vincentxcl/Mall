@@ -1,12 +1,28 @@
 <template>
-  <div class="searchSysParams">
+  <div class="searchFileType">
     <div class="workbench">
       <div class="grid">
         <table>
           <tr>
+            <td class="ttl">名称:</td>
+            <td>
+              <textbox ref="title" v-model="title" :maxlength="32" :required="false" pattern="/^.{1,32}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">格式:</td>
+            <td>
+              <textbox ref="format" v-model="format" :maxlength="64" :required="false" pattern="/^.{0,64}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
             <td class="ttl">内容:</td>
             <td>
-              <textbox ref="search" v-model="search" :maxlength="64" pattern="/^.{0,64}$/">
+              <textbox ref="search" v-model="search" :maxlength="64" :required="false" pattern="/^.{0,64}$/">
                 <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
               </textbox>
             </td>
@@ -37,17 +53,19 @@ import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vu
 import { extractProps } from 'common/helper/convertHelper.js';
 
 export default {
-  name: 'SearchSysParams',
+  name: 'SearchFileType',
   mixins: [computedAssistanceBarItems],
   data() {
     return {
+      title: '',
+      format: '',
       search: ''
     };
   },
   methods: {
     toolItemsClick(e) {
       switch (e.id) {
-        case 61031:
+        case 92031:
           {
             this.clear();
           }
@@ -57,25 +75,27 @@ export default {
       }
     },
     clear() {
+      this.$refs.title.clear();
+      this.$refs.format.clear();
       this.$refs.search.clear();
     },
     back() {
       this.$router.push({
-        name: 'sysParamsList'
+        name: 'fileTypeList'
       });
     },
     validate() {
-      return this.$refs.search.check();
+      return this.$refs.title.check() && this.$refs.format && this.$refs.search.check();
     },
     submit() {
       if (this.validate()) {
         //构建查询参数对象
-        let props = ['search'];
+        let props = ['title', 'format', 'search'];
         let query = extractProps(this, props);
         //提交
         if (Object.keys(query).length > 0) {
           this.$router.push({
-            name: 'searchSysParamsResult',
+            name: 'searchFileTypeResult',
             query: query
           });
           this.clear();
@@ -96,16 +116,16 @@ export default {
 </script>
 
 <style>
-div.searchSysParams {
+div.searchFileType {
   height: calc(100% - 40px);
 }
 
-div.searchSysParams div.workbench {
+div.searchFileType div.workbench {
   height: calc(100% - 25px);
   overflow: auto;
 }
 
-div.searchSysParams div.grid {
+div.searchFileType div.grid {
   width: 50%;
   min-width: 500px;
   padding: 10px;
@@ -114,80 +134,80 @@ div.searchSysParams div.grid {
 }
 
 /* #region table圆角 */
-div.searchSysParams table {
+div.searchFileType table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.searchSysParams table td {
+div.searchFileType table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.searchSysParams table tr:first-child td:first-child {
+div.searchFileType table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.searchSysParams table tr:first-child td:last-child {
+div.searchFileType table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.searchSysParams table tr:last-child td:first-child {
+div.searchFileType table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.searchSysParams table tr:last-child td:last-child {
+div.searchFileType table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.searchSysParams table tr td:first-child {
+div.searchFileType table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.searchSysParams table tr:last-child td {
+div.searchFileType table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.searchSysParams table tr td:first-child {
+div.searchFileType table tr td:first-child {
   width: 100px;
 }
 
-div.searchSysParams div.grid .textBox {
+div.searchFileType div.grid .textBox {
   width: 100%;
 }
 
-div.searchSysParams div.grid input {
+div.searchFileType div.grid input {
   width: 70%;
   min-width: 300px;
 }
 
-div.searchSysParams div.grid div.tip {
+div.searchFileType div.grid div.tip {
   display: inline-block;
   color: var(--color-danger);
 }
 
-div.searchSysParams div.ctrl {
+div.searchFileType div.ctrl {
   display: flex;
 }
 
-div.searchSysParams div.ctrl > div {
+div.searchFileType div.ctrl > div {
   width: 50%;
 }
 
-div.searchSysParams div.ctrl > div:first-child {
+div.searchFileType div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.searchSysParams div.ctrl button {
+div.searchFileType div.ctrl button {
   margin: 0px 5px;
 }
 
-div.searchSysParams div.assistance {
+div.searchFileType div.assistance {
   display: flex;
   background: #ebebeb;
   width: 100%;

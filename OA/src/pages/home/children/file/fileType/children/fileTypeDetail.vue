@@ -1,5 +1,5 @@
 <template>
-  <div class="sysParamsDetail">
+  <div class="fileTypeDetail">
     <div class="grid">
       <table>
         <tr>
@@ -11,9 +11,15 @@
           </td>
         </tr>
         <tr>
-          <td class="ttl">属性:</td>
+          <td class="ttl">格式:</td>
           <td>
-            {{ value }}
+            {{ format }}
+          </td>
+        </tr>
+        <tr>
+          <td class="ttl">存储路径:</td>
+          <td>
+            {{ path }}
           </td>
         </tr>
         <tr>
@@ -41,14 +47,15 @@
 
 <script>
 import { dateFormat, fillProps } from 'common/helper/convertHelper';
-import { requestItem } from 'netWork/appSetting.js';
+import { requestItem } from 'netWork/fileType.js';
 
 export default {
-  name: 'SysParamsDetail',
+  name: 'FileTypeDetail',
   data() {
     return {
       title: '',
-      value: '',
+      format: '',
+      path: '',
       ord: 0,
       establish: '',
       description: '',
@@ -70,7 +77,7 @@ export default {
     //请求数据
     requestItem(this.id, this)
       .then((res) => {
-        let ttls = ['title', 'value', 'description', 'ord', 'establish', 'isEnable'];
+        let ttls = ['title', 'format', 'path', 'description', 'ord', 'establish', 'isEnable'];
         //为组件data填充数据
         fillProps(res.data, this, ttls);
       })
@@ -80,60 +87,60 @@ export default {
 </script>
 
 <style>
-div.sysParamsDetail {
+div.fileTypeDetail {
   width: 100%;
   height: calc(100% - 40px);
 }
 
-div.sysParamsDetail div.grid {
+div.fileTypeDetail div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
 /* #region table圆角 */
-div.sysParamsDetail table {
+div.fileTypeDetail table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.sysParamsDetail table td {
+div.fileTypeDetail table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.sysParamsDetail table tr:first-child td:first-child {
+div.fileTypeDetail table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.sysParamsDetail table tr:first-child td:last-child {
+div.fileTypeDetail table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.sysParamsDetail table tr:last-child td:first-child {
+div.fileTypeDetail table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.sysParamsDetail table tr:last-child td:last-child {
+div.fileTypeDetail table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.sysParamsDetail table tr td:first-child {
+div.fileTypeDetail table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.sysParamsDetail table tr:last-child td {
+div.fileTypeDetail table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.sysParamsDetail table tr td:first-child {
+div.fileTypeDetail table tr td:first-child {
   width: 150px;
 }
 
-div.sysParamsDetail table tr td span.enable {
+div.fileTypeDetail table tr td span.enable {
   display: inline-block;
   color: white;
   font-size: 12px;
@@ -146,7 +153,7 @@ div.sysParamsDetail table tr td span.enable {
   margin: 0px 5px;
 }
 
-div.sysParamsDetail table tr td span.disable {
+div.fileTypeDetail table tr td span.disable {
   display: inline-block;
   color: white;
   font-size: 12px;

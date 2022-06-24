@@ -29,8 +29,14 @@ Date.prototype.format = function (format) {
 //dateString原时间字符串数据 / Date(1597749325850) /
 //format 时间格式
 export function convertDateFormat(dateString, format = 'yyyy-MM-dddd hh:mm:ss') {
-  var _str = dateString.replace(/[^\d]/g, ''); //凡是非数字就替换掉
-  var _time = new Date(parseInt(_str));
+  let _str = dateString.replace(/[^\d]/g, ''); //凡是非数字就替换掉
+  let _time = new Date(parseInt(_str));
+  return _time.format(format);
+}
+
+//时间格式转化，date为''时，为当前时间
+export function dateFormat(dateStr, format = 'yyyy-MM-dddd hh:mm:ss') {
+  let _time = dateStr.trim() == '' ? new Date() : new Date(dateStr);
   return _time.format(format);
 }
 
@@ -94,7 +100,7 @@ export function deepClone(target) {
   return newObj;
 }
 
-//从对象中提取属性后，组成一个对象返回，忽略为undefined、空字符串的成员
+//从对象中提取属性后，组成一个对象返回，忽略为'undefined、空字符串'的成员
 export function extractProps(obj, props) {
   if (typeof obj == 'object' && typeof props == 'object') {
     let newObj = {};
@@ -153,27 +159,32 @@ export function equalArr(arr1, arr2) {
 }
 
 export function equalObject(a, b) {
-  var aProps = Object.getOwnPropertyNames(a);
-  var bProps = Object.getOwnPropertyNames(b);
+  let aProps = Object.getOwnPropertyNames(a);
+  let bProps = Object.getOwnPropertyNames(b);
   if (aProps.length != bProps.length) {
     return false;
   }
   //
-  for (var i = 0; i < aProps.length; i++) {
-    var propName = aProps[i];
+  for (let i = 0; i < aProps.length; i++) {
+    let propName = aProps[i]; //取a中的一个属性
 
-    var propA = a[propName];
-    var propB = b[propName];
+    let aPropVal = a[propName];
+    let bPropVal = b[propName];
     // 这里忽略了值为undefined的情况
     // 故先判断两边都有相同键名
-    if (!Object.prototype.hasOwnProperty.call(b, propName)) return false;
-    if (propA instanceof Object) {
-      if (this.isObjectValueEqual(propA, propB)) {
+    if (!Object.prototype.hasOwnProperty.call(b, propName)) {
+      return false;
+    }
+
+    if (aPropVal instanceof Object) {
+      if (equalObject(aPropVal, bPropVal)) {
         // return true     这里不能return ,后面的对象还没判断
       } else {
         return false;
       }
-    } else if (propA !== propB) {
+    }
+    //如果要精确到类型不同时，比如2!='2'，使用!==
+    else if (aPropVal != bPropVal) {
       return false;
     }
   }

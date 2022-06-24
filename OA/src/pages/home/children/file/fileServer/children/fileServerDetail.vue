@@ -1,19 +1,30 @@
 <template>
-  <div class="sysParamsDetail">
+  <div class="fileServerDetail">
     <div class="grid">
       <table>
         <tr>
-          <td class="ttl">名称:</td>
+          <td class="ttl">硬盘Ip地址:</td>
           <td>
-            {{ title }}
+            {{ ipAddress }}
+          </td>
+        </tr>
+        <tr>
+          <td class="ttl">文件路径:</td>
+          <td>
+            {{ path }}
+          </td>
+        </tr>
+        <tr>
+          <td class="ttl">状态</td>
+          <td>
             <span v-if="isEnable" class="enable">启用中</span>
             <span v-if="!isEnable" class="disable">禁用中</span>
           </td>
         </tr>
         <tr>
-          <td class="ttl">属性:</td>
+          <td class="ttl">使用率:</td>
           <td>
-            {{ value }}
+            {{ diskCapacity }}
           </td>
         </tr>
         <tr>
@@ -41,14 +52,15 @@
 
 <script>
 import { dateFormat, fillProps } from 'common/helper/convertHelper';
-import { requestItem } from 'netWork/appSetting.js';
+import { requestItem } from 'netWork/fileServer.js';
 
 export default {
   name: 'SysParamsDetail',
   data() {
     return {
-      title: '',
-      value: '',
+      ipAddress: '',
+      path: '',
+      diskCapacity: '',
       ord: 0,
       establish: '',
       description: '',
@@ -70,7 +82,7 @@ export default {
     //请求数据
     requestItem(this.id, this)
       .then((res) => {
-        let ttls = ['title', 'value', 'description', 'ord', 'establish', 'isEnable'];
+        let ttls = ['ipAddress', 'path', 'diskCapacity', 'description', 'ord', 'establish', 'isEnable'];
         //为组件data填充数据
         fillProps(res.data, this, ttls);
       })
@@ -80,60 +92,60 @@ export default {
 </script>
 
 <style>
-div.sysParamsDetail {
+div.fileServerDetail {
   width: 100%;
   height: calc(100% - 40px);
 }
 
-div.sysParamsDetail div.grid {
+div.fileServerDetail div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
 /* #region table圆角 */
-div.sysParamsDetail table {
+div.fileServerDetail table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.sysParamsDetail table td {
+div.fileServerDetail table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.sysParamsDetail table tr:first-child td:first-child {
+div.fileServerDetail table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.sysParamsDetail table tr:first-child td:last-child {
+div.fileServerDetail table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.sysParamsDetail table tr:last-child td:first-child {
+div.fileServerDetail table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.sysParamsDetail table tr:last-child td:last-child {
+div.fileServerDetail table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.sysParamsDetail table tr td:first-child {
+div.fileServerDetail table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.sysParamsDetail table tr:last-child td {
+div.fileServerDetail table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.sysParamsDetail table tr td:first-child {
+div.fileServerDetail table tr td:first-child {
   width: 150px;
 }
 
-div.sysParamsDetail table tr td span.enable {
+div.fileServerDetail table tr td span.enable {
   display: inline-block;
   color: white;
   font-size: 12px;
@@ -143,10 +155,9 @@ div.sysParamsDetail table tr td span.enable {
   border-radius: 9px;
   background-color: var(--color-success);
   text-align: center;
-  margin: 0px 5px;
 }
 
-div.sysParamsDetail table tr td span.disable {
+div.fileServerDetail table tr td span.disable {
   display: inline-block;
   color: white;
   font-size: 12px;
@@ -156,6 +167,5 @@ div.sysParamsDetail table tr td span.disable {
   border-radius: 9px;
   background-color: var(--color-danger);
   text-align: center;
-  margin: 0px 5px;
 }
 </style>

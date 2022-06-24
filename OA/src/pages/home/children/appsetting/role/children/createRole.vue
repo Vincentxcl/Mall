@@ -5,7 +5,7 @@
         <tr>
           <td class="ttl">名称:</td>
           <td>
-            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{0,32}$/g">
+            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{1,32}$/g">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
             </textbox>
           </td>

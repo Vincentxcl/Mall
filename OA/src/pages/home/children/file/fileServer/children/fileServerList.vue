@@ -1,6 +1,6 @@
 <template>
-  <div class="actionList">
-    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection" @sort-change="setSortChange">
+  <div class="fileServerList">
+    <grid-view ref="gridview" :gridData="dataList" @selection-change="setFileServerSelection" @sort-change="setSortChange">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
@@ -9,11 +9,6 @@
           <icon v-if="showDetail" :icon="iconDetail" title="明细" @click.native="getDetail(item.scope.row)"></icon>
           <icon v-if="showEdit" :icon="iconEdit" title="编辑" @click.native="editItem(item.scope.row)"></icon>
           <icon v-if="showDel" :icon="iconDel" title="删除" @click.native="deleteItem(item.scope.row)"></icon>
-        </template>
-      </grid-field>
-      <grid-field v-if="showAllRole" label="配置" width="70" align="center">
-        <template slot-scope="item">
-          <span class="btn" title="配置角色" @click="editActionRoles(item.scope.row)">角色</span>
         </template>
       </grid-field>
       <!-- content -->
@@ -43,40 +38,34 @@ import { computedIcons } from 'common/mixins/computedIcons.js';
 import { method_detail_edit } from './mixins/method_detail_edit';
 import { computed_show } from './mixins/computed_show.js';
 
-import { patchObj, deleteObj } from 'netWork/action.js';
+import { patchObj, deleteObj } from 'netWork/fileServer.js';
 
 export default {
-  name: 'ActionList',
+  name: 'FileServerList',
   mixins: [computedIcons, method_detail_edit, computed_show],
   data() {
     return {
       index: 0, //页码
       headItem: [
         {
-          prop: 'name',
-          label: '名称',
-          width: '150',
+          prop: 'ipAddress',
+          label: '地址',
+          width: '200',
           align: 'left',
           sort: 'custom'
         },
         {
-          prop: 'controllerTtl',
-          label: 'Controller',
-          width: '180',
-          align: 'left',
-          sort: 'custom'
-        },
-        {
-          prop: 'actionTtl',
-          label: 'Action',
+          prop: 'path',
+          label: '路径',
           width: '200',
           align: 'left'
         },
         {
-          prop: 'httpMethod',
-          label: '请求方式',
-          width: '90',
-          align: 'left'
+          prop: 'diskCapacity',
+          label: '使用率',
+          width: '80',
+          align: 'center',
+          sort: 'custom'
         },
         {
           prop: 'description',
@@ -88,7 +77,6 @@ export default {
           label: '排序',
           width: '65',
           align: 'center',
-          fixed: 'right',
           sort: 'custom'
         }
       ]
@@ -96,47 +84,47 @@ export default {
   },
   computed: {
     pageIndex() {
-      return this.$store.getters['action/pageIndex'];
+      return this.$store.getters['fileServer/pageIndex'];
     },
     totalCount() {
-      return this.$store.getters['action/totalCount'];
+      return this.$store.getters['fileServer/totalCount'];
     },
     pageCount() {
-      return this.$store.getters['action/pageCount'];
+      return this.$store.getters['fileServer/pageCount'];
     },
     dataList() {
-      return this.$store.getters['action/dataList'];
+      return this.$store.getters['fileServer/dataList'];
     }
   },
   methods: {
     //将选中项目提交至store
-    setSysParamsSelection(e) {
-      this.$store.commit('action/SetSelection', e);
+    setFileServerSelection(e) {
+      this.$store.commit('fileServer/SetSelection', e);
     },
     deleteItem(e) {
       this.$confirm({
         type: 'warning',
-        content: '是否删除 ' + e.name + ' ?',
+        content: '是否删除 ' + e.ipAddress + '\\' + e.path + ' ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
         .then(() => {
           deleteObj(e.id, this).then(() => {
-            this.$store.dispatch('action/getDataList', this.pageIndex + 1); //刷新当前页
+            this.$store.dispatch('fileServer/getDataList', this.pageIndex + 1); //刷新当前页
             this.$toast.show({ type: 'success', text: '删除成功' });
           });
         })
         .catch(() => {});
     },
     setSortChange(e) {
-      this.$store.dispatch('action/setOrderBy', e);
-      this.$store.dispatch('action/getDataList', this.index + 1);
+      this.$store.dispatch('fileServer/setOrderBy', e);
+      this.$store.dispatch('fileServer/getDataList', this.index + 1);
     },
     setEnable(e) {
       let word = !e.isEnable ? '启用' : '禁用';
       this.$confirm({
         type: 'warning',
-        content: '是否' + word + ' "' + e.name + '" ?',
+        content: '是否' + word + ' "' + e.ipAddress + '\\' + e.path + '" ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
@@ -150,7 +138,7 @@ export default {
             }
           ];
           patchObj(e.id, operations, this).then(() => {
-            this.$store.dispatch('action/getDataList', this.pageIndex + 1); //刷新当前页
+            this.$store.dispatch('fileServer/getDataList', this.pageIndex + 1); //刷新当前页
             this.$toast.show({ type: 'success', text: '修改成功' });
           });
         })
@@ -158,7 +146,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('action/getDataList', 1); //创建该组件时，默认获取首页
+    this.$store.dispatch('fileServer/getDataList', 1); //创建该组件时，默认获取首页
   },
   watch: {
     pageIndex: {
@@ -170,7 +158,7 @@ export default {
     },
     index: {
       handler(current) {
-        this.$store.dispatch('action/getDataList', current + 1);
+        this.$store.dispatch('fileServer/getDataList', current + 1);
       }
     }
   },
@@ -184,33 +172,33 @@ export default {
 </script>
 
 <style>
-.actionList {
+.fileServerList {
   width: 100%;
   height: calc(100% - 40px);
 }
 
-.actionList .gridView {
+.fileServerList .gridView {
   height: calc(100% - 25px);
 }
 
-.actionList .gridView tbody div.cell i {
+.fileServerList .gridView tbody div.cell i {
   padding: 0px 3px;
 }
 
-.actionList .gridView tbody div.cell i.icon-qiyong {
+.fileServerList .gridView tbody div.cell i.icon-qiyong {
   color: var(--color-success);
 }
 
-.actionList .gridView tbody div.cell i.icon-jinyong {
+.fileServerList .gridView tbody div.cell i.icon-jinyong {
   color: var(--color-danger);
 }
 
-.actionList .gridView tbody div.cell i:hover {
+.fileServerList .gridView tbody div.cell i:hover {
   color: var(--color-high-text);
   cursor: pointer;
 }
 
-.actionList .bottomBar {
+.fileServerList .bottomBar {
   display: flex;
   width: 100%;
   height: 25px;
@@ -218,21 +206,9 @@ export default {
   background: #ebebeb;
 }
 
-.actionList .bottomBar .total {
+.fileServerList .bottomBar .total {
   margin-right: 30px;
   line-height: 25px;
-  font-size: 14px;
-}
-
-.actionList span.btn {
-  color: var(--color-brand);
-  font-size: 12px;
-  cursor: pointer;
-  text-decoration: underline;
-  margin: 0px 5px;
-}
-
-.actionList span.btn:hover {
-  color: var(--color-high-text);
+  font-size: 13px;
 }
 </style>

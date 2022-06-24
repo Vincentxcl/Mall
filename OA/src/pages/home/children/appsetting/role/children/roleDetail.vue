@@ -6,12 +6,20 @@
           <td class="ttl">名称:</td>
           <td>
             {{ name }}
+            <span v-if="isEnable" class="enable">启用中</span>
+            <span v-if="!isEnable" class="disable">禁用中</span>
           </td>
         </tr>
         <tr>
           <td class="ttl">排序:</td>
           <td>
             {{ ord }}
+          </td>
+        </tr>
+        <tr>
+          <td class="ttl">创建时间:</td>
+          <td>
+            {{ adjustedEstablish }}
           </td>
         </tr>
         <tr>
@@ -34,7 +42,7 @@
 </template>
 
 <script>
-import { fillProps } from 'common/helper/convertHelper';
+import { dateFormat, fillProps } from 'common/helper/convertHelper';
 import { randomColor } from 'common/helper/randomHelper';
 import * as role from 'netWork/role.js';
 import * as roleActions from 'netWork/roleAction.js';
@@ -45,9 +53,16 @@ export default {
     return {
       name: '',
       ord: 0,
+      establish: '',
       description: '',
+      isEnable: false,
       actionRolesArray: []
     };
+  },
+  computed: {
+    adjustedEstablish() {
+      return dateFormat(this.establish);
+    }
   },
   props: {
     id: {
@@ -67,7 +82,7 @@ export default {
     role
       .requestItem(this.id, this)
       .then((res) => {
-        let ttls = ['name', 'description', 'ord'];
+        let ttls = ['name', 'description', 'ord', 'establish', 'isEnable'];
         //为组件data填充数据
         fillProps(res.data, this, ttls);
 
@@ -95,6 +110,11 @@ export default {
 </script>
 
 <style>
+div.roleDetail {
+  width: 100%;
+  height: calc(100% - 40px);
+}
+
 div.roleDetail div.grid {
   padding: 10px;
   font-size: 14px;
@@ -141,6 +161,32 @@ div.roleDetail table tr:last-child td {
 
 div.roleDetail table tr td:first-child {
   width: 150px;
+}
+
+div.roleDetail table tr td span.enable {
+  display: inline-block;
+  color: white;
+  font-size: 12px;
+  width: 60px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 9px;
+  background-color: var(--color-success);
+  text-align: center;
+  margin: 0px 5px;
+}
+
+div.roleDetail table tr td span.disable {
+  display: inline-block;
+  color: white;
+  font-size: 12px;
+  width: 60px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 9px;
+  background-color: var(--color-danger);
+  text-align: center;
+  margin: 0px 5px;
 }
 
 div.roleDetail table label.action {

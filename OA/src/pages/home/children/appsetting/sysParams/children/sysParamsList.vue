@@ -4,7 +4,7 @@
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
-      <grid-field v-if="showEdit || showDel" fixed="left" label="操作" width="100" align="center">
+      <grid-field v-if="showDetail || showEdit || showDel" fixed="left" label="操作" width="100" align="center">
         <template slot-scope="item">
           <icon v-if="showDetail" :icon="iconDetail" title="明细" @click.native="getDetail(item.scope.row)"></icon>
           <icon v-if="showEdit" :icon="iconEdit" title="编辑" @click.native="editItem(item.scope.row)"></icon>
@@ -13,6 +13,13 @@
       </grid-field>
       <!-- content -->
       <grid-field v-for="item in headItem" :key="item.field" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
+      <!-- state -->
+      <grid-field v-if="showEdit" label="状态" width="65" align="center">
+        <template slot-scope="item">
+          <icon v-show="item.scope.row.isEnable" :icon="iconEnable" title="启用中" @click.native="setEnable(item.scope.row)"></icon>
+          <icon v-show="!item.scope.row.isEnable" :icon="iconDisable" title="禁用中" @click.native="setEnable(item.scope.row)"></icon>
+        </template>
+      </grid-field>
     </grid-view>
 
     <div class="bottomBar">
@@ -27,15 +34,15 @@ import Icon from 'components/widgets/icon.vue';
 import GridView from 'components/grid/oa.v3/GridView.vue';
 import GridField from 'components/grid/oa.v3/GridField.vue';
 import Pagination from 'components/pagination/v2/Pagination.vue';
+import { computedIcons } from 'common/mixins/computedIcons.js';
 import { method_detail_edit } from './mixins/method_detail_edit';
 import { computed_show } from './mixins/computed_show.js';
 
-import appsetting from 'config/appsettings.json';
-import { deleteObj } from 'netWork/appSetting.js';
+import { patchObj, deleteObj } from 'netWork/appSetting.js';
 
 export default {
   name: 'SysParamsList',
-  mixins: [method_detail_edit, computed_show],
+  mixins: [computedIcons, method_detail_edit, computed_show],
   data() {
     return {
       index: 0, //页码
@@ -69,15 +76,6 @@ export default {
     };
   },
   computed: {
-    iconDetail() {
-      return appsetting.systemIcon.toolIcon.detail;
-    },
-    iconEdit() {
-      return appsetting.systemIcon.toolIcon.edit;
-    },
-    iconDel() {
-      return appsetting.systemIcon.toolIcon.del;
-    },
     pageIndex() {
       return this.$store.getters['sysParams/pageIndex'];
     },
@@ -114,6 +112,30 @@ export default {
     setSortChange(e) {
       this.$store.dispatch('sysParams/setOrderBy', e);
       this.$store.dispatch('sysParams/getDataList', this.index + 1);
+    },
+    setEnable(e) {
+      let word = !e.isEnable ? '启用' : '禁用';
+      this.$confirm({
+        type: 'warning',
+        content: '是否' + word + ' "' + e.title + '" ?',
+        confirmTxt: '确认',
+        cancelTxt: '取消'
+      })
+        .then(() => {
+          //提交修改
+          let operations = [
+            {
+              path: '/isEnable',
+              op: 'replace',
+              value: !e.isEnable
+            }
+          ];
+          patchObj(e.id, operations, this).then(() => {
+            this.$store.dispatch('sysParams/getDataList', this.pageIndex + 1); //刷新当前页
+            this.$toast.show({ type: 'success', text: '修改成功' });
+          });
+        })
+        .catch(() => {});
     }
   },
   created() {
@@ -154,6 +176,14 @@ export default {
 
 .sysParamsList .gridView tbody div.cell i {
   padding: 0px 3px;
+}
+
+.sysParamsList .gridView tbody div.cell i.icon-qiyong {
+  color: var(--color-success);
+}
+
+.sysParamsList .gridView tbody div.cell i.icon-jinyong {
+  color: var(--color-danger);
 }
 
 .sysParamsList .gridView tbody div.cell i:hover {

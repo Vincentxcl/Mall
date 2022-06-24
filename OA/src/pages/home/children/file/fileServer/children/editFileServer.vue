@@ -1,14 +1,18 @@
 <template>
-  <div class="editRole">
+  <div class="editFileServer">
     <div class="workbench">
       <div class="grid">
         <table>
           <tr>
-            <td class="ttl">名称:</td>
+            <td class="ttl">文件服务器IP地址:</td>
             <td>
-              <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{0,32}$/g">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
+              {{ ipAddress }}
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">文件路径:</td>
+            <td>
+              {{ path }}
             </td>
           </tr>
           <tr>
@@ -28,7 +32,7 @@
           <tr>
             <td class="ttl">说明:</td>
             <td>
-              <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,64}$/">
+              <textbox ref="description" type="textarea" v-model="description" :required="false" :maxlength="128" pattern="/^.{0,128}$/">
                 <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
               </textbox>
             </td>
@@ -53,21 +57,22 @@
 
 <script>
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto';
+import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto.js';
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 import SwitchBtn from 'components/button/switchBtn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { fillProps, getDifferent, deepClone } from 'common/helper/convertHelper';
-import { patchObj } from 'netWork/role.js';
+import { patchObj } from 'netWork/fileServer.js';
 
 export default {
-  name: 'EditRole',
+  name: 'EditFileServer',
   mixins: [computedAssistanceBarItems, beforeRouteEnter_goto],
   data() {
     return {
-      name: '',
+      ipAddress: '',
+      path: '',
       isEnable: false,
       ord: 0,
       description: '',
@@ -78,23 +83,22 @@ export default {
   },
   computed: {
     pageIndex() {
-      return this.$store.getters['role/pageIndex'];
+      return this.$store.getters['fileServer/pageIndex'];
     },
     selectedObj() {
-      return this.$store.getters['role/selectedObj'];
+      return this.$store.getters['fileServer/selectedObj'];
     },
     readOnlySelectedObj() {
-      return this.$store.getters['role/readOnlySelectedObj'];
+      return this.$store.getters['fileServer/readOnlySelectedObj'];
     }
   },
   methods: {
     toolItemsClick(e) {
       switch (e.id) {
-        case 6391:
+        case 91101:
           {
-            this.$refs.name.clear();
-            this.isEnable = false;
             this.$refs.ord.clear();
+            this.isEnable = false;
             this.$refs.description.clear();
             this.isForbidden = false;
             this.message = '';
@@ -105,26 +109,24 @@ export default {
       }
     },
     clear() {
-      this.$refs.name.clear();
       this.$refs.ord.clear();
       this.isEnable = false;
       this.$refs.description.clear();
       this.isForbidden = false;
       this.message = '';
-      this.$store.dispatch('role/setSelectedObj', null);
+      this.$store.dispatch('fileServer/setSelectedObj', null);
     },
     back() {
       this.$router.push({
-        name: 'roleList'
+        name: 'fileServerList'
       });
     },
     validate() {
-      return this.$refs.name.check() && this.$refs.ord.check() && this.$refs.description.check();
+      return this.$refs.ord.check() && this.$refs.description.check();
     },
     submit() {
       if (this.validate()) {
         let obj = {
-          name: this.name,
           description: this.description,
           isEnable: this.isEnable
         };
@@ -158,7 +160,7 @@ export default {
       //提交修改
       patchObj(this.readOnlySelectedObj.id, operations, this)
         .then(() => {
-          this.$store.dispatch('role/getDataList', this.pageIndex + 1); //刷新当前页
+          this.$store.dispatch('fileServer/getDataList', this.pageIndex + 1); //刷新当前页
           this.$toast.show({ type: 'success', text: '修改成功' });
           this.back();
         })
@@ -176,12 +178,12 @@ export default {
     this.isAccomplished = false;
     // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
     if (this.selectedObj && typeof this.selectedObj == 'object') {
-      let ttls = ['name', 'description', 'isEnable', 'ord'];
+      let ttls = ['ipAddress', 'path', 'description', 'isEnable', 'ord'];
       fillProps(this.selectedObj, this, ttls);
     }
   },
   beforeRouteLeave(to, from, next) {
-    let arr = ['roleList', 'createRole'];
+    let arr = ['fileServerList', 'createFileServer'];
 
     if (this.isAccomplished) {
       this.clear();
@@ -211,7 +213,7 @@ export default {
             temp[prop] = Reflect.get(this, prop);
           }
         }
-        this.$store.commit('role/SetSelectedObj', temp);
+        this.$store.commit('fileServer/SetSelectedObj', temp);
       }
       next();
     }
@@ -226,111 +228,111 @@ export default {
 </script>
 
 <style>
-div.editRole {
+div.editFileServer {
   height: calc(100% - 40px);
 }
 
-div.editRole div.workbench {
+div.editFileServer div.workbench {
   height: calc(100% - 25px);
   overflow: auto;
 }
 
-div.editRole div.grid {
+div.editFileServer div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
 /* #region table圆角 */
-div.editRole table {
+div.editFileServer table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-div.editRole table td {
+div.editFileServer table td {
   border: 1px solid rgb(226, 226, 226);
   border-left: none;
   border-bottom: none;
   padding: 5px 10px;
 }
 
-div.editRole table tr:first-child td:first-child {
+div.editFileServer table tr:first-child td:first-child {
   border-top-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.editRole table tr:first-child td:last-child {
+div.editFileServer table tr:first-child td:last-child {
   border-top-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.editRole table tr:last-child td:first-child {
+div.editFileServer table tr:last-child td:first-child {
   border-bottom-left-radius: 5px; /* 设置table左下圆角 */
 }
 
-div.editRole table tr:last-child td:last-child {
+div.editFileServer table tr:last-child td:last-child {
   border-bottom-right-radius: 5px; /* 设置table右下圆角 */
 }
 
-div.editRole table tr td:first-child {
+div.editFileServer table tr td:first-child {
   border-left: 1px solid rgb(226, 226, 226);
 }
 
-div.editRole table tr:last-child td {
+div.editFileServer table tr:last-child td {
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 /* #endregion */
 
-div.editRole table tr td:first-child {
+div.editFileServer table tr td:first-child {
   width: 150px;
 }
 
-div.editRole div.grid .textBox {
+div.editFileServer div.grid .textBox {
   width: 100%;
 }
 
-div.editRole div.grid input {
+div.editFileServer div.grid input {
   width: 60%;
   min-width: 400px;
 }
 
-div.editRole div.grid textarea {
+div.editFileServer div.grid textarea {
   width: 60%;
   min-width: 400px;
   height: 100px;
 }
 
-div.editRole div.grid div.tip {
+div.editFileServer div.grid div.tip {
   display: inline-block;
   color: var(--color-danger);
 }
 
-div.editRole div.ctrl {
+div.editFileServer div.ctrl {
   display: flex;
 }
 
-div.editRole div.ctrl > div {
+div.editFileServer div.ctrl > div {
   width: 50%;
 }
 
-div.editRole div.ctrl > div:first-child {
+div.editFileServer div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.editRole div.ctrl button {
+div.editFileServer div.ctrl button {
   margin: 0px 5px;
 }
 
-div.editRole div.ctrl button.isForbidden {
+div.editFileServer div.ctrl button.isForbidden {
   cursor: not-allowed;
 }
 
-div.editRole div.message {
+div.editFileServer div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);
 }
 
-div.editRole div.assistance {
+div.editFileServer div.assistance {
   display: flex;
   background: #ebebeb;
   width: 100%;

@@ -39,6 +39,17 @@ const computed_show = {
         }
       }
       return isShow;
+    },
+    ///////////////////////////////
+    showAllRole() {
+      let isShow = false;
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'role');
+      if (parentNode) {
+        if (parentNode.children.value.find((val) => val.id == 6312)) {
+          isShow = true;
+        }
+      }
+      return isShow;
     }
   }
 };

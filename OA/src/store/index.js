@@ -5,6 +5,8 @@ import user from './user.js';
 import role from './role.js';
 import sysParams from './sysParams.js';
 import action from './action.js';
+import fileServer from './fileServer.js';
+import fileType from './fileType.js';
 
 Vue.use(Vuex);
 
@@ -14,7 +16,9 @@ const modules = {
   user,
   role,
   sysParams,
-  action
+  action,
+  fileServer,
+  fileType
 };
 
 export default new Vuex.Store({
