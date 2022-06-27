@@ -98,6 +98,7 @@ export default {
 <style>
 div.searchSysParams {
   height: calc(100% - 40px);
+  overflow: auto;
 }
 
 div.searchSysParams div.workbench {

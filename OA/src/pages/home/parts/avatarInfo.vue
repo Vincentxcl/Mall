@@ -1,6 +1,6 @@
 <template>
   <drop-down-list class="avatarInfo">
-    <avatar slot="trigger"></avatar>
+    <avatar slot="trigger" :url="portraitUrl"></avatar>
     <ul>
       <li>个人中心</li>
       <li @click="logout">退出</li>
@@ -16,6 +16,11 @@ import { deleteCookie } from 'common/helper/cookiesHelper.js';
 
 export default {
   name: 'AvatarInfo',
+  computed: {
+    portraitUrl() {
+      return this.$store.getters['current/portraitUrl'];
+    }
+  },
   methods: {
     logout() {
       //注销服务器登陆身份

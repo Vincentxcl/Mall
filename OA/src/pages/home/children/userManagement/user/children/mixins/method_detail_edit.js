@@ -5,9 +5,9 @@ const method_detail_edit = {
   methods: {
     getDetail(e) {
       let temp = deepClone(e);
-      this.$store.dispatch('sysParams/setSelectedObj', trimInObj(temp));
+      this.$store.dispatch('user/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'sysParamsDetail',
+        name: 'userDetail',
         params: {
           id: e.id
         }
@@ -15,9 +15,9 @@ const method_detail_edit = {
     },
     editItem(e) {
       let temp = deepClone(e);
-      this.$store.dispatch('sysParams/setSelectedObj', trimInObj(temp));
+      this.$store.dispatch('user/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editSysParams'
+        name: 'editUser'
       });
     }
   }

@@ -122,16 +122,64 @@ export function extractProps(obj, props) {
 }
 
 //将source的部分属性props，添加至target对象。
-export function fillProps(source, target, props) {
+export function fillProps(source, target, props, isSendAll = false) {
   if (typeof source == 'object' && typeof target == 'object') {
     for (let prop of props) {
-      if (Reflect.get(source, prop) != undefined) {
-        target[prop] = Reflect.get(source, prop);
+      const val = searchChainVal(source, prop); //取值
+      //赋值 是否过滤undefined
+      if (isSendAll) {
+        setChainVal(target, prop, val);
+      }
+      //
+      else {
+        if (val != undefined || val != null) {
+          setChainVal(target, prop, val);
+        }
       }
     }
   } else {
     throw new Error('function fill parameter error,parameter source and target require type of object');
   }
+}
+
+//链式取值 'aa/bb/cc'
+export function searchChainVal(obj, path) {
+  // 1.循环方式
+  // let temp = obj;
+  // while (path.includes("/")) {
+  //   const pieces = path.split("/");
+  //   temp = temp[pieces[0]];
+  //   path = pieces.slice(1).join("/"); //截取后面的路径
+  // }
+  // return temp[path];
+  //
+  // 2.递归方式
+  if (path.includes('/')) {
+    const pieces = path.split('/');
+    const tempObj = obj[pieces[0]];
+    //如果下一轮要取的值都不存在，返回undefined
+    if (tempObj && typeof tempObj == 'object') {
+      const tempPath = pieces.slice(1).join('/');
+      return searchChainVal(tempObj, tempPath);
+    }
+    return undefined;
+  }
+  //
+  else {
+    return obj[path];
+  }
+  //
+  // 3.reduce
+  // return path.split("/").reduce((obj, key) => obj[key], obj);
+  //
+  // 4.eval
+  // return eval(`temp['${path.split("/").join(`']['`)}']`);
+}
+
+//链式赋值
+export function setChainVal(obj, path, val) {
+  //obj[a][b]=val;
+  eval(`obj['${path.split('/').join(`']['`)}']=val`);
 }
 
 // 做一层判断两个数组是否相同，不支持嵌套数组

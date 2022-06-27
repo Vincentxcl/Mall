@@ -29,10 +29,10 @@
           </td>
         </tr>
         <tr>
-          <td class="ttl">具有权限（{{ actionRolesArray.length }}项）:</td>
+          <td class="ttl">具有权限（{{ roleActions.length }}项）:</td>
           <td>
-            <template v-if="actionRolesArray.length > 0">
-              <label v-for="item of actionRolesArray" class="action" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
+            <template v-if="roleActions.length > 0">
+              <label v-for="item of roleActions" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
             </template>
           </td>
         </tr>
@@ -45,7 +45,6 @@
 import { dateFormat, fillProps } from 'common/helper/convertHelper';
 import { randomColor } from 'common/helper/randomHelper';
 import * as role from 'netWork/role.js';
-import * as roleActions from 'netWork/roleAction.js';
 
 export default {
   name: 'RoleDetail',
@@ -56,7 +55,7 @@ export default {
       establish: '',
       description: '',
       isEnable: false,
-      actionRolesArray: []
+      roleActions: []
     };
   },
   computed: {
@@ -78,32 +77,28 @@ export default {
     }
   },
   activated() {
-    //请求数据
-    role
-      .requestItem(this.id, this)
-      .then((res) => {
-        let ttls = ['name', 'description', 'ord', 'establish', 'isEnable'];
-        //为组件data填充数据
-        fillProps(res.data, this, ttls);
-
-        // 2.加载权限对应的角色
-        roleActions
-          .requestDataByRoleId(this.id, this)
-          .then((res) => {
-            this.actionRolesArray = res.data;
-          })
-          .catch((error) => {
-            if (error.response.status == 404) {
-              this.$toast.show({ type: 'warning', text: '该角色并无任何的权限' });
-            } else {
-              this.$toast.show({ type: 'danger', text: '请求角色对应的权限失败' });
-            }
-          });
-      })
-      .catch(() => {});
+    if (this.$route.meta.fromList) {
+      //请求数据
+      role
+        .requestItem(this.id, this)
+        .then((res) => {
+          let ttls = ['name', 'description', 'ord', 'establish', 'isEnable', 'roleActions'];
+          //为组件data填充数据
+          fillProps(res.data, this, ttls);
+        })
+        .catch(() => {});
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    let pages = ['roleList', 'searchRoleResult'];
+    if (pages.indexOf(from.name) > -1) {
+      to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
+    }
+    next();
   },
   beforeRouteLeave(to, from, next) {
-    this.actionRolesArray = [];
+    this.roleActions = [];
+    from.meta.fromList = false; //重置meta fromSearch设置
     next();
   }
 };
@@ -189,7 +184,7 @@ div.roleDetail table tr td span.disable {
   margin: 0px 5px;
 }
 
-div.roleDetail table label.action {
+div.roleDetail table label.tag {
   display: inline-block;
   line-height: 25px;
   height: 25px;

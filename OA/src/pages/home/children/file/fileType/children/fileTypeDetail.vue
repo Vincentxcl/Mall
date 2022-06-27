@@ -74,14 +74,27 @@ export default {
     }
   },
   activated() {
-    //请求数据
-    requestItem(this.id, this)
-      .then((res) => {
-        let ttls = ['title', 'format', 'path', 'description', 'ord', 'establish', 'isEnable'];
-        //为组件data填充数据
-        fillProps(res.data, this, ttls);
-      })
-      .catch(() => {});
+    if (this.$route.meta.fromList) {
+      //请求数据
+      requestItem(this.id, this)
+        .then((res) => {
+          let ttls = ['title', 'format', 'path', 'description', 'ord', 'establish', 'isEnable'];
+          //为组件data填充数据
+          fillProps(res.data, this, ttls);
+        })
+        .catch(() => {});
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    let pages = ['fileTypeList', 'searchFileTypeResult'];
+    if (pages.indexOf(from.name) > -1) {
+      to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
+    }
+    next();
+  },
+  beforeRouteLeave(to, from, next) {
+    from.meta.fromList = false; //重置meta fromSearch设置
+    next();
   }
 };
 </script>

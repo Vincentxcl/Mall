@@ -2,9 +2,9 @@ const computed_show = {
   computed: {
     showSelection() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParams');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'user');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 6106)) {
+        if (parentNode.children.value.find((val) => val.id == 5106)) {
           isShow = true;
         }
       }
@@ -12,9 +12,9 @@ const computed_show = {
     },
     showDetail() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParams');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'user');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 6109)) {
+        if (parentNode.children.value.find((val) => val.id == 5109)) {
           isShow = true;
         }
       }
@@ -22,9 +22,9 @@ const computed_show = {
     },
     showEdit() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParams');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'user');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 6110)) {
+        if (parentNode.children.value.find((val) => val.id == 5110)) {
           isShow = true;
         }
       }
@@ -32,9 +32,9 @@ const computed_show = {
     },
     showDel() {
       let isShow = false;
-      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'sysParams');
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'user');
       if (parentNode) {
-        if (parentNode.children.value.find((val) => val.id == 6111)) {
+        if (parentNode.children.value.find((val) => val.id == 5111)) {
           isShow = true;
         }
       }

@@ -3,7 +3,7 @@ import store from 'store/index.js'; // import the store
 const beforeRouteEnter_goto = {
   beforeRouteEnter(to, from, next) {
     //不能直接通过this访问$store
-    if (store.getters['sysParams/selectedObj']) {
+    if (store.getters['user/selectedObj']) {
       next();
     } else {
       //导航到列表

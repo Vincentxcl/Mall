@@ -144,6 +144,7 @@ export default {
 <style>
 div.createSysParams {
   height: calc(100% - 40px);
+  overflow: auto;
 }
 
 div.createSysParams div.workbench {

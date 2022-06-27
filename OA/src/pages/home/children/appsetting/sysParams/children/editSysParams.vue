@@ -240,6 +240,7 @@ export default {
 <style>
 div.editSysParams {
   height: calc(100% - 40px);
+  overflow: auto;
 }
 
 div.editSysParams div.workbench {

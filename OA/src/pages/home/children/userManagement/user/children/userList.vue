@@ -1,31 +1,41 @@
 <template>
   <div class="userList">
-    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection">
+    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection" @sort-change="setSortChange">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
-      <grid-field v-if="showEdit || showDel" fixed="left" label="操作" width="100" align="center">
+      <grid-field v-if="showDetail || showEdit || showDel" fixed="left" label="操作" width="100" align="center">
         <template slot-scope="item">
-          <icon v-if="showDetail" :icon="iconDetail" class="ctrl" title="明细" @click.native="getDetail(item.scope.row)"></icon>
-          <icon v-if="showEdit" :icon="iconEdit" class="ctrl" title="编辑" @click.native="editItem(item.scope.row)"></icon>
-          <icon v-if="showDel" :icon="iconDel" class="ctrl" title="删除" @click.native="deleteItem(item.scope.row)"></icon>
+          <icon v-if="showDetail" :icon="iconDetail" title="明细" @click.native="getDetail(item.scope.row)"></icon>
+          <icon v-if="showEdit" :icon="iconEdit" title="编辑" @click.native="editItem(item.scope.row)"></icon>
+          <icon v-if="showDel" :icon="iconDel" title="删除" @click.native="deleteItem(item.scope.row)"></icon>
         </template>
       </grid-field>
+
       <!-- content -->
       <grid-field prop="account" label="账号" width="150" align="center" :show-overflow-tooltip="true"></grid-field>
-      <grid-field prop="name" label="姓名" width="150" align="center" :show-overflow-tooltip="true"></grid-field>
+      <grid-field prop="name" label="姓名" width="120" align="center" :show-overflow-tooltip="true"></grid-field>
       <grid-field label="性别" width="50" align="center">
         <template slot-scope="item">
           <icon v-if="item.scope.row.gender == 'Female'" icon="icon-nv" title="女"></icon>
           <icon v-else icon="icon-nan" title="男"></icon>
         </template>
       </grid-field>
-      <grid-field prop="phone" label="电话" width="150" align="center" :show-overflow-tooltip="true"></grid-field>
+      <grid-field prop="phone" label="电话" width="120" align="center" :show-overflow-tooltip="true"></grid-field>
       <grid-field prop="email" label="邮箱" align="left" :show-overflow-tooltip="true"></grid-field>
-      <grid-field fixed="right" label="配置" width="100" align="center">
+      <!-- 是否显示控件，权限校验 TODO -->
+      <grid-field v-if="true" label="配置" width="90" align="center">
         <template slot-scope="item">
           <span class="btn" title="配置角色" @click="userRolesClick(item.scope.row)">角色</span>
           <span class="btn" title="特殊权限" @click="userActionsClick(item.scope.row)">权限</span>
+        </template>
+      </grid-field>
+
+      <!-- state -->
+      <grid-field v-if="showEdit" label="状态" width="65" align="center">
+        <template slot-scope="item">
+          <icon v-show="item.scope.row.isEnable" :icon="iconEnable" title="启用中" @click.native="setEnable(item.scope.row)"></icon>
+          <icon v-show="!item.scope.row.isEnable" :icon="iconDisable" title="禁用中" @click.native="setEnable(item.scope.row)"></icon>
         </template>
       </grid-field>
     </grid-view>
@@ -42,30 +52,21 @@ import Icon from 'components/widgets/icon.vue';
 import GridView from 'components/grid/oa.v3/GridView.vue';
 import GridField from 'components/grid/oa.v3/GridField.vue';
 import Pagination from 'components/pagination/v2/Pagination.vue';
+import { computedIcons } from 'common/mixins/computedIcons.js';
 import { method_detail_edit } from './mixins/method_detail_edit';
 import { computed_show } from './mixins/computed_show.js';
 
-import appsetting from 'config/appsettings.json';
-import { deleteObj } from 'netWork/userinfo.js';
+import { patchObj, deleteObj } from 'netWork/userinfo.js';
 
 export default {
   name: 'UserList',
-  mixins: [method_detail_edit, computed_show],
+  mixins: [computedIcons, method_detail_edit, computed_show],
   data() {
     return {
       index: 0 //页码
     };
   },
   computed: {
-    iconDetail() {
-      return appsetting.systemIcon.toolIcon.detail;
-    },
-    iconEdit() {
-      return appsetting.systemIcon.toolIcon.edit;
-    },
-    iconDel() {
-      return appsetting.systemIcon.toolIcon.del;
-    },
     pageIndex() {
       return this.$store.getters['user/pageIndex'];
     },
@@ -87,7 +88,7 @@ export default {
     deleteItem(e) {
       this.$confirm({
         type: 'warning',
-        content: '是否删除 ' + e.title + ' ?',
+        content: '是否删除 ' + e.account + ' ?',
         confirmTxt: '确认',
         cancelTxt: '取消'
       })
@@ -95,6 +96,34 @@ export default {
           deleteObj(e.id, this).then(() => {
             this.$store.dispatch('user/getDataList', this.pageIndex + 1); //刷新当前页
             this.$toast.show({ type: 'success', text: '删除成功' });
+          });
+        })
+        .catch(() => {});
+    },
+    setSortChange(e) {
+      this.$store.dispatch('user/setOrderBy', e);
+      this.$store.dispatch('user/getDataList', this.index + 1);
+    },
+    setEnable(e) {
+      let word = !e.isEnable ? '启用' : '禁用';
+      this.$confirm({
+        type: 'warning',
+        content: '是否' + word + ' "' + e.account + '" ?',
+        confirmTxt: '确认',
+        cancelTxt: '取消'
+      })
+        .then(() => {
+          //提交修改
+          let operations = [
+            {
+              path: '/isEnable',
+              op: 'replace',
+              value: !e.isEnable
+            }
+          ];
+          patchObj(e.id, operations, this).then(() => {
+            this.$store.dispatch('user/getDataList', this.pageIndex + 1); //刷新当前页
+            this.$toast.show({ type: 'success', text: '修改成功' });
           });
         })
         .catch(() => {});
@@ -128,7 +157,9 @@ export default {
   watch: {
     pageIndex: {
       handler(current) {
-        this.index = current; //通知pagination
+        if (this.index != current) {
+          this.index = current; //一定要判断一下，避免响应式重复执行getDataList，通知pagination
+        }
       }
     },
     index: {
@@ -156,11 +187,27 @@ export default {
   height: calc(100% - 25px);
 }
 
-.userList .gridView div.cell i.ctrl {
+.userList .gridView tbody div.cell i {
   padding: 0px 3px;
 }
 
-.userList .gridView div.cell i.ctrl:hover {
+.userList .gridView tbody div.cell i.icon-nv {
+  color: red;
+}
+
+.userList .gridView tbody div.cell i.icon-nan {
+  color: blue;
+}
+
+.userList .gridView tbody div.cell i.icon-qiyong {
+  color: var(--color-success);
+}
+
+.userList .gridView tbody div.cell i.icon-jinyong {
+  color: var(--color-danger);
+}
+
+.userList .gridView tbody div.cell i:hover {
   color: var(--color-high-text);
   cursor: pointer;
 }

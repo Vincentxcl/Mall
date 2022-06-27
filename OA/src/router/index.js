@@ -88,12 +88,13 @@ const routes = [
     path: '/login',
     component: login,
     beforeEnter: (to, from, next) => {
-      let auth = getCookie('userAuth');
-      //令牌不存在
+      // 登录后自动跳转至首页
+      let auth = getCookie('userAuth') || window.sessionStorage.getItem('userAuth');
+      // 令牌不存在
       if (auth == undefined || auth.trim() == '') {
         next();
       }
-      //令牌存在
+      // 令牌存在
       else {
         let payload = decodeJwtPayload(auth);
         let isExpired = payload.exp < new Date();
@@ -111,7 +112,28 @@ const routes = [
   {
     name: 'register',
     path: '/register',
-    component: register
+    component: register,
+    beforeEnter: (to, from, next) => {
+      // 登录后自动跳转至首页
+      let auth = getCookie('userAuth') || window.sessionStorage.getItem('userAuth');
+      // 令牌不存在
+      if (auth == undefined || auth.trim() == '') {
+        next();
+      }
+      // 令牌存在
+      else {
+        let payload = decodeJwtPayload(auth);
+        let isExpired = payload.exp < new Date();
+        //1.已过期
+        if (isExpired) {
+          next();
+        }
+        //2.未过期
+        else {
+          next('home');
+        }
+      }
+    }
   },
   {
     name: 'home',
@@ -176,7 +198,9 @@ const routes = [
             path: 'detail/:id',
             component: userDetail,
             props: true,
-            meta: {}
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'createUser',
@@ -232,7 +256,9 @@ const routes = [
             path: 'detail/:id',
             component: actionDetail,
             props: true,
-            meta: {}
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'createAction',
@@ -294,7 +320,9 @@ const routes = [
             path: 'detail/:id',
             component: fileServerDetail,
             props: true,
-            meta: {}
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'createFileServer',
@@ -310,7 +338,6 @@ const routes = [
           }
         ]
       },
-
       {
         name: 'fileType',
         path: 'fileType',
@@ -349,7 +376,9 @@ const routes = [
             path: 'detail/:id',
             component: fileTypeDetail,
             props: true,
-            meta: {}
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'createFileType',
@@ -365,7 +394,6 @@ const routes = [
           }
         ]
       },
-
       {
         name: 'role',
         path: 'role',
@@ -402,7 +430,9 @@ const routes = [
             path: 'detail/:id',
             component: roleDetail,
             props: true,
-            meta: {}
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'createRole',
@@ -454,7 +484,9 @@ const routes = [
             path: 'detail/:id',
             component: sysParamsDetail,
             props: true,
-            meta: {}
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'createSysParams',
@@ -493,8 +525,9 @@ const routes = [
           let siteMenu = siteNodesBuilder(siteMap, 'menuItem', siteMenuNodeProps);
           router.app.$store.commit('SetSiteMenu', siteMenu);
 
-          //账号//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-          router.app.$store.commit('SetAccount', claims.Account);
+          //加载当前用户信息
+
+          router.app.$store.dispatch('current/getUser', claims.Id);
           next();
         })
         .catch((error) => {

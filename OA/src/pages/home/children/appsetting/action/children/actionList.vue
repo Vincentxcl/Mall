@@ -4,7 +4,7 @@
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
-      <grid-field v-if="showEdit || showDel" fixed="left" label="操作" width="100" align="center">
+      <grid-field v-if="showDetail||showEdit || showDel" fixed="left" label="操作" width="100" align="center">
         <template slot-scope="item">
           <icon v-if="showDetail" :icon="iconDetail" title="明细" @click.native="getDetail(item.scope.row)"></icon>
           <icon v-if="showEdit" :icon="iconEdit" title="编辑" @click.native="editItem(item.scope.row)"></icon>

@@ -47,10 +47,10 @@
           </td>
         </tr>
         <tr>
-          <td class="ttl">具有该权限的角色（{{ actionRolesArray.length }}项）:</td>
+          <td class="ttl">具有该权限的角色（{{ roleActions.length }}项）:</td>
           <td>
-            <template v-if="actionRolesArray.length > 0">
-              <label v-for="item of actionRolesArray" class="role" :key="item.role.id" :title="item.role.description" :style="labelStyle()"> {{ item.role.name }} </label>
+            <template v-if="roleActions.length > 0">
+              <label v-for="item of roleActions" class="tag" :key="item.role.id" :title="item.role.description" :style="labelStyle()"> {{ item.role.name }} </label>
             </template>
           </td>
         </tr>
@@ -63,7 +63,6 @@
 import { dateFormat, fillProps } from 'common/helper/convertHelper';
 import { randomColor } from 'common/helper/randomHelper';
 import * as action from 'netWork/action.js';
-import * as roleActions from 'netWork/roleAction.js';
 
 export default {
   name: 'ActionDetail',
@@ -77,7 +76,7 @@ export default {
       establish: '',
       description: '',
       isEnable: false,
-      actionRolesArray: []
+      roleActions: []
     };
   },
   computed: {
@@ -99,32 +98,28 @@ export default {
     }
   },
   activated() {
-    // 1.请求action的数据
-    action
-      .requestItem(this.id, this)
-      .then((res) => {
-        let ttls = ['name', 'controllerTtl', 'actionTtl', 'httpMethod', 'description', 'ord', 'establish', 'isEnable'];
-        //为组件data填充数据
-        fillProps(res.data, this, ttls);
-
-        // 2.加载权限对应的角色
-        roleActions
-          .requestDataByActionId(this.id, this)
-          .then((res) => {
-            this.actionRolesArray = res.data;
-          })
-          .catch((error) => {
-            if (error.response.status == 404) {
-              this.$toast.show({ type: 'warning', text: '并无任何角色有该权限' });
-            } else {
-              this.$toast.show({ type: 'danger', text: '请求权限对应角色失败' });
-            }
-          });
-      })
-      .catch(() => {});
+    if (this.$route.meta.fromList) {
+      // 1.请求action的数据
+      action
+        .requestItem(this.id, this)
+        .then((res) => {
+          let ttls = ['name', 'controllerTtl', 'actionTtl', 'httpMethod', 'description', 'ord', 'establish', 'isEnable', 'roleActions'];
+          //为组件data填充数据
+          fillProps(res.data, this, ttls);
+        })
+        .catch(() => {});
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    let pages = ['actionList', 'searchActionResult'];
+    if (pages.indexOf(from.name) > -1) {
+      to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
+    }
+    next();
   },
   beforeRouteLeave(to, from, next) {
-    this.actionRolesArray = [];
+    this.roleActions = [];
+    from.meta.fromList = false; //重置meta fromSearch设置
     next();
   }
 };
@@ -209,7 +204,7 @@ div.actionDetail table tr td span.disable {
   margin: 0px 5px;
 }
 
-div.actionDetail table label.role {
+div.actionDetail table label.tag {
   display: inline-block;
   line-height: 25px;
   height: 25px;
