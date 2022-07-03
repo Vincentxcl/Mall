@@ -1,19 +1,22 @@
 ﻿<template>
 	<file-holder ref="fileholder" v-model="isShowField" :width="width" :height="height" :supportContentType="supportContentType" :supportContentSize="supportContentSize" @submit="submit">
-		<img alt="Thumbnail" slot="file" slot-scope="slot" :src="slot.files[0]" @load="adjustSize" />
+		<template slot="file" slot-scope="slot">
+			<img-clipper :width="width-2" :height="height-72" v-model="slot.files[0]" />
+		</template>
 	</file-holder>
 </template>
 
 <script>
-	import FileHolder from './parts/fileHolder.vue';
-	import { adjustImgWH } from 'common/helper/imageHelper.js';
-	import { imgUpload } from 'netWork/imgUpload.js';
+	import FileHolder from '../parts/fileHolder.vue';
+	import ImgClipper from 'components/imgClipper/index.vue';
+	import { imgBase64Upload } from 'netWork/imgUpload.js';
 
 	export default {
 		name: 'ImgUploader',
 		data() {
 			return {
 				isShowField: false,
+				imgData: null,
 			};
 		},
 		props: {
@@ -49,21 +52,14 @@
 			},
 		},
 		methods: {
-			adjustSize(event) {
-				//调整img尺寸
-				let img = event.target;
-				let holderRect = this.$refs.fileholder.$refs.imgholder.getBoundingClientRect();
-				adjustImgWH(img, holderRect.width, holderRect.height, 0.5);
-			},
 			submit(val) {
-				if (!val || !val.fileArray|| val.fileArray.length == 0) {
-					return;
-				}
+				if (!val || !val.dataURLArray || val.dataURLArray.length == 0) return;
+
+
 				let formData = new FormData();
-				for (let i = 0; i < val.fileArray.length; i++) {
-					formData.append('formData', val.fileArray[i]);
-				}
-				imgUpload(formData)
+				formData.append('formData', val.dataURLArray[0]);
+
+				imgBase64Upload(formData)
 					.then(res => {
 						this.isShowField = false;
 						this.$toast.show(res.data);
@@ -88,6 +84,7 @@
 		},
 		components: {
 			FileHolder,
+			ImgClipper,
 		},
 		model: {
 			prop: 'isShow',
@@ -95,11 +92,3 @@
 		},
 	};
 </script>
-
-<style>
-	div.content > div.view_preview > div.imgholder {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

@@ -1,6 +1,7 @@
 //当前使用的用户信息
 import * as userinfo from 'netWork/userinfo.js';
 import * as fileinfo from 'netWork/fileinfo.js';
+import appsettings from 'config/appsettings.json';
 
 export default {
   namespaced: true, //开启命名空间，使用'module/method'方式访问
@@ -18,19 +19,43 @@ export default {
   },
   actions: {
     getUser(context, payload) {
-      // 1.请求用户信息
-      userinfo.requestItem(payload, this._vm).then((res) => {
-        context.commit('SetUser', res.data);
-        // 2.请求头像
-        if (res.data.portrait) {
-          fileinfo.requestFile(res.data.portrait, this._vm).then((res) => {
-            if (res.headers['content-type'] == 'image/jpeg; ver=1.0') {
-              const url = window.URL.createObjectURL(res.data);
-              context.commit('SetPortraitUrl', url);
+      return new Promise((resolve, reject) => {
+        // 1.请求用户个人信息
+        userinfo
+          .requestItem(payload, this._vm)
+          .then((res) => {
+            context.commit('SetUser', res.data);
+
+            // 2.请求用户头像，如果有头像，需请求完头像再进行下一步，以免同时请求多个导致cancel
+            if (res.data.portrait) {
+              fileinfo
+                .requestFile(res.data.portrait, this._vm)
+                .then((res) => {
+                  resolve();
+                  //匹配 image/jpeg; ver=1.0
+                  new RegExp(/^(image\/\w+);\s.+$/g).exec(res.headers['content-type']);
+                  //支持的格式
+                  if (appsettings.portraitImgType.indexOf(RegExp.$1) > -1) {
+                    const url = window.URL.createObjectURL(res.data);
+                    context.commit('SetPortraitUrl', url);
+                  }
+                })
+                .catch(() => {
+                  this._vm.$toast.show({ type: 'warning', text: '用户头像加载失败' });
+                  resolve();
+                });
+            } else {
+              resolve();
             }
+          })
+          .catch(() => {
+            reject();
           });
-        }
       });
+    },
+    clearUserInfo(context) {
+      context.commit('SetUser', {});
+      context.commit('SetPortraitUrl', '');
     }
   },
   mutations: {

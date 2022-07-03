@@ -12,7 +12,6 @@ const home = () => import('../pages/home/home.vue');
 const homeIndex = () => import('../pages/home/children/homeIndex/homeIndex.vue');
 const partA = () => import('../pages/home/children/category/partA.vue');
 const partB = () => import('../pages/home/children/category/partB.vue');
-const profile = () => import('../pages/home/children/profile/Profile.vue');
 
 //#region 用户管理
 const user = () => import('../pages/home/children/userManagement/user/user.vue');
@@ -23,6 +22,10 @@ const userDetail = () => import('../pages/home/children/userManagement/user/chil
 const createUser = () => import('../pages/home/children/userManagement/user/children/createUser.vue');
 const editUser = () => import('../pages/home/children/userManagement/user/children/editUser.vue');
 //#endregion
+
+//#region  当前用户信息
+const profile = () => import('../pages/home/children/profile/Profile.vue');
+//endregion
 
 //#region 系统参数
 const sysParams = () => import('../pages/home/children/appsetting/sysParams/sysParams.vue');
@@ -515,20 +518,27 @@ const routes = [
       tryGetToken('userAuth')
         .then((res) => {
           let claims = decodeJwtPayload(res);
-          //依据权限claims，为home组件页，动态地添加站点地图
+          // 依据权限claims，为home组件页，动态地添加站点地图
           let siteMapNodeProps = ['id', 'routeName', 'path', 'title', 'icon', 'substitutionTagSiteNodeId', 'type', 'supports'];
           let siteMap = siteMapBuilder(appsetting.siteMap, claims, siteMapNodeProps);
           router.app.$store.commit('SetSiteMap', siteMap);
 
-          //加载站点菜单
+          // 加载站点菜单
           let siteMenuNodeProps = ['id', 'routeName', 'path', 'title', 'icon', 'substitutionTagSiteNodeId', 'type'];
           let siteMenu = siteNodesBuilder(siteMap, 'menuItem', siteMenuNodeProps);
           router.app.$store.commit('SetSiteMenu', siteMenu);
 
-          //加载当前用户信息
+          // 加载当前用户信息
 
-          router.app.$store.dispatch('current/getUser', claims.Id);
-          next();
+          router.app.$store
+            .dispatch('current/getUser', claims.Id)
+            .then(() => {
+              //注意所有异步加载完成后再跳转，否则同时请求多个api会cancel
+              next();
+            })
+            .catch(() => {
+              router.app.$toast.show({ type: 'warning', text: '用户信息加载失败' });
+            });
         })
         .catch((error) => {
           console.log(error, 'Home路由守卫提示');

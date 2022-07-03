@@ -2,63 +2,52 @@
   <div class="createUser">
     <div class="workbench">
       <div class="grid">
-        <table>
-          <tr>
-            <td class="ttl">电话:</td>
-            <td>
-              <text-box ref="phone" :value="phone" placeholder="请输入手机号码" :maxlength="11" title="Tel" pattern="/^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$/" @blur="phone = $event.target.value" icon="icon-shoujihao">
-                <div class="tip" slot="tips" slot-scope="textbox">
-                  <p class="fl" :style="isExistPhone ? {} : { color: 'var(--color-success)' }">{{ textbox.tips }}</p>
-                </div>
-              </text-box>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">密码:</td>
-            <td>
-              <text-box ref="password" v-model="password" type="password" placeholder="请设置密码" :maxlength="20" title="密码" pattern="/^((?!<|>).){1,20}$/" @input="checkPwd()" icon="icon-mima">
-                <div class="tip" slot="tips" slot-scope="textbox">
-                  <p class="fl">{{ textbox.tips }}</p>
-                  <p class="fr" v-show="isShowPwdLevel">
-                    <meter max="4" min="0" high="3" low="2" optimum="4" :value="pwdLevel"></meter>
-                    <span :style="pwdLevelColor">强度{{ pwdLevelTips }}</span>
-                  </p>
-                </div>
-              </text-box>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">确认:</td>
-            <td>
-              <text-box ref="passwordConfirm" v-model="passwordConfirm" type="password" placeholder="请确认密码" :maxlength="20" title="确认密码" @blur="checkPwdConfirm()" icon="icon-querenmima">
-                <div class="tip" slot="tips" slot-scope="textbox">
-                  <p>{{ textbox.tips }}</p>
-                </div>
-              </text-box>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">邮箱:</td>
-            <td>
-              <text-box ref="email" :value="email" placeholder="请输入邮箱" :maxlength="30" title="邮箱" pattern="/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/" @blur="email = $event.target.value" icon="icon-youxiang">
-                <div class="tip" slot="tips" slot-scope="textbox">
-                  <p class="fl" :style="isExistEmail ? {} : { color: '#00dc04' }">{{ textbox.tips }}</p>
-                </div>
-              </text-box>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">验证码:</td>
-            <td>
-              <text-box ref="randomWords" v-model="randomWords" placeholder="点击获取验证码" :maxlength="4" @focus="showVCode()" icon="icon-yanzhengyanzhengma" @iconClick="reverseVCodeDisplay()" @tab="reverseVCodeDisplay()">
-                <div class="tip" slot="tips" slot-scope="textbox">
-                  <p class="fl">{{ textbox.tips }}</p>
-                </div>
-              </text-box>
-              <verification-code ref="vCode" v-model="isShowVerificationCode" :x="randomWordsRect.x" :y="randomWordsRect.y + 35" :img-src="verificationImgUrl" :effectiveDuration="verificationDuration" :refreshLockDuration="refreshLockDuration"></verification-code>
-            </td>
-          </tr>
-        </table>
+    <input ref="file"  type="file" name="input1" @change="get" />
+
+
+        <div>姓名:</div>
+        <text-box ref="name" v-model="name" :maxlength="16" title="姓名" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{1,16}$/g">
+          <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+        </text-box>
+        <div>性别:</div>
+        <div>
+          <label> <input type="radio" name="sex" :value="true" v-model="gender" />男 </label>
+          <label> <input type="radio" name="sex" :value="false" v-model="gender" />女 </label>
+        </div>
+        <div>电话:</div>
+        <text-box ref="phone" :value="phone" :maxlength="11" title="Tel" pattern="/^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$/" @blur="phone = $event.target.value">
+          <div class="tip" slot="tips" slot-scope="textbox">
+            <p class="fl" :style="isExistPhone ? {} : { color: 'var(--color-success)' }">{{ textbox.tips }}</p>
+          </div>
+        </text-box>
+        <div>密码:</div>
+        <text-box ref="password" v-model="password" type="password" :maxlength="20" title="密码" pattern="/^((?!<|>).){1,16}$/" @input="checkPwd()">
+          <div class="tip" slot="tips" slot-scope="textbox">
+            <p class="fl">{{ textbox.tips }}</p>
+            <p class="fr" v-show="isShowPwdLevel">
+              <meter max="4" min="0" high="3" low="2" optimum="4" :value="pwdLevel"></meter>
+              <span :style="pwdLevelColor">强度{{ pwdLevelTips }}</span>
+            </p>
+          </div>
+        </text-box>
+        <div>确认密码</div>
+        <text-box ref="passwordConfirm" v-model="passwordConfirm" type="password" :maxlength="20" title="确认密码" @blur="checkPwdConfirm()">
+          <div class="tip" slot="tips" slot-scope="textbox">
+            <p>{{ textbox.tips }}</p>
+          </div>
+        </text-box>
+        <div>邮箱:</div>
+        <text-box ref="email" :value="email" :maxlength="64" title="邮箱" pattern="/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/" @blur="email = $event.target.value">
+          <div class="tip" slot="tips" slot-scope="textbox">
+            <p class="fl" :style="isExistEmail ? {} : { color: '#00dc04' }">{{ textbox.tips }}</p>
+          </div>
+        </text-box>
+        <div>生日:</div>
+        <calender ref="calender" @change="getDate"></calender>
+        <div>QQ:</div>
+        <text-box ref="qq" v-model="qq" :maxlength="32" title="QQ" :required="false" pattern="/^[0-9]{1,32}$/">
+          <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+        </text-box>
       </div>
       <div class="ctrl">
         <div>
@@ -77,27 +66,32 @@
 </template>
 
 <script>
+import { dateFormat } from 'common/helper/convertHelper.js';
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import Textbox from 'components/widgets/textbox.vue';
+import TextBox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
-import VerificationCode from 'components/verificationCode/verificationCodeFull.vue';
+import Calender from 'components/calendar/v1/calender.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import * as userinfo from 'netWork/userinfo.js';
 
 export default {
-  name: 'CreateSysParams',
+  name: 'CreateUser',
   mixins: [computedAssistanceBarItems],
   data() {
     return {
+      uploadfile:undefined,
+      name: '',
+      gender: true,
       phone: '',
       password: '',
       passwordConfirm: '',
       email: '',
-      randomWords: '',
+      birthday: '',
+      qq: '',
+
       isExistPhone: true,
       isExistEmail: true,
-      randomWordsRect: {},
       isShowPwdLevel: false,
       pwdLevel: 0,
       pwdLevelTips: '低',
@@ -130,9 +124,14 @@ export default {
     }
   },
   methods: {
+    get() {
+      this.uploadfile = this.$refs.file.files[0];
+    },
+
+
     toolItemsClick(e) {
       switch (e.id) {
-        case 61051:
+        case 51051:
           {
             this.clear();
           }
@@ -146,7 +145,6 @@ export default {
       if (this.$refs.phone.check()) {
         userinfo
           .requestData({
-            ver: '1.0',
             fields: 'phone',
             phone: this.phone
           })
@@ -160,7 +158,7 @@ export default {
             }
           })
           .catch((error) => {
-            this.$refs.phone.tips = error.message;
+            this.$refs.phone.tips = JSON.stringify(error.response);
           });
       }
     },
@@ -216,11 +214,11 @@ export default {
     //验证邮箱
     checkEmail() {
       if (this.$refs.email.check()) {
-        getUsers({
-          ver: '1.0',
-          fields: 'email',
-          email: this.email
-        })
+        userinfo
+          .requestData({
+            fields: 'email',
+            email: this.email
+          })
           .then((res) => {
             this.isExistEmail = res.data.length > 0;
 
@@ -231,45 +229,74 @@ export default {
             }
           })
           .catch((error) => {
-            this.$refs.email.tips = error.message;
+            this.$refs.email.tips = JSON.stringify(error.response);
           });
       }
     },
-
+    getDate(e) {
+      this.birthday = e;
+    },
     clear() {
+      this.$refs.name.clear();
+      this.gender = true;
       this.$refs.phone.clear();
       this.$refs.password.clear();
       this.$refs.passwordConfirm.clear();
       this.$refs.email.clear();
-      this.$refs.randomWords.clear();
+      this.$refs.calender.clear();
+      this.$refs.qq.clear();
       this.message = '';
       this.isForbidden = false;
     },
     back() {
       this.$router.push({
-        name: 'sysParamsList'
+        name: 'userList'
       });
     },
     validate() {
-      return this.$refs.title.check() && this.$refs.value.check() && this.$refs.ord.check() && this.$refs.description.check();
+      //非必填项，但不能填错
+      if (this.birthday) {
+        if (!this.$refs.calender.check()) {
+          this.message = '请选择正确的日期';
+          return false;
+        }
+      }
+      if (this.qq) {
+        if (!this.$refs.qq.check()) {
+          return false;
+        }
+      }
+
+      return this.$refs.name.check() && !this.isExistPhone && this.$refs.password.check() && this.checkPwdLevel() && this.$refs.passwordConfirm.check() && this.checkPwdConfirm() && !this.isExistEmail;
     },
     submit() {
       if (this.validate()) {
-        let obj = {
-          title: this.title,
-          value: this.value,
-          description: this.description
-        };
-        if (this.ord) {
-          obj.ord = this.ord;
+        //表单形式传输
+        let formData = new FormData();
+        formData.append('name', this.name);
+        formData.append('gender', this.gender);
+        formData.append('phone', this.phone);
+        formData.append('pwd', this.password);
+        formData.append('email', this.email);
+
+        if(this.uploadfile){
+          formData.append('portrait',this.uploadfile)
+        }
+
+        if (this.birthday) {
+          formData.append('birthday', dateFormat(this.birthday));
+        }
+        if (this.qq) {
+          formData.append('qq', this.qq);
         }
         this.isForbidden = true; //提交按钮禁用，不能再点击
         this.message = '正在提交数据';
-        this.createData(obj);
+        this.createData(formData);
       }
     },
     createData(e) {
-      postData(e, this)
+      userinfo
+        .postData(e, this)
         .then(() => {
           this.$toast.show({ type: 'success', text: '添加成功' });
           this.clear();
@@ -277,32 +304,33 @@ export default {
         .catch((error) => {
           let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            str = JSON.stringify(error.response.data);
           }
           this.message = str;
           this.isForbidden = false;
         });
     }
   },
-		watch: {
-			phone: {
-				handler(current) {
-					this.isExistPhone = true;
-					if (current != '') this.checkPhone();
-				}
-			},
-			email: {
-				handler(current) {
-					this.isExistEmail = true;
-					if (current != '') this.checkEmail();
-				}
-			},
-		},
+  watch: {
+    phone: {
+      handler(current) {
+        this.isExistPhone = true;
+        if (current != '') this.checkPhone();
+      }
+    },
+    email: {
+      handler(current) {
+        this.isExistEmail = true;
+        if (current != '') this.checkEmail();
+      }
+    }
+  },
 
   components: {
-    Textbox,
+    TextBox,
     Btn,
-    AssistanceToolBar
+    AssistanceToolBar,
+    Calender
   }
 };
 </script>

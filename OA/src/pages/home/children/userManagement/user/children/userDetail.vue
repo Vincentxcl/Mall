@@ -8,9 +8,11 @@
             {{ account }}
             <span v-if="isEnable" class="enable">正常</span>
             <span v-if="!isEnable" class="disable">锁定</span>
-
-            <!-- <avatar :url="url"></avatar> -->
-            <img :src="url" alt="xxx" />
+          </td>
+          <td class="avatar" rowspan="4">
+            <div class="avatar">
+              <img :key="account" :src="defaultImgSrc" v-realSrc="url" alt="avatar" @load="load" />
+            </div>
           </td>
         </tr>
         <tr>
@@ -35,29 +37,29 @@
         </tr>
         <tr>
           <td class="ttl">生日:</td>
-          <td>
+          <td colspan="2">
             {{ adjustedBirthday }}
           </td>
         </tr>
         <tr>
           <td class="ttl">QQ号:</td>
-          <td>
+          <td colspan="2">
             {{ userInfoExt.qq }}
           </td>
         </tr>
         <tr>
           <td class="ttl">注册时间:</td>
-          <td>
+          <td colspan="2">
             {{ adjustedEstablish }}
           </td>
         </tr>
         <tr>
           <td class="ttl">近期登陆:</td>
-          <td>{{ recentLyLogin }}</td>
+          <td colspan="2">{{ recentLyLogin }}</td>
         </tr>
         <tr>
           <td class="ttl">角色（{{ adjustedUserRoles.length }}个）:</td>
-          <td>
+          <td colspan="2">
             <template v-if="adjustedUserRoles.length > 0">
               <label v-for="item of adjustedUserRoles" class="tag" :key="item.role.id" :title="item.role.description" :style="labelStyle()"> {{ item.role.name }} </label>
             </template>
@@ -65,7 +67,7 @@
         </tr>
         <tr>
           <td class="ttl">允许的特限（{{ userActionsAllow.length }}个）:</td>
-          <td>
+          <td colspan="2">
             <template v-if="userActionsAllow.length > 0">
               <label v-for="item of userActionsAllow" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
             </template>
@@ -73,7 +75,7 @@
         </tr>
         <tr>
           <td class="ttl">禁止的权限（{{ userActionsForbid.length }}个）:</td>
-          <td>
+          <td colspan="2">
             <template v-if="userActionsForbid.length > 0">
               <label v-for="item of userActionsForbid" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
             </template>
@@ -85,12 +87,13 @@
 </template>
 
 <script>
-import { dateFormat, fillProps } from 'common/helper/convertHelper';
-import { randomColor } from 'common/helper/randomHelper';
+import { dateFormat, fillProps } from 'common/helper/convertHelper.js';
+import { randomColor } from 'common/helper/randomHelper.js';
 import { requestItem } from 'netWork/userinfo.js';
 import * as fileinfo from 'netWork/fileinfo.js';
+import appsettings from 'config/appsettings.json';
+
 import Icon from 'components/widgets/icon.vue';
-import Avatar from 'components/avatar/index.vue';
 
 export default {
   name: 'UserDetail',
@@ -117,6 +120,9 @@ export default {
     };
   },
   computed: {
+    defaultImgSrc() {
+      return require('assets/imgs/avatar/default.png');
+    },
     adjustedName() {
       return this.name != undefined ? this.name : '新用户';
     },
@@ -165,38 +171,31 @@ export default {
       return {
         backgroundColor: randomColor(0.2)
       };
+    },
+    load() {
+      window.URL.revokeObjectURL(this.url);
     }
   },
   activated() {
     if (this.$route.meta.fromList) {
+      this.url = '';
       //请求数据
-      requestItem(this.id, this)
-        .then((res) => {
-          // 1.加载头像
-          if (res.data.portrait) {
-            fileinfo
-              .requestFile(res.data.portrait, this)
-              .then((res) => {
-                if (res.headers['content-type'] == 'image/jpeg; ver=1.0') {
-                  // var binaryData = [];
+      requestItem(this.id, this).then((res) => {
+        // 1.加载头像
+        if (res.data.portrait) {
+          fileinfo.requestFile(res.data.portrait, this).then((res) => {
+            new RegExp(/^(image\/\w+);\s.+$/g).exec(res.headers['content-type']);
+            if (appsettings.portraitImgType.indexOf(RegExp.$1) > -1) {
+              this.url = window.URL.createObjectURL(res.data);
+            }
+          });
+        }
 
-                  // binaryData.push(res.data);
-
-                  // this.url = window.URL.createObjectURL(new Blob(binaryData, { type: 'image/jpeg' }));
-                  this.url = window.URL.createObjectURL(res.data);
-
-                  console.log(this.url);
-                }
-              })
-              .catch(() => {});
-          }
-
-          // 2.填充数据
-          let ttls = ['account', 'name', 'gender', 'portrait', 'phone', 'email', 'userLogin', 'userRoles', 'userActions', 'userInfoExt/birthday', 'userInfoExt/qq', 'establish', 'isEnable'];
-          //为组件data填充数据
-          fillProps(res.data, this, ttls, true);
-        })
-        .catch(() => {});
+        // 2.填充数据
+        let ttls = ['account', 'name', 'gender', 'portrait', 'phone', 'email', 'userLogin', 'userRoles', 'userActions', 'userInfoExt/birthday', 'userInfoExt/qq', 'establish', 'isEnable'];
+        //为组件data填充数据
+        fillProps(res.data, this, ttls, true);
+      });
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -211,8 +210,7 @@ export default {
     next();
   },
   components: {
-    Icon,
-    Avatar
+    Icon
   }
 };
 </script>
@@ -270,6 +268,23 @@ div.userDetail table tr:last-child td {
 
 div.userDetail table tr td:first-child {
   width: 150px;
+}
+
+div.userDetail table tr td.avatar {
+  text-align: center;
+}
+
+div.userDetail table tr td div.avatar {
+  display: inline-block;
+  width: 110px;
+  height: 110px;
+  border: 1px solid rgb(202, 202, 202);
+}
+
+div.userDetail table tr td .avatar img {
+  width: 106px;
+  height: 106px;
+  margin: 1px auto;
 }
 
 div.userDetail table tr td span.enable {

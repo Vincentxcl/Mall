@@ -35,9 +35,14 @@ export function convertDateFormat(dateString, format = 'yyyy-MM-dddd hh:mm:ss') 
 }
 
 //时间格式转化，date为''时，为当前时间
-export function dateFormat(dateStr, format = 'yyyy-MM-dddd hh:mm:ss') {
-  let _time = dateStr.trim() == '' ? new Date() : new Date(dateStr);
-  return _time.format(format);
+export function dateFormat(date, format = 'yyyy-MM-dddd hh:mm:ss') {
+  if (typeof date == 'object') {
+    return date.format(format);
+  }
+  if (typeof date == 'string') {
+    let _time = date.trim() == '' ? new Date() : new Date(date);
+    return _time.format(format);
+  }
 }
 
 // 去除对象成员属性的前后空格

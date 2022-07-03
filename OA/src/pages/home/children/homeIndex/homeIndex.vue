@@ -1,5 +1,5 @@
 <template>
-  <row >
+  <row>
     <column :span="8" class="p1">
       <card></card>
       <div class="bg-purple b1">222</div>
@@ -7,7 +7,9 @@
     <column :span="16" class="p2 bg-purple-dark">
       <div class="bg-purple-light" style="height: 200px">2 1</div>
       <div class="bg-purple-dark" style="height: 300px">2 2</div>
-      <div class="g" style="height: 300px">2 3</div>
+      <div class="g" style="height: 300px">
+        <img :src="portraitUrl" alt="ccc" style="width:100px" />
+      </div>
     </column>
   </row>
 </template>
@@ -19,6 +21,11 @@ import Card from './parts/card.vue';
 
 export default {
   name: 'HomeIndex',
+  computed: {
+    portraitUrl() {
+      return this.$store.getters['current/portraitUrl'];
+    }
+  },
   // created() {
   //   requestData(0)
   //     .then((res) => {

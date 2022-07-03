@@ -2,16 +2,32 @@
 //<img src="xxx" v-realSrc="yyy"/>
 // 判断img的realSrc='yyy'地址是否能成功加载，否则使用xxx地址
 const realSrc = {
+  //被绑定元素插入父节点时调用
   bind(element, binding) {
     //图片地址
     let imgURL = binding.value;
     if (imgURL) {
-      //如果该图片存在就当前元素的src
+      //如果该图片存在就替换当前元素的src
       imageIsExist(imgURL).then((val) => {
         if (val) {
           element.setAttribute('src', imgURL);
         }
       });
+    }
+  },
+  //所在组件的 VNode 更新时调用
+  update(element, binding) {
+    if (binding.oldValue != binding.value) {
+      //图片地址
+      let imgURL = binding.value;
+      if (imgURL) {
+        //如果该图片存在就替换当前元素的src
+        imageIsExist(imgURL).then((val) => {
+          if (val) {
+            element.setAttribute('src', imgURL);
+          }
+        });
+      }
     }
   }
 };

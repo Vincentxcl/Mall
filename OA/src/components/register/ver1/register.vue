@@ -139,7 +139,7 @@ export default {
             }
           })
           .catch((error) => {
-            this.$refs.phone.tips = error.message;
+            this.$refs.phone.tips = JSON.stringify(error.response);
           });
       }
     },
@@ -213,7 +213,7 @@ export default {
             }
           })
           .catch((error) => {
-            this.$refs.email.tips = error.message;
+            this.$refs.email.tips = JSON.stringify(error.response);
           });
       }
     },
@@ -247,7 +247,7 @@ export default {
 
         user
           .postData(dto, this)
-          .then((res) => {
+          .then(() => {
             this.message = '注册成功';
             //this.refreshVCode();
             this.clear();

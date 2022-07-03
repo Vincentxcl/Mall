@@ -14,15 +14,15 @@ export function requestItem(id, vm) {
   });
 }
 
-export function postData(dto, vm) {
+export function postData(formData, vm) {
   const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'post',
     url: 'userinfo',
     headers: {
-      'content-type': 'application/json'
+      'content-type': 'multipart/form-data'
     },
-    data: dto,
+    data: formData,
     params: {
       ver: '1.0'
     }

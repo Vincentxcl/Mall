@@ -2,7 +2,7 @@
   <drop-down-list class="avatarInfo">
     <avatar slot="trigger" :url="portraitUrl"></avatar>
     <ul>
-      <li>个人中心</li>
+      <li @click="toUserProfile">个人中心</li>
       <li @click="logout">退出</li>
     </ul>
   </drop-down-list>
@@ -22,6 +22,9 @@ export default {
     }
   },
   methods: {
+    toUserProfile() {
+      this.$router.push({ name: 'profile' });
+    },
     logout() {
       //注销服务器登陆身份
       login
@@ -30,14 +33,15 @@ export default {
           this.$toast.show({ type: 'success', text: '退出成功' });
         })
         .catch((error) => {
-          let str = JSON.stringify(error.response.data.errors);
+          let str = JSON.stringify(error.response.data);
           this.$toast.show({ type: 'warning', text: error.response.status + '退出异常' + str });
         });
 
-      //删除本地账号，跳转
-      deleteCookie('user');
-      deleteCookie('userAuth');
-      window.sessionStorage.removeItem('userAuth');
+      //删除本地账号
+      deleteCookie('user'); //移除用户账号密码
+      deleteCookie('userAuth'); //移除令牌
+      window.sessionStorage.removeItem('userAuth'); //移除令牌
+      this.$store.dispatch('current/clearUserInfo'); //移除vuex用户信息
       this.$router.push({ name: 'login' });
     }
   },
@@ -49,6 +53,10 @@ export default {
 </script>
 
 <style>
+.avatarInfo .avatar:hover {
+  cursor: pointer;
+}
+
 /* 对话框尺寸 */
 .avatarInfo .container-with-arrow {
   width: 100px;
