@@ -23,6 +23,7 @@
 import Icon from 'components/widgets/icon.vue';
 import Container from '../parts/container.vue';
 
+//没用的组件，只是一个样式框
 export default {
   name: 'DialogWindow', //different from dialog in html5
   methods: {

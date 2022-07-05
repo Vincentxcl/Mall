@@ -20,7 +20,7 @@ export function postData(formData, vm) {
     method: 'post',
     url: 'userinfo',
     headers: {
-      'content-type': 'multipart/form-data'
+      'content-type': 'application/x-www-form-urlencoded'
     },
     data: formData,
     params: {

@@ -1,19 +1,22 @@
 ﻿<template>
   <file-holder ref="fileholder" class="imgUploader" v-model="isShowField" :width="width" :height="height" :supportContentType="supportContentType" :supportContentSize="supportContentSize" @submit="submit">
-    <img alt="Thumbnail" slot="file" slot-scope="slot" :src="slot.files[0]" @load="adjustSize" />
+    <template slot="file" slot-scope="slot">
+      <img-clipper :width="width - 2" :height="height - 72" v-model="slot.files[0]" />
+    </template>
   </file-holder>
 </template>
 
 <script>
 import FileHolder from '../parts/fileHolder.vue';
-import { adjustImgWH } from 'common/helper/imageHelper.js';
+import ImgClipper from 'components/imgClipper/index.vue';
 
-//简单预览
+//具有剪切功能
 export default {
   name: 'ImgUploader',
   data() {
     return {
-      isShowField: false
+      isShowField: false,
+      imgData: null
     };
   },
   props: {
@@ -49,12 +52,6 @@ export default {
     }
   },
   methods: {
-    adjustSize(event) {
-      //调整img尺寸
-      let img = event.target;
-      let holderRect = this.$refs.fileholder.$refs.imgholder.getBoundingClientRect();
-      adjustImgWH(img, holderRect.width, holderRect.height);
-    },
     submit(val) {
       this.$emit('submit', val);
     }
@@ -72,7 +69,8 @@ export default {
     }
   },
   components: {
-    FileHolder
+    FileHolder,
+    ImgClipper
   },
   model: {
     prop: 'isShow',
@@ -80,11 +78,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.imgUploader div.content > div.view_preview > div.imgholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>

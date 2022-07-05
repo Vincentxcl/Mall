@@ -6,18 +6,13 @@
 
     <input type="button" value="Test" @click="onClick" />
 
-    <dialog-window v-model="isShow">
-      <div slot="content">XXXX</div>
-    </dialog-window>
-
-    <div drawable style="background: gray; width: 200px; height: 300px" v-drag>bbbb</div>
+    <img-uploader v-model="isShow" @submit="submit"></img-uploader>
   </div>
 </template>
 
 <script>
 import { imgUpload } from 'netWork/demo.js';
-import DialogWindow from 'components/dialog/v1/dialogWindow.vue';
-import { drag } from 'common/directives/drag.js';
+import ImgUploader from 'components/uploader/v2/imgUploader.vue';
 
 export default {
   name: 'PartB',
@@ -28,6 +23,9 @@ export default {
     };
   },
   methods: {
+    submit(e) {
+      console.log(e);
+    },
     onClick() {
       this.isShow = !this.isShow;
     },
@@ -50,10 +48,7 @@ export default {
     }
   },
   components: {
-    DialogWindow
-  },
-  directives: {
-    drag: drag
+    ImgUploader
   }
 };
 </script>

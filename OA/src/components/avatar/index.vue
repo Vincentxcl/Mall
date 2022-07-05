@@ -1,6 +1,6 @@
 <template>
-  <div class="avatar">
-    <img :src="defaultImgSrc" v-realSrc="url" alt="avatar" />
+  <div class="avatar" @click="click">
+    <img :src="defaultImgSrc" v-realSrc="url" alt="avatar" @load="onload" />
   </div>
 </template>
 
@@ -14,7 +14,18 @@ export default {
     defaultImgSrc: {
       type: String,
       default() {
-        return require('assets/imgs/avatar/default.png');
+        return require('assets/imgs/avatar/default.png'); //此地址中的default为关键词，影响正则判断图片加载问题
+      }
+    }
+  },
+  methods: {
+    click() {
+      this.$emit('click');
+    },
+    onload(e) {
+      let src = e.target.getAttribute('src');
+      if (!/^.+(default).+$/g.test(src)) {
+        this.$emit('loadComplete');///////////loadComplete 事件
       }
     }
   }
