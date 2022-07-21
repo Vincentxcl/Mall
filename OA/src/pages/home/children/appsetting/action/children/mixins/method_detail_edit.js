@@ -25,7 +25,10 @@ const method_detail_edit = {
 
       this.$store.dispatch('action/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editAction'
+        name: 'editAction',
+        params: {
+          id: e.id
+        }
       });
     },
     editActionRoles(e) {
@@ -35,7 +38,10 @@ const method_detail_edit = {
 
       this.$store.dispatch('action/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editActionRoles'
+        name: 'editActionRoles',
+        params: {
+          id: e.id
+        }
       });
     }
   }

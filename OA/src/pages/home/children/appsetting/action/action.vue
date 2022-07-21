@@ -30,14 +30,11 @@ export default {
     pageIndex() {
       return this.$store.getters['action/pageIndex'];
     },
-    readOnlySelectedObj() {
-      return this.$store.getters['action/readOnlySelectedObj'];
+    selectedObj() {
+      return this.$store.getters['action/selectedObj'];
     },
     selection() {
       return this.$store.getters['action/selection'];
-    },
-    roleList() {
-      return this.$store.getters['action/roleList'];
     }
   },
   methods: {
@@ -68,30 +65,20 @@ export default {
             this.resetActions();
           }
           break;
-        case 6214:
-          {
-            this.selectAll();
-          }
-          break;
-        case 6215:
-          {
-            this.clearSelection();
-          }
-          break;
         default:
           break;
       }
     },
     deleteItemClick() {
-      if (this.readOnlySelectedObj) {
+      if (this.selectedObj) {
         this.$confirm({
           type: 'warning',
-          content: '是否删除 ' + this.readOnlySelectedObj.name + ' ?',
+          content: '是否删除 ' + this.selectedObj.name + ' ?',
           confirmTxt: '确认',
           cancelTxt: '取消'
         })
           .then(() => {
-            deleteObj(this.readOnlySelectedObj.id, this).then(() => {
+            deleteObj(this.selectedObj.id, this).then(() => {
               this.$store.dispatch('action/getDataList', this.pageIndex + 1); //刷新当前页
               this.$toast.show({ type: 'success', text: '删除成功' });
               this.$router.push({ name: 'actionList' });
@@ -127,7 +114,7 @@ export default {
       }
     },
     editItemClick() {
-      if (this.readOnlySelectedObj) {
+      if (this.selectedObj) {
         this.$router.push({ name: 'editAction' });
       }
     },
@@ -149,27 +136,6 @@ export default {
             });
         })
         .catch(() => {});
-    },
-    selectAll() {
-      let roleIds = this.roleList.map((val) => val.id);
-      this.$store.commit('action/SetSelectedRoleIds', roleIds);
-    },
-    clearSelection() {
-      // 选出当前角色 和 admin 的id////////////
-      let roleNames = ['Admin'];
-      let role = this.roleList.filter((val) => {
-        let result = roleNames.find((n) => {
-          return n == val.name;
-        });
-        return result != undefined;
-      });
-
-      if (role.length > 0) {
-        let roleIds = role.map((val) => {
-          return val.id;
-        });
-        this.$store.commit('action/SetSelectedRoleIds', roleIds);
-      }
     }
   },
   beforeDestroy() {

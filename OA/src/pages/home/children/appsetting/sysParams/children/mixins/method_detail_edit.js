@@ -17,7 +17,10 @@ const method_detail_edit = {
       let temp = deepClone(e);
       this.$store.dispatch('sysParams/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editSysParams'
+        name: 'editSysParams',
+        params: {
+          id: e.id
+        }
       });
     }
   }

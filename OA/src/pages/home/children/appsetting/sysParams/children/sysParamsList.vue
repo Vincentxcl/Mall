@@ -1,6 +1,6 @@
 <template>
   <div class="sysParamsList">
-    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection" @sort-change="setSortChange">
+    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSelection" @sort-change="setSortChange">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
@@ -12,7 +12,7 @@
         </template>
       </grid-field>
       <!-- content -->
-      <grid-field v-for="item in headItem" :key="item.field" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
+      <grid-field v-for="item in headItem" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
       <!-- state -->
       <grid-field v-if="showEdit" label="状态" width="65" align="center">
         <template slot-scope="item">
@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     //将选中项目提交至store
-    setSysParamsSelection(e) {
+    setSelection(e) {
       this.$store.commit('sysParams/SetSelection', e);
     },
     deleteItem(e) {
@@ -144,8 +144,10 @@ export default {
   watch: {
     pageIndex: {
       handler(current) {
+        this.$refs.gridview.resetScroll(); //翻页后重置滚动条位置
         if (this.index != current) {
-          this.index = current; //一定要判断一下，避免响应式重复执行getDataList，通知pagination
+          //一定要判断一下，避免响应式重复执行getDataList，通知pagination
+          this.index = current;
         }
       }
     },

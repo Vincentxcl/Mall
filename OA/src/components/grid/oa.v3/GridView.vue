@@ -9,6 +9,11 @@
 <script>
 export default {
   name: 'GridView',
+  data() {
+    return {
+      scrollTop: null //定义新变量-当前表格高度
+    };
+  },
   props: {
     gridData: {
       type: Array,
@@ -74,7 +79,46 @@ export default {
     },
     echoSortChange(e) {
       this.$emit('sort-change', e);
+    },
+    resetScroll() {
+      //重置滚动条位置
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let scrollTop = this.$el.querySelector('.el-table__body-wrapper');
+          scrollTop.scrollTop = 0;
+        }, 13);
+      });
     }
+  },
+  mounted() {
+    // 监听滚动条的位置
+    this.$refs.table.bodyWrapper.addEventListener(
+      'scroll',
+      (res) => {
+        let height = res.target;
+        this.scrollTop = height.scrollTop;
+      },
+      false
+    );
+  },
+  activated() {
+    // 这里如果直接赋值给this.$el.querySelector('.el-table__body-wrapper').scrollTop会失效，需要加上setTimeout才行。
+    this.$nextTick(() => {
+      setTimeout(() => {
+        let scrollTop = this.$el.querySelector('.el-table__body-wrapper');
+        scrollTop.scrollTop = this.scrollTop;
+      }, 13);
+    });
+  },
+  beforeDestroy() {
+    this.$refs.table.bodyWrapper.removeEventListener(
+      'scroll',
+      (res) => {
+        let height = res.target;
+        this.scrollTop = height.scrollTop;
+      },
+      false
+    );
   }
 };
 </script>

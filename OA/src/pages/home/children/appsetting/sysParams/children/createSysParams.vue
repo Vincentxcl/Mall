@@ -2,40 +2,24 @@
   <div class="createSysParams">
     <div class="workbench">
       <div class="grid">
-        <table>
-          <tr>
-            <td class="ttl">名称:</td>
-            <td>
-              <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[0-9a-zA-Z]{0,32}$/g">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">属性:</td>
-            <td>
-              <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">排序:</td>
-            <td>
-              <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">说明:</td>
-            <td>
-              <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,128}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-        </table>
+        <div>
+          <div class="ttl">名称:</div>
+          <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[0-9a-zA-Z]{0,32}$/g">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+          <div class="ttl">属性:</div>
+          <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+          <div class="ttl">排序:</div>
+          <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+          <div class="ttl">说明:</div>
+          <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,128}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+        </div>
       </div>
       <div class="ctrl">
         <div>
@@ -124,11 +108,9 @@ export default {
           this.clear();
         })
         .catch((error) => {
-          let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            this.message = JSON.stringify(error.response.data);
           }
-          this.message = str;
           this.isForbidden = false;
         });
     }
@@ -157,47 +139,18 @@ div.createSysParams div.grid {
   font-size: 14px;
 }
 
-/* #region table圆角 */
-div.createSysParams table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-div.createSysParams table td {
+div.createSysParams div.grid > div {
+  display: grid;
+  grid-template-columns: 10% 90%;
+  row-gap: 5px;
+  padding: 10px;
   border: 1px solid rgb(226, 226, 226);
-  border-left: none;
-  border-bottom: none;
-  padding: 5px 10px;
+  border-radius: 5px;
 }
 
-div.createSysParams table tr:first-child td:first-child {
-  border-top-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.createSysParams table tr:first-child td:last-child {
-  border-top-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.createSysParams table tr:last-child td:first-child {
-  border-bottom-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.createSysParams table tr:last-child td:last-child {
-  border-bottom-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.createSysParams table tr td:first-child {
-  border-left: 1px solid rgb(226, 226, 226);
-}
-
-div.createSysParams table tr:last-child td {
-  border-bottom: 1px solid rgb(226, 226, 226);
-}
-/* #endregion */
-
-div.createSysParams table tr td:first-child {
-  width: 150px;
+div.createSysParams div.grid div.ttl {
+  height: 30px;
+  line-height: 30px;
 }
 
 div.createSysParams div.grid .textBox {

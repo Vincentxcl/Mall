@@ -8,7 +8,7 @@
       </div>
     </text-box>
 
-    <text-box ref="password" v-model="password" type="password" placeholder="请设置密码" :maxlength="20" title="密码" pattern="/^((?!<|>).){1,20}$/" @input="checkPwd()" icon="icon-mima">
+    <text-box ref="password" v-model="password" type="password" placeholder="请设置密码" :maxlength="16" title="密码" pattern="/^((?!<|>|[\s\u4e00-\u9fa5]).){1,16}$/" @input="checkPwd()" icon="icon-mima">
       <div class="msg" slot="tips" slot-scope="textbox">
         <p class="fl">{{ textbox.tips }}</p>
         <p class="fr" v-show="isShowPwdLevel">
@@ -49,7 +49,7 @@ import TextBox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 import VerificationCode from 'components/verificationCode/verificationCodeFull.vue';
 
-import * as user from 'netWork/register.js';//专用不要令牌的请求方式
+import * as user from 'netWork/register.js'; //专用不要令牌的请求方式
 
 export default {
   name: 'Register',
@@ -145,11 +145,13 @@ export default {
     },
     //验证密码格式-->密码强度
     checkPwd() {
-      if (this.$refs.password.check()) {
-        this.isShowPwdLevel = true;
-        this.checkPwdLevel(this.password);
-      } else {
-        this.isShowPwdLevel = false;
+      if (this.password.trim() != '') {
+        if (this.$refs.password.check()) {
+          this.isShowPwdLevel = true;
+          this.checkPwdLevel(this.password);
+        } else {
+          this.isShowPwdLevel = false;
+        }
       }
     },
     //验证密码强度

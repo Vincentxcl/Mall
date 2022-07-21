@@ -39,6 +39,26 @@ const computed_show = {
         }
       }
       return isShow;
+    },
+    showEditUserRoles() {
+      let isShow = false;
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'user');
+      if (parentNode) {
+        if (parentNode.children.value.find((val) => val.id == 5112)) {
+          isShow = true;
+        }
+      }
+      return isShow;
+    },
+    showEditUserActions() {
+      let isShow = false;
+      let parentNode = this.$store.getters.siteNodes.find((val) => val.routeName == 'user');
+      if (parentNode) {
+        if (parentNode.children.value.find((val) => val.id == 5113)) {
+          isShow = true;
+        }
+      }
+      return isShow;
     }
   }
 };

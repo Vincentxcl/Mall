@@ -17,7 +17,10 @@ const method_detail_edit = {
       let temp = deepClone(e);
       this.$store.dispatch('role/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editRole'
+        name: 'editRole',
+        params: {
+          id: e.id
+        }
       });
     }
   }

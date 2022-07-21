@@ -28,8 +28,8 @@ export default {
     pageIndex() {
       return this.$store.getters['fileServer/pageIndex'];
     },
-    readOnlySelectedObj() {
-      return this.$store.getters['fileServer/readOnlySelectedObj'];
+    selectedObj() {
+      return this.$store.getters['fileServer/selectedObj'];
     },
     selection() {
       return this.$store.getters['fileServer/selection'];
@@ -63,15 +63,15 @@ export default {
       }
     },
     deleteItemClick() {
-      if (this.readOnlySelectedObj) {
+      if (this.selectedObj) {
         this.$confirm({
           type: 'warning',
-          content: '是否删除 ' + this.readOnlySelectedObj.ipAddress + '\\' + this.readOnlySelectedObj.path + ' ?',
+          content: '是否删除 ' + this.selectedObj.ipAddress + '\\' + this.selectedObj.path + ' ?',
           confirmTxt: '确认',
           cancelTxt: '取消'
         })
           .then(() => {
-            deleteObj(this.readOnlySelectedObj.id, this).then(() => {
+            deleteObj(this.selectedObj.id, this).then(() => {
               this.$store.dispatch('fileServer/getDataList', this.pageIndex + 1); //刷新当前页
               this.$toast.show({ type: 'success', text: '删除成功' });
               this.$router.push({ name: 'fileServerList' });
@@ -107,7 +107,7 @@ export default {
       }
     },
     editItemClick() {
-      if (this.readOnlySelectedObj) {
+      if (this.selectedObj) {
         this.$router.push({ name: 'editFileServer' });
       }
     },

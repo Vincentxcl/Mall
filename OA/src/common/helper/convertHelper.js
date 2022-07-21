@@ -63,18 +63,27 @@ export function trimInObj(val) {
 }
 
 //对比新对象，在旧对象上找出不同的属性，组成一个对象，返回该对象
-export function getDifferent(oldObj, newObj) {
-  if (typeof oldObj != 'object') {
-    throw new Error('argument oldObj error');
-  }
-  if (typeof newObj != 'object') {
-    throw new Error('argument newObj error');
-  }
+export function getDifferent(pre, cur) {
+  if (!(pre instanceof Object) || !(cur instanceof Object)) return;
+
+  let preProps = Object.getOwnPropertyNames(pre);
+  //
   let temp = {};
-  for (let prop in oldObj) {
-    if (newObj[prop] != undefined) {
-      if (oldObj[prop] != newObj[prop]) {
-        temp[prop] = newObj[prop];
+  for (let i = 0; i < preProps.length; i++) {
+    let propName = preProps[i]; //取a中的一个属性
+
+    // 这里忽略了值为undefined的情况
+    // 故先判断两边都有相同键名
+    if (Object.prototype.hasOwnProperty.call(cur, propName)) {
+      let prePropVal = pre[propName];
+      let curPropVal = cur[propName];
+      //
+      if (prePropVal instanceof Object && !equalObject(prePropVal, curPropVal)) {
+        temp[propName] = getDifferent(prePropVal, curPropVal);
+      }
+      //
+      else if (curPropVal != undefined && prePropVal != curPropVal) {
+        temp[propName] = curPropVal;
       }
     }
   }
@@ -112,8 +121,8 @@ export function extractProps(obj, props) {
     for (let prop of props) {
       //明确为undefined 避免0或者''被作为了false
       if (Reflect.get(obj, prop) != undefined) {
-        let val = Reflect.get(obj, prop).toString();
-        if (val.trim() == '') {
+        let val = Reflect.get(obj, prop);
+        if (val.toString().trim() == '') {
           continue;
         }
         newObj[prop] = val;
@@ -185,6 +194,30 @@ export function searchChainVal(obj, path) {
 export function setChainVal(obj, path, val) {
   //obj[a][b]=val;
   eval(`obj['${path.split('/').join(`']['`)}']=val`);
+}
+
+export function toChainProps(name, val) {
+  const props = Object.getOwnPropertyNames(val);
+
+  let chainProps = [];
+  for (let i = 0; i < props.length; i++) {
+    const propName = props[i]; //取一个属性
+    //下层为一个对象但不是时间
+    if (val[propName] instanceof Object && !(val[propName] instanceof Date)) {
+      const arr = toChainProps(name + '/' + propName, val[propName]);
+      for (let item of arr) {
+        chainProps.push(item);
+      }
+    }
+    //下层为一个普通参数
+    else {
+      chainProps.push({
+        path: name + '/' + propName,
+        value: val[propName]
+      });
+    }
+  }
+  return chainProps;
 }
 
 // 做一层判断两个数组是否相同，不支持嵌套数组

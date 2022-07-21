@@ -118,7 +118,6 @@ export default {
     next();
   },
   beforeRouteLeave(to, from, next) {
-    this.roleActions = [];
     from.meta.fromList = false; //重置meta fromSearch设置
     next();
   }

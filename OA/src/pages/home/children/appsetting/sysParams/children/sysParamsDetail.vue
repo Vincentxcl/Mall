@@ -1,40 +1,22 @@
 <template>
   <div class="sysParamsDetail">
     <div class="grid">
-      <table>
-        <tr>
-          <td class="ttl">名称:</td>
-          <td>
-            {{ title }}
-            <span v-if="isEnable" class="enable">启用中</span>
-            <span v-if="!isEnable" class="disable">禁用中</span>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">属性:</td>
-          <td>
-            {{ value }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">排序:</td>
-          <td>
-            {{ ord }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">创建时间:</td>
-          <td>
-            {{ adjustedEstablish }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">说明:</td>
-          <td>
-            {{ description }}
-          </td>
-        </tr>
-      </table>
+      <div>
+        <div class="ttl">名称:</div>
+        <div>
+          {{ title }}
+          <span v-if="isEnable" class="enable">启用中</span>
+          <span v-if="!isEnable" class="disable">禁用中</span>
+        </div>
+        <div class="ttl">属性:</div>
+        <div>{{ value }}</div>
+        <div class="ttl">排序:</div>
+        <div>{{ ord }}</div>
+        <div class="ttl">创建时间:</div>
+        <div>{{ adjustedEstablish }}</div>
+        <div class="ttl">说明:</div>
+        <div>{{ description }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -104,50 +86,21 @@ div.sysParamsDetail div.grid {
   font-size: 14px;
 }
 
-/* #region table圆角 */
-div.sysParamsDetail table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-div.sysParamsDetail table td {
+div.sysParamsDetail div.grid > div {
+  display: grid;
+  grid-template-columns: 10% 90%;
+  row-gap: 5px;
+  padding: 10px;
   border: 1px solid rgb(226, 226, 226);
-  border-left: none;
-  border-bottom: none;
-  padding: 5px 10px;
+  border-radius: 5px;
 }
 
-div.sysParamsDetail table tr:first-child td:first-child {
-  border-top-left-radius: 5px; /* 设置table左下圆角 */
+div.sysParamsDetail div.grid > div > div {
+  height: 30px;
+  line-height: 30px;
 }
 
-div.sysParamsDetail table tr:first-child td:last-child {
-  border-top-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.sysParamsDetail table tr:last-child td:first-child {
-  border-bottom-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.sysParamsDetail table tr:last-child td:last-child {
-  border-bottom-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.sysParamsDetail table tr td:first-child {
-  border-left: 1px solid rgb(226, 226, 226);
-}
-
-div.sysParamsDetail table tr:last-child td {
-  border-bottom: 1px solid rgb(226, 226, 226);
-}
-/* #endregion */
-
-div.sysParamsDetail table tr td:first-child {
-  width: 150px;
-}
-
-div.sysParamsDetail table tr td span.enable {
+div.sysParamsDetail div.grid span.enable {
   display: inline-block;
   color: white;
   font-size: 12px;
@@ -160,7 +113,7 @@ div.sysParamsDetail table tr td span.enable {
   margin: 0px 5px;
 }
 
-div.sysParamsDetail table tr td span.disable {
+div.sysParamsDetail div.grid span.disable {
   display: inline-block;
   color: white;
   font-size: 12px;

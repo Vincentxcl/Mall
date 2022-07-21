@@ -7,7 +7,6 @@ export function stateModule() {
   this._dataList = []; //表数据
   this._selection = [];
   this._selectedObj = null; //待编辑的对象
-  this._readOnlySelectedObj = null; //待编辑的对象，只读，用于做patch document时,对比发生了什么变化
   this._orderBy = []; //保存排序对象{prop:'num',order:'asc'}
 }
 
@@ -29,9 +28,6 @@ export function gettersModule() {
   };
   this.selectedObj = function (state) {
     return state._selectedObj;
-  };
-  this.readOnlySelectedObj = function (state) {
-    return state._readOnlySelectedObj;
   };
   this.orderBy = function (state) {
     if (state._orderBy.Length == 0) {
@@ -70,19 +66,26 @@ export function actionsModules(appsettings, netWork) {
       orderBy: context.getters.orderBy == '' ? 'establish desc' : context.getters.orderBy //默认按照创建时间排序
     };
 
-    netWork.requestData(queryObj, this._vm).then((res) => {
-      //页码
-      let page = JSON.parse(res.headers['x-pagination']);
-      //提交
-      context.commit('SetPageIndex', page.pageIndex - 1);
-      context.commit('SetTotalCount', page.totalCount);
-      context.commit('SetPageCount', page.pageCount);
-      context.commit('SetDataList', res.data);
+    return new Promise((resolve, reject) => {
+      netWork
+        .requestData(queryObj, this._vm)
+        .then((res) => {
+          //页码
+          let page = JSON.parse(res.headers['x-pagination']);
+          //提交
+          context.commit('SetPageIndex', page.pageIndex - 1);
+          context.commit('SetTotalCount', page.totalCount);
+          context.commit('SetPageCount', page.pageCount);
+          context.commit('SetDataList', res.data);
+          resolve();
+        })
+        .catch(() => {
+          reject();
+        });
     });
   };
   this.setSelectedObj = function (context, payload) {
     context.commit('SetSelectedObj', payload);
-    context.commit('SetReadOnlySelectedObj', payload);
   };
 }
 
@@ -104,8 +107,5 @@ export function mutationsModule() {
   };
   this.SetSelectedObj = function (state, payload) {
     state._selectedObj = payload;
-  };
-  this.SetReadOnlySelectedObj = function (state, payload) {
-    state._readOnlySelectedObj = payload;
   };
 }

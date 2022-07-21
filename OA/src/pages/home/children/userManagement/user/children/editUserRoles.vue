@@ -1,27 +1,20 @@
 <template>
-  <div class="editActionRoles">
+  <div class="editUserRoles">
     <div class="workbench">
       <div class="grid">
         <div>
           <!-- 标题 -->
           <div class="ttl">
             <p>
-              正在配置权限<span> {{ title }} </span>所对应的角色
+              正在配置用户<span> {{ title }} </span>所对应的角色
             </p>
           </div>
           <!-- 角色列表 -->
           <div class="form">
-            <template v-if="roleActionTempList.length > 0">
+            <template v-if="userRoleTempList.length > 0">
               <!-- role list -->
-              <div v-for="rl in roleActionTempList" :key="rl.roleId" class="role">
+              <div v-for="rl in userRoleTempList" :key="rl.roleId" class="role">
                 <label> <input type="checkbox" :disabled="rl.isDisabled" :value="rl.roleId" v-model="rl.isChecked" /> {{ rl.roleName }} </label>
-                <!--operation range-->
-                <div class="opRange">
-                  <label v-for="op in operationRange" :key="op.value" :title="op.description">
-                    {{ op.title }}
-                    <input type="radio" :value="op.value" :name="rl.roleId" :disabled="rl.isDisabled || !rl.isChecked" v-model="rl.operationRange" />
-                  </label>
-                </div>
               </div>
             </template>
             <template v-else>
@@ -52,16 +45,14 @@ import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarI
 import Btn from 'components/button/btn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
-import * as roleActions from 'netWork/roleAction.js';
-import appsetting from 'config/appsettings.json';
-import { extractProps, equalObject } from 'common/helper/convertHelper';
+import * as userRole from 'netWork/userRole.js';
 
 export default {
-  name: 'EditActionRoles',
+  name: 'EditUserRoles',
   mixins: [computedAssistanceBarItems],
   data() {
     return {
-      roleActionTempList: [], //角色操作范围的列表
+      userRoleTempList: [], //角色的列表
       message: '',
       isForbidden: false
     };
@@ -69,19 +60,16 @@ export default {
   computed: {
     title() {
       //判断vuex中selectObj是否为null，因为路由离开editRole组件时会清除selectObj，导致缓存中该组件从vuex取值时selectObj为null.name报错
-      return this.$store.getters['action/selectedObj'] ? this.$store.getters['action/selectedObj'].name : '';
+      return this.$store.getters['user/selectedObj'] ? this.$store.getters['user/selectedObj'].account : '';
     },
     selectedObj() {
-      return this.$store.getters['action/selectedObj'];
+      return this.$store.getters['user/selectedObj'];
     },
     roleList() {
-      return this.$store.getters['action/roleList'];
+      return this.$store.getters['user/roleList'];
     },
-    selectedRoleActions() {
-      return this.$store.getters['action/selectedRoleActions'];
-    },
-    operationRange() {
-      return appsetting.operationRange;
+    selectedUserRoles() {
+      return this.$store.getters['user/selectedUserRoles'];
     }
   },
   props: {
@@ -91,32 +79,30 @@ export default {
     }
   },
   methods: {
-    mapToRoleActionTempList() {
+    mapToUserRoleTempList() {
       //生成角色以及关系对象的列表
-      let forbiddenRoleNames = ['Admin']; //Admin以及当前角色不可编辑 todo/////////////////////////////////
+      let forbiddenRoleNames = []; //不可编辑的角色比如 ['材料员']
       let list = [];
       for (let rl of this.roleList) {
         //找关系对象
-        let ra = this.selectedRoleActions.find((val) => val.roleId == rl.id);
         let item = {
           roleId: rl.id,
           roleName: rl.name,
           isDisabled: forbiddenRoleNames.find((val) => val == rl.name) != undefined, //未在列表中的角色为true，可选状态
-          isChecked: ra != undefined, //找到了，说明存在该关系，反之
-          operationRange: ra != undefined ? ra.operationRange : 0
+          isChecked: this.selectedUserRoles.find((val) => val.roleId == rl.id) != undefined //找到了，说明存在该关系，反之
         };
         list.push(item);
       }
-      this.roleActionTempList = list;
+      this.userRoleTempList = list;
     },
     toolItemsClick(e) {
       switch (e.id) {
-        case 62131:
+        case 51121:
           {
             this.selectAll();
           }
           break;
-        case 62132:
+        case 51122:
           {
             this.clearSelection();
           }
@@ -126,13 +112,13 @@ export default {
       }
     },
     selectAll() {
-      this.roleActionTempList.forEach((el) => {
+      this.userRoleTempList.forEach((el) => {
         el.isChecked = true;
       });
     },
     clearSelection() {
-      let forbiddenRoleNames = ['Admin'];
-      this.roleActionTempList.forEach((el) => {
+      let forbiddenRoleNames = [];
+      this.userRoleTempList.forEach((el) => {
         //不在禁止操作的角色列表中
         if (forbiddenRoleNames.find((val) => val == el.roleName) == undefined) {
           el.isChecked = false;
@@ -142,11 +128,11 @@ export default {
     clear() {
       this.message = '';
       this.isForbidden = false;
-      this.roleActionTempList = [];
+      this.userRoleTempList = [];
     },
     back() {
       this.$router.push({
-        name: 'actionList'
+        name: 'userList'
       });
     },
     equalObjectArr(arr1, arr2) {
@@ -162,36 +148,31 @@ export default {
         let arr2Item = arr2.find((val) => val.roleId == arr1[i].roleId);
         //如果找不到对应的
         if (arr2Item == undefined) return false;
-        //如果找到了，取出所需属性，避免带入__ob__
-        const a = extractProps(arr1[i], ['roleId', 'operationRange']);
-        const b = extractProps(arr2Item, ['roleId', 'operationRange']);
-        if (!equalObject(a, b)) return false;
       }
       return true;
     },
     submit() {
       // 构建提交数据
-      let ras = this.roleActionTempList
+      let urs = this.userRoleTempList
         .filter((i) => i.isChecked)
         .map((val) => {
           return {
-            roleId: val.roleId,
-            operationRange: val.operationRange
+            roleId: val.roleId
           };
         });
 
       //发生变化时提交
-      if (!this.equalObjectArr(ras, this.selectedRoleActions)) {
+      if (!this.equalObjectArr(urs, this.selectedUserRoles)) {
         this.message = '正在提交数据';
         this.isForbidden = true;
-        roleActions
-          .postData(this.id, ras, this)
+        userRole
+          .postData(this.id, urs, this)
           .then(() => {
             this.message = '';
             this.isForbidden = false;
             //刷新
             this.$store
-              .dispatch('action/getSelectedRoleActions')
+              .dispatch('user/getSelectedUserRoles')
               .then(() => {
                 this.$toast.show({ type: 'success', text: '设置成功' });
               })
@@ -208,35 +189,35 @@ export default {
   },
   activated() {
     if (this.$route.meta.fromList) {
-      // 角色列表变化较少，只需加载一次。每次进入组件时都要加载的是actionRole关系对象
+      // 角色列表变化较少，只需加载一次。每次进入组件时都要加载的是userRole关系对象
       if (this.roleList.length == 0) {
-        //加载完成角色，再加载角色权限关系对象，同时执行两个请求会取消cancel前一个请求
-        this.$store.dispatch('action/getRoleList').then(() => {
+        //加载完成角色，再加载用户角色关系对象，同时执行两个请求会取消cancel前一个请求
+        this.$store.dispatch('user/getRoleList').then(() => {
           this.$store
-            .dispatch('action/getSelectedRoleActions')
+            .dispatch('user/getSelectedUserRoles')
             .then(() => {
-              this.mapToRoleActionTempList();
+              this.mapToUserRoleTempList();
             })
             .catch(() => {
-              this.mapToRoleActionTempList(); //不论是否有关系都要编辑
+              this.mapToUserRoleTempList(); //不论是否有关系都要编辑
             });
         });
       } else {
         this.$store
-          .dispatch('action/getSelectedRoleActions')
+          .dispatch('user/getSelectedUserRoles')
           .then(() => {
-            this.mapToRoleActionTempList();
+            this.mapToUserRoleTempList();
           })
           .catch(() => {
-            this.mapToRoleActionTempList();
+            this.mapToUserRoleTempList();
           });
       }
     }
   },
   beforeRouteEnter(to, from, next) {
     //不能直接通过this访问$store
-    if (store.getters['action/selectedObj']) {
-      let pages = ['actionList', 'searchActionResult', 'actionDetail'];
+    if (store.getters['user/selectedObj']) {
+      let pages = ['userList', 'searchUserResult', 'userDetail'];
       if (pages.indexOf(from.name) > -1) {
         to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
       }
@@ -253,7 +234,7 @@ export default {
   beforeRouteLeave(to, from, next) {
     from.meta.fromList = false; //重置meta fromSearch设置
 
-    let arr = ['actionList'];
+    let arr = ['userList'];
     // 如果离开到sysParameter之下的其他组件时，再访问edit时会重新dispatch对象，所有数据会重置，因此提示
     if (arr.find((i) => i.toLowerCase() == to.name.toLowerCase())) {
       this.$confirm({
@@ -281,93 +262,77 @@ export default {
 </script>
 
 <style>
-div.editActionRoles {
+div.editUserRoles {
   height: calc(100% - 40px);
 }
 
-div.editActionRoles div.workbench {
+div.editUserRoles div.workbench {
   height: calc(100% - 25px);
   overflow: auto;
 }
 
-div.editActionRoles div.grid {
+div.editUserRoles div.grid {
   padding: 10px;
   font-size: 14px;
 }
 
-div.editActionRoles div.grid > div {
+div.editUserRoles div.grid > div {
   border: 1px solid rgb(226, 226, 226);
   border-radius: 5px;
 }
 
-div.editActionRoles div.grid div.ttl {
+div.editUserRoles div.grid div.ttl {
   font-size: 15px;
   padding: 10px 20px;
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 
-div.editActionRoles div.grid div.ttl p span {
+div.editUserRoles div.grid div.ttl p span {
   color: var(--color-high-text);
   padding: 0px 5px;
 }
 
-div.editActionRoles div.form {
+div.editUserRoles div.form {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 350px);
+  grid-template-columns: repeat(auto-fill, 120px);
 }
 
-div.editActionRoles div.form .role {
-  width: 350px;
+div.editUserRoles div.form .role {
+  width: 120px;
   height: 40px;
   line-height: 40px;
-  padding: 0px 15px;
+  padding: 0px 10px;
 }
 
-div.editActionRoles div.form .role > label {
-  display: inline-block;
-  width: 100px;
-}
-
-div.editActionRoles div.form .role .opRange {
-  display: inline-block;
-  width: 220px;
-  text-align: center;
-}
-
-div.editActionRoles div.form .role .opRange > label {
-  margin: 0px 3px;
-  cursor: pointer;
-}
-
-div.editActionRoles div.ctrl {
+div.editUserRoles div.ctrl {
   display: flex;
   margin-bottom: 10px;
 }
 
-div.editActionRoles div.ctrl > div {
+div.editUserRoles div.ctrl > div {
   width: 50%;
 }
 
-div.editActionRoles div.ctrl > div:first-child {
+div.editUserRoles div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.editActionRoles div.ctrl button {
+div.editUserRoles div.ctrl button {
   margin: 0px 5px;
 }
 
-div.editActionRoles div.ctrl button.isForbidden {
+div.editUserRoles div.ctrl button.isForbidden {
   cursor: not-allowed;
 }
 
-div.editActionRoles div.message {
+div.editUserRoles div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);
 }
 
-div.editActionRoles div.assistance {
+div.editUserRoles div.assistance {
   display: flex;
   background: #ebebeb;
   width: 100%;
@@ -375,3 +340,4 @@ div.editActionRoles div.assistance {
   height: 25px;
 }
 </style>
+

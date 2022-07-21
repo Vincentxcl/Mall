@@ -49,6 +49,9 @@ export default {
       default() {
         return 2 * 1024 * 1024;
       }
+    },
+    message: {
+      type: String
     }
   },
   methods: {
@@ -65,6 +68,11 @@ export default {
     isShowField: {
       handler(current) {
         this.$emit('change', current);
+      }
+    },
+    message: {
+      handler(cur) {
+        this.$refs.fileholder.message = cur;
       }
     }
   },

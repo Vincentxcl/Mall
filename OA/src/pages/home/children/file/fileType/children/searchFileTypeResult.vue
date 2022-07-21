@@ -12,7 +12,7 @@
         </template>
       </grid-field>
       <!-- content -->
-      <grid-field v-for="item in headItem" :key="item.field" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
+      <grid-field v-for="item in headItem" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
       <!-- state -->
       <grid-field v-if="showEdit" label="状态" width="65" align="center">
         <template slot-scope="item">
@@ -199,6 +199,8 @@ export default {
   watch: {
     pageIndex: {
       handler(current) {
+        this.$refs.gridview.resetScroll(); //翻页后重置滚动条位置
+
         let props = ['title', 'format', 'search'];
         let queryParams = extractProps(this, props);
         let queryObj = {

@@ -1,92 +1,77 @@
 <template>
   <div class="userDetail">
     <div class="grid">
-      <table>
-        <tr>
-          <td class="ttl">账号:</td>
-          <td>
-            {{ account }}
-            <span v-if="isEnable" class="enable">正常</span>
-            <span v-if="!isEnable" class="disable">锁定</span>
-          </td>
-          <td class="avatar" rowspan="4">
+      <div>
+        <div class="info">
+          <div>
+            <div class="ttl">账号:</div>
+            <div>
+              {{ account }}
+              <span v-if="isEnable" class="enable">正常</span>
+              <span v-if="!isEnable" class="disable">锁定</span>
+            </div>
+            <div class="ttl">姓名:</div>
+            <div>
+              {{ adjustedName }}
+              <icon v-if="gender == 'Female'" icon="icon-nv" title="女"></icon>
+              <icon v-else icon="icon-nan" title="男"></icon>
+            </div>
+            <div class="ttl">电话:</div>
+            <div>
+              {{ phone }}
+            </div>
+            <div class="ttl">邮箱:</div>
+            <div>
+              {{ email }}
+            </div>
+            <div class="ttl">生日:</div>
+            <div>
+              {{ adjustedBirthday }}
+            </div>
+            <div class="ttl">QQ号:</div>
+            <div>
+              {{ userInfoExt.qq }}
+            </div>
+            <div class="ttl">注册时间:</div>
+            <div>
+              {{ adjustedEstablish }}
+            </div>
+            <div class="ttl">近期登陆:</div>
+            <div colspan="2">{{ recentLyLogin }}</div>
+          </div>
+          <div>
             <div class="avatar">
               <img :key="account" :src="defaultImgSrc" v-realSrc="url" alt="avatar" @load="load" />
             </div>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">姓名:</td>
-          <td>
-            {{ adjustedName }}
-            <icon v-if="gender == 'Female'" icon="icon-nv" title="女"></icon>
-            <icon v-else icon="icon-nan" title="男"></icon>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">电话:</td>
-          <td>
-            {{ phone }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">邮箱:</td>
-          <td>
-            {{ email }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">生日:</td>
-          <td colspan="2">
-            {{ adjustedBirthday }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">QQ号:</td>
-          <td colspan="2">
-            {{ userInfoExt.qq }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">注册时间:</td>
-          <td colspan="2">
-            {{ adjustedEstablish }}
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">近期登陆:</td>
-          <td colspan="2">{{ recentLyLogin }}</td>
-        </tr>
-        <tr>
-          <td class="ttl">角色（{{ adjustedUserRoles.length }}个）:</td>
-          <td colspan="2">
+          </div>
+        </div>
+        <div class="ext">
+          <div class="ttl">角色（{{ adjustedUserRoles.length }}个）:</div>
+          <div>
             <template v-if="adjustedUserRoles.length > 0">
               <label v-for="item of adjustedUserRoles" class="tag" :key="item.role.id" :title="item.role.description" :style="labelStyle()"> {{ item.role.name }} </label>
             </template>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">允许的特限（{{ userActionsAllow.length }}个）:</td>
-          <td colspan="2">
+          </div>
+          <div class="ttl">允许的特限（{{ userActionsAllow.length }}个）:</div>
+          <div>
             <template v-if="userActionsAllow.length > 0">
-              <label v-for="item of userActionsAllow" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
+              <label v-for="item of userActionsAllow" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ buildActionTtl(item) }} </label>
             </template>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">禁止的权限（{{ userActionsForbid.length }}个）:</td>
-          <td colspan="2">
+          </div>
+          <div class="ttl">禁止的权限（{{ userActionsForbid.length }}个）:</div>
+          <div>
             <template v-if="userActionsForbid.length > 0">
               <label v-for="item of userActionsForbid" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
             </template>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { buildActionTtl } from 'common/mixins/buildActionTtl';
 import { dateFormat, fillProps } from 'common/helper/convertHelper.js';
 import { randomColor } from 'common/helper/randomHelper.js';
 import { requestItem } from 'netWork/userinfo.js';
@@ -97,6 +82,7 @@ import Icon from 'components/widgets/icon.vue';
 
 export default {
   name: 'UserDetail',
+  mixins: [buildActionTtl],
   data() {
     return {
       //#region 表单
@@ -199,7 +185,7 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    let pages = ['userList', 'searchUserResult'];
+    let pages = ['userList', 'searchUserResult', 'editUserRoles', 'editUserActions'];
     if (pages.indexOf(from.name) > -1) {
       to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
     }
@@ -227,67 +213,47 @@ div.userDetail div.grid {
   font-size: 14px;
 }
 
-/* #region table圆角 */
-div.userDetail table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-div.userDetail table td {
+div.userDetail div.grid > div {
+  padding: 10px;
   border: 1px solid rgb(226, 226, 226);
-  border-left: none;
-  border-bottom: none;
-  padding: 5px 10px;
+  border-radius: 5px;
+  min-width: 1075px;
 }
 
-div.userDetail table tr:first-child td:first-child {
-  border-top-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.userDetail table tr:first-child td:last-child {
-  border-top-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.userDetail table tr:last-child td:first-child {
-  border-bottom-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.userDetail table tr:last-child td:last-child {
-  border-bottom-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.userDetail table tr td:first-child {
-  border-left: 1px solid rgb(226, 226, 226);
-}
-
-div.userDetail table tr:last-child td {
+div.userDetail div.grid div.info {
+  display: grid;
+  grid-template-columns: minmax(900px, 86%) minmax(145px, 14%);
+  padding: 5px 0px;
   border-bottom: 1px solid rgb(226, 226, 226);
 }
-/* #endregion */
 
-div.userDetail table tr td:first-child {
-  width: 150px;
+div.userDetail div.grid div.info > div:nth-child(1) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(90px, 10%) minmax(350px, 40%));
+  row-gap: 5px;
+  justify-items: start;
+  align-items: center;
 }
 
-div.userDetail table tr td.avatar {
-  text-align: center;
+div.userDetail div.grid div.info > div:nth-child(2) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-div.userDetail table tr td div.avatar {
-  display: inline-block;
+div.userDetail div.grid div.info .avatar {
   width: 110px;
   height: 110px;
   border: 1px solid rgb(202, 202, 202);
 }
 
-div.userDetail table tr td .avatar img {
+div.userDetail div.grid div.info .avatar img {
   width: 106px;
   height: 106px;
   margin: 1px auto;
 }
 
-div.userDetail table tr td span.enable {
+div.userDetail div.grid div.info > div span.enable {
   display: inline-block;
   color: white;
   font-size: 12px;
@@ -300,7 +266,7 @@ div.userDetail table tr td span.enable {
   margin: 0px 5px;
 }
 
-div.userDetail table tr td span.disable {
+div.userDetail div.grid div.info > div span.disable {
   display: inline-block;
   color: white;
   font-size: 12px;
@@ -313,15 +279,24 @@ div.userDetail table tr td span.disable {
   margin: 0px 5px;
 }
 
-div.userDetail table tr td i.icon-nv {
+div.userDetail div.grid div.info > div i.icon-nv {
   color: red;
 }
 
-div.userDetail table tr td i.icon-nan {
+div.userDetail div.grid div.info > div i.icon-nan {
   color: blue;
 }
 
-div.userDetail table label.tag {
+div.userDetail div.grid div.ext {
+  display: grid;
+  grid-template-columns: minmax(140px, 15%) 85%;
+  justify-items: start;
+  align-items: center;
+  padding: 5px 0px;
+  row-gap: 5px;
+}
+
+div.userDetail div.grid div.ext label.tag {
   display: inline-block;
   line-height: 25px;
   height: 25px;

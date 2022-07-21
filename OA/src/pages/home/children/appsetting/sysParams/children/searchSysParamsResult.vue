@@ -1,6 +1,6 @@
 <template>
   <div class="searchSysParamsResult">
-    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection" @sort-change="setSortChange">
+    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSelection" @sort-change="setSortChange">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
 
@@ -14,7 +14,7 @@
       </grid-field>
 
       <!-- content -->
-      <grid-field v-for="item in headItem" :key="item.field" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
+      <grid-field v-for="item in headItem" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
 
       <!-- state -->
       <grid-field v-if="showEdit" label="状态" width="65" align="center">
@@ -119,7 +119,7 @@ export default {
         this.getDataList(queryObj);
       }
     },
-    setSysParamsSelection(e) {
+    setSelection(e) {
       //将选中项目提交至store
       this.$store.commit('sysParams/SetSelection', e);
     },
@@ -191,6 +191,8 @@ export default {
   watch: {
     pageIndex: {
       handler(current) {
+        this.$refs.gridview.resetScroll(); //翻页后重置滚动条位置
+
         let props = ['search'];
         let queryParams = extractProps(this, props);
         let queryObj = {

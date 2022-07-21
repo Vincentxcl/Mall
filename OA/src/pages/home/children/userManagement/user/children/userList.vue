@@ -1,6 +1,6 @@
 <template>
   <div class="userList">
-    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSysParamsSelection" @sort-change="setSortChange">
+    <grid-view ref="gridview" :gridData="dataList" @selection-change="setSelection">
       <!-- selection column -->
       <grid-field v-if="showSelection" type="selection" width="50" fixed="left" align="center"> </grid-field>
       <!-- ctrls -->
@@ -23,11 +23,11 @@
       </grid-field>
       <grid-field prop="phone" label="电话" width="120" align="center" :show-overflow-tooltip="true"></grid-field>
       <grid-field prop="email" label="邮箱" align="left" :show-overflow-tooltip="true"></grid-field>
-      <!-- 是否显示控件，权限校验 TODO -->
-      <grid-field v-if="true" label="配置" width="90" align="center">
+      <!-- 是否显示控件，权限校验 -->
+      <grid-field v-if="showEditUserRoles || showEditUserActions" label="配置" width="90" align="center">
         <template slot-scope="item">
-          <span class="btn" title="配置角色" @click="userRolesClick(item.scope.row)">角色</span>
-          <span class="btn" title="特殊权限" @click="userActionsClick(item.scope.row)">权限</span>
+          <span v-if="showEditUserRoles" class="btn" title="配置角色" @click="editUserRoles(item.scope.row)">角色</span>
+          <span v-if="showEditUserActions" class="btn" title="特殊权限" @click="editUserActions(item.scope.row)">权限</span>
         </template>
       </grid-field>
 
@@ -48,15 +48,15 @@
 </template>
 
 <script>
+import { computedIcons } from 'common/mixins/computedIcons.js';
+import { method_detail_edit } from './mixins/method_detail_edit';
+import { computed_show } from './mixins/computed_show.js';
 import Icon from 'components/widgets/icon.vue';
 import GridView from 'components/grid/oa.v3/GridView.vue';
 import GridField from 'components/grid/oa.v3/GridField.vue';
 import Pagination from 'components/pagination/v2/Pagination.vue';
-import { computedIcons } from 'common/mixins/computedIcons.js';
-import { method_detail_edit } from './mixins/method_detail_edit';
-import { computed_show } from './mixins/computed_show.js';
 
-import { patchObj, deleteObj } from 'netWork/userinfo.js';
+import { patchUser, deleteObj } from 'netWork/userinfo.js';
 
 export default {
   name: 'UserList',
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     //将选中项目提交至store
-    setSysParamsSelection(e) {
+    setSelection(e) {
       this.$store.commit('user/SetSelection', e);
     },
     deleteItem(e) {
@@ -99,10 +99,6 @@ export default {
           });
         })
         .catch(() => {});
-    },
-    setSortChange(e) {
-      this.$store.dispatch('user/setOrderBy', e);
-      this.$store.dispatch('user/getDataList', this.index + 1);
     },
     setEnable(e) {
       let word = !e.isEnable ? '启用' : '禁用';
@@ -121,34 +117,12 @@ export default {
               value: !e.isEnable
             }
           ];
-          patchObj(e.id, operations, this).then(() => {
+          patchUser(e.id, operations, this).then(() => {
             this.$store.dispatch('user/getDataList', this.pageIndex + 1); //刷新当前页
             this.$toast.show({ type: 'success', text: '修改成功' });
           });
         })
         .catch(() => {});
-    },
-    userRolesClick(e) {
-      this.selectedUser = e;
-      this.isShowUserRole = true;
-      //所有角色
-      role
-        .requestData(1)
-        .then((res) => {
-          this.roleList = res.data;
-        })
-        .catch();
-      //相应角色
-      userRole
-        .requestData(e.id)
-        .then((res) => {
-          this.selectedUserRoles = res.data.map((i) => i.role.id);
-        })
-        .catch();
-    },
-    userActionsClick(e) {
-      this.selectedUser = e;
-      this.isShowUserAction = true;
     }
   },
   created() {

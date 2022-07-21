@@ -1,53 +1,61 @@
 <template>
   <div class="createRole">
-    <div class="grid">
-      <table>
-        <tr>
-          <td class="ttl">名称:</td>
-          <td>
-            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{1,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">排序:</td>
-          <td>
-            <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">说明:</td>
-          <td>
-            <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,64}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-      </table>
+    <div class="workbench">
+      <div class="grid">
+        <table>
+          <tr>
+            <td class="ttl">名称:</td>
+            <td>
+              <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{1,32}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">排序:</td>
+            <td>
+              <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">说明:</td>
+            <td>
+              <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,64}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="ctrl">
+        <div>
+          <div class="message">{{ message }}</div>
+          <btn type="brand" :isForbidden="isForbidden" @click="submit">提交</btn>
+        </div>
+        <div>
+          <btn type="normal" @click="back">返回</btn>
+        </div>
+      </div>
     </div>
-    <div class="ctrl">
-      <div>
-        <div class="message">{{ message }}</div>
-        <btn type="brand" :isForbidden="isForbidden" @click="submit">提交</btn>
-      </div>
-      <div>
-        <btn type="normal" @click="back">返回</btn>
-      </div>
+    <div class="assistance">
+      <assistance-tool-bar :items="assistanceBarItems" @click="toolItemsClick"></assistance-tool-bar>
     </div>
   </div>
 </template>
 
 <script>
+import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
+import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { postData } from 'netWork/role.js';
 
 export default {
-  name: 'CreateSettingItem',
+  name: 'CreateRole',
+  mixins: [computedAssistanceBarItems],
   data() {
     return {
       name: '',
@@ -58,6 +66,17 @@ export default {
     };
   },
   methods: {
+    toolItemsClick(e) {
+      switch (e.id) {
+        case 6341:
+          {
+            this.clear();
+          }
+          break;
+        default:
+          break;
+      }
+    },
     clear() {
       this.$refs.name.clear();
       this.$refs.ord.clear();
@@ -70,7 +89,7 @@ export default {
         name: 'roleList'
       });
     },
-    validate(){
+    validate() {
       return this.$refs.name.check() && this.$refs.ord.check() && this.$refs.description.check();
     },
     submit() {
@@ -94,23 +113,32 @@ export default {
           this.clear();
         })
         .catch((error) => {
-          let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            this.message = JSON.stringify(error.response.data);
           }
-          this.message = str;
           this.isForbidden = false;
         });
     }
   },
   components: {
     Textbox,
-    Btn
+    Btn,
+    AssistanceToolBar
   }
 };
 </script>
 
 <style>
+div.createRole {
+  height: calc(100% - 40px);
+  overflow: auto;
+}
+
+div.createRole div.workbench {
+  height: calc(100% - 25px);
+  overflow: auto;
+}
+
 div.createRole div.grid {
   padding: 10px;
   font-size: 14px;
@@ -204,5 +232,13 @@ div.createRole div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);
+}
+
+div.createRole div.assistance {
+  display: flex;
+  background: #ebebeb;
+  width: 100%;
+  min-width: 600px;
+  height: 25px;
 }
 </style>

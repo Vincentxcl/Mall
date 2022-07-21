@@ -32,7 +32,7 @@
           <td class="ttl">具有权限（{{ roleActions.length }}项）:</td>
           <td>
             <template v-if="roleActions.length > 0">
-              <label v-for="item of roleActions" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ item.action.name }} </label>
+              <label v-for="item of roleActions" class="tag" :key="item.action.id" :title="item.action.description" :style="labelStyle()"> {{ buildActionTtl(item) }} </label>
             </template>
           </td>
         </tr>
@@ -42,12 +42,14 @@
 </template>
 
 <script>
+import { buildActionTtl } from 'common/mixins/buildActionTtl';
 import { dateFormat, fillProps } from 'common/helper/convertHelper';
 import { randomColor } from 'common/helper/randomHelper';
 import * as role from 'netWork/role.js';
 
 export default {
   name: 'RoleDetail',
+  mixins: [buildActionTtl],
   data() {
     return {
       name: '',
@@ -97,7 +99,6 @@ export default {
     next();
   },
   beforeRouteLeave(to, from, next) {
-    this.roleActions = [];
     from.meta.fromList = false; //重置meta fromSearch设置
     next();
   }

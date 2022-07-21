@@ -55,7 +55,7 @@ import { dateFormat, fillProps } from 'common/helper/convertHelper';
 import { requestItem } from 'netWork/fileServer.js';
 
 export default {
-  name: 'SysParamsDetail',
+  name: 'FileServerDetail',
   data() {
     return {
       ipAddress: '',

@@ -17,7 +17,30 @@ const method_detail_edit = {
       let temp = deepClone(e);
       this.$store.dispatch('user/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editUser'
+        name: 'editUser',
+        params: {
+          id: e.id
+        }
+      });
+    },
+    editUserRoles(e) {
+      let temp = deepClone(e);
+      this.$store.dispatch('user/setSelectedObj', trimInObj(temp));
+      this.$router.push({
+        name: 'editUserRoles',
+        params: {
+          id: e.id
+        }
+      });
+    },
+    editUserActions(e) {
+      let temp = deepClone(e);
+      this.$store.dispatch('user/setSelectedObj', trimInObj(temp));
+      this.$router.push({
+        name: 'editUserActions',
+        params: {
+          id: e.id
+        }
       });
     }
   }

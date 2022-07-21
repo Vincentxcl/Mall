@@ -1,17 +1,30 @@
 <template>
-  <div class="searchSysParams">
+  <div class="searchUser">
     <div class="workbench">
       <div class="grid">
-        <table>
-          <tr>
-            <td class="ttl">内容:</td>
-            <td>
-              <textbox ref="search" v-model="search" :maxlength="64" pattern="/^.{0,64}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-        </table>
+        <div>
+          <div class="ttl">姓名:</div>
+          <text-box ref="name" v-model="name" :maxlength="16" :required="false" title="姓名" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{1,16}$/g">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </text-box>
+          <div class="ttl">性别:</div>
+          <div>
+            <label> <input type="radio" name="sex" value="1" v-model="gender" />男 </label>
+            <label> <input type="radio" name="sex" value="0" v-model="gender" />女 </label>
+          </div>
+          <div class="ttl">电话:</div>
+          <text-box ref="phone" v-model="phone" :maxlength="11" :required="false" title="Tel" pattern="/^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </text-box>
+          <div class="ttl">邮箱:</div>
+          <text-box ref="email" v-model="email" :maxlength="64" :required="false" title="邮箱" pattern="/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </text-box>
+          <div class="ttl">内容:</div>
+          <text-box ref="search" v-model="search" :maxlength="64" :required="false" title="模糊查询" pattern="/^.{0,64}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </text-box>
+        </div>
       </div>
       <div class="ctrl">
         <div>
@@ -30,24 +43,28 @@
 
 <script>
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import Textbox from 'components/widgets/textbox.vue';
+import TextBox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { extractProps } from 'common/helper/convertHelper.js';
 
 export default {
-  name: 'SearchSysParams',
+  name: 'SearchUser',
   mixins: [computedAssistanceBarItems],
   data() {
     return {
+      name: '',
+      gender: undefined,
+      phone: '',
+      email: '',
       search: ''
     };
   },
   methods: {
     toolItemsClick(e) {
       switch (e.id) {
-        case 61041:
+        case 51031:
           {
             this.clear();
           }
@@ -57,25 +74,29 @@ export default {
       }
     },
     clear() {
+      this.$refs.name.clear();
+      this.gender = undefined;
+      this.$refs.phone.clear();
+      this.$refs.email.clear();
       this.$refs.search.clear();
     },
     back() {
       this.$router.push({
-        name: 'sysParamsList'
+        name: 'userList'
       });
     },
     validate() {
-      return this.$refs.search.check();
+      return this.$refs.name.check() && this.$refs.phone.check() && this.$refs.email.check() && this.$refs.search.check();
     },
     submit() {
       if (this.validate()) {
         //构建查询参数对象
-        let props = ['search'];
+        let props = ['name', 'gender', 'phone', 'email', 'search'];
         let query = extractProps(this, props);
         //提交
         if (Object.keys(query).length > 0) {
           this.$router.push({
-            name: 'searchSysParamsResult',
+            name: 'searchUserResult',
             query: query
           });
           this.clear();
@@ -88,7 +109,7 @@ export default {
     }
   },
   components: {
-    Textbox,
+    TextBox,
     Btn,
     AssistanceToolBar
   }
@@ -96,16 +117,17 @@ export default {
 </script>
 
 <style>
-div.searchSysParams {
+div.searchUser {
   height: calc(100% - 40px);
+  overflow: auto;
 }
 
-div.searchSysParams div.workbench {
+div.searchUser div.workbench {
   height: calc(100% - 25px);
   overflow: auto;
 }
 
-div.searchSysParams div.grid {
+div.searchUser div.grid {
   width: 50%;
   min-width: 500px;
   padding: 10px;
@@ -113,81 +135,58 @@ div.searchSysParams div.grid {
   margin: auto;
 }
 
-/* #region table圆角 */
-div.searchSysParams table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-div.searchSysParams table td {
+div.searchUser div.grid > div {
+  display: grid;
+  grid-template-columns: 15% 85%;
+  justify-content: start;
+  align-items: center;
+  row-gap: 5px;
+  padding: 10px;
   border: 1px solid rgb(226, 226, 226);
-  border-left: none;
-  border-bottom: none;
-  padding: 5px 10px;
+  border-radius: 5px;
 }
 
-div.searchSysParams table tr:first-child td:first-child {
-  border-top-left-radius: 5px; /* 设置table左下圆角 */
+div.searchUser div.grid div.ttl {
+  height: 30px;
+  line-height: 30px;
 }
 
-div.searchSysParams table tr:first-child td:last-child {
-  border-top-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.searchSysParams table tr:last-child td:first-child {
-  border-bottom-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.searchSysParams table tr:last-child td:last-child {
-  border-bottom-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.searchSysParams table tr td:first-child {
-  border-left: 1px solid rgb(226, 226, 226);
-}
-
-div.searchSysParams table tr:last-child td {
-  border-bottom: 1px solid rgb(226, 226, 226);
-}
-/* #endregion */
-
-div.searchSysParams table tr td:first-child {
-  width: 100px;
-}
-
-div.searchSysParams div.grid .textBox {
+div.searchUser div.grid .textBox {
   width: 100%;
 }
 
-div.searchSysParams div.grid input {
+div.searchUser div.grid input[type='text'] {
   width: 70%;
   min-width: 300px;
 }
 
-div.searchSysParams div.grid div.tip {
+div.searchUser div.grid input[type='radio'] {
+  margin: 0px 5px;
+}
+
+div.searchUser div.grid div.tip {
   display: inline-block;
   color: var(--color-danger);
 }
 
-div.searchSysParams div.ctrl {
+div.searchUser div.ctrl {
   display: flex;
 }
 
-div.searchSysParams div.ctrl > div {
+div.searchUser div.ctrl > div {
   width: 50%;
 }
 
-div.searchSysParams div.ctrl > div:first-child {
+div.searchUser div.ctrl > div:first-child {
   display: flex;
   justify-content: flex-end;
 }
 
-div.searchSysParams div.ctrl button {
+div.searchUser div.ctrl button {
   margin: 0px 5px;
 }
 
-div.searchSysParams div.assistance {
+div.searchUser div.assistance {
   display: flex;
   background: #ebebeb;
   width: 100%;

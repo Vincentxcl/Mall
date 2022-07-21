@@ -2,46 +2,26 @@
   <div class="editSysParams">
     <div class="workbench">
       <div class="grid">
-        <table>
-          <tr>
-            <td class="ttl">名称:</td>
-            <td>
-              <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[0-9a-zA-Z]{0,32}$/g">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">状态:</td>
-            <td>
-              <switch-btn tipOfCheck="启用" tipOfUncheck="禁用" :width="70" v-model="isEnable" />
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">属性:</td>
-            <td>
-              <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">排序:</td>
-            <td>
-              <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="ttl">说明:</td>
-            <td>
-              <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,128}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-        </table>
+        <div>
+          <div class="ttl">名称:</div>
+          <textbox ref="title" v-model="title" :maxlength="32" pattern="/^[0-9a-zA-Z]{0,32}$/g">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+          <div class="ttl">状态:</div>
+          <switch-btn tipOfCheck="启用" tipOfUncheck="禁用" :width="70" v-model="isEnable" />
+          <div class="ttl">属性:</div>
+          <textbox ref="value" v-model="value" :maxlength="64" pattern="/^.{0,64}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+          <div class="ttl">排序:</div>
+          <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+          <div class="ttl">说明:</div>
+          <textbox ref="description" type="textarea" v-model="description" :maxlength="128" pattern="/^.{0,128}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+        </div>
       </div>
       <div class="ctrl">
         <div>
@@ -60,19 +40,19 @@
 </template>
 
 <script>
+import store from 'store/index.js'; // import the store
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto.js';
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 import SwitchBtn from 'components/button/switchBtn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
-import { fillProps, getDifferent, deepClone } from 'common/helper/convertHelper';
+import { fillProps, getDifferent, toChainProps } from 'common/helper/convertHelper';
 import { patchObj } from 'netWork/appSetting.js';
 
 export default {
   name: 'EditSysParams',
-  mixins: [computedAssistanceBarItems, beforeRouteEnter_goto],
+  mixins: [computedAssistanceBarItems],
   data() {
     return {
       title: '',
@@ -91,9 +71,12 @@ export default {
     },
     selectedObj() {
       return this.$store.getters['sysParams/selectedObj'];
-    },
-    readOnlySelectedObj() {
-      return this.$store.getters['sysParams/readOnlySelectedObj'];
+    }
+  },
+  props: {
+    id: {
+      type: String,
+      required: true
     }
   },
   methods: {
@@ -148,7 +131,7 @@ export default {
         this.isAccomplished = true;
 
         //是否发生了变化
-        let diff = getDifferent(this.readOnlySelectedObj, obj);
+        let diff = getDifferent(this.selectedObj, obj);
         if (Object.keys(diff).length > 0) {
           this.message = '正在提交数据';
           this.editItem(diff);
@@ -160,39 +143,56 @@ export default {
     },
     editItem(diff) {
       //构建patch document
-      let operations = [];
-      for (let prop in diff) {
-        let operation = { op: 'replace' };
-        operation.path = '/' + prop;
-        operation.value = diff[prop];
-        operations.push(operation);
+      let operations = toChainProps('', diff);
+      for (let item of operations) {
+        item.op = 'replace';
       }
       //提交修改
-      patchObj(this.readOnlySelectedObj.id, operations, this)
+      patchObj(this.selectedObj.id, operations, this)
         .then(() => {
           this.$store.dispatch('sysParams/getDataList', this.pageIndex + 1); //刷新当前页
           this.$toast.show({ type: 'success', text: '修改成功' });
           this.back();
         })
         .catch((error) => {
-          let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            this.message = JSON.stringify(error.response.data);
           }
-          this.message = str;
           this.isForbidden = false;
         });
     }
   },
   activated() {
     this.isAccomplished = false;
-    // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
-    if (this.selectedObj && typeof this.selectedObj == 'object') {
-      let ttls = ['title', 'value', 'description', 'isEnable', 'ord'];
-      fillProps(this.selectedObj, this, ttls);
+    if (this.$route.meta.fromList) {
+      // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
+      // 该类型数据没有简略和详细的区别，直接取selectedObj即可
+      if (this.selectedObj && typeof this.selectedObj == 'object') {
+        let ttls = ['title', 'value', 'description', 'isEnable', 'ord'];
+        fillProps(this.selectedObj, this, ttls);
+      }
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    //不能直接通过this访问$store
+    if (store.getters['sysParams/selectedObj']) {
+      let pages = ['sysParamsList', 'searchSysParamsResult', 'sysParamsDetail'];
+      if (pages.indexOf(from.name) > -1) {
+        to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
+      }
+      next();
+    } else {
+      //导航到列表
+      let currentNode = store.getters.siteNodes.find((val) => to.name == val.routeName);
+      if (currentNode.substitutionTagSiteNodeId) {
+        let subNode = store.getters.siteNodes.find((val) => val.id == currentNode.substitutionTagSiteNodeId); //获取当前节点的替代节点
+        next({ name: subNode.routeName });
+      }
     }
   },
   beforeRouteLeave(to, from, next) {
+    from.meta.fromList = false; //重置meta fromSearch设置
+
     let arr = ['sysParamsList', 'createSysParams'];
 
     if (this.isAccomplished) {
@@ -213,18 +213,8 @@ export default {
         })
         .catch(() => {});
     }
-    //保存修改状态，确保再来时的数据不丢失
+    //
     else {
-      if (this.readOnlySelectedObj) {
-        let temp = deepClone(this.readOnlySelectedObj); //克隆新的对象，不在引用的对象上修改
-        for (let prop in this.readOnlySelectedObj) {
-          //根据表单中内容重新赋值
-          if (Reflect.get(this, prop) != undefined) {
-            temp[prop] = Reflect.get(this, prop);
-          }
-        }
-        this.$store.commit('sysParams/SetSelectedObj', temp);
-      }
       next();
     }
   },
@@ -253,47 +243,18 @@ div.editSysParams div.grid {
   font-size: 14px;
 }
 
-/* #region table圆角 */
-div.editSysParams table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-div.editSysParams table td {
+div.editSysParams div.grid > div {
+  display: grid;
+  grid-template-columns: 10% 90%;
+  row-gap: 5px;
+  padding: 10px;
   border: 1px solid rgb(226, 226, 226);
-  border-left: none;
-  border-bottom: none;
-  padding: 5px 10px;
+  border-radius: 5px;
 }
 
-div.editSysParams table tr:first-child td:first-child {
-  border-top-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.editSysParams table tr:first-child td:last-child {
-  border-top-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.editSysParams table tr:last-child td:first-child {
-  border-bottom-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.editSysParams table tr:last-child td:last-child {
-  border-bottom-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.editSysParams table tr td:first-child {
-  border-left: 1px solid rgb(226, 226, 226);
-}
-
-div.editSysParams table tr:last-child td {
-  border-bottom: 1px solid rgb(226, 226, 226);
-}
-/* #endregion */
-
-div.editSysParams table tr td:first-child {
-  width: 150px;
+div.editSysParams div.grid div.ttl {
+  height: 30px;
+  line-height: 30px;
 }
 
 div.editSysParams div.grid .textBox {

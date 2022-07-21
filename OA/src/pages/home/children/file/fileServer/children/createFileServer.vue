@@ -126,11 +126,9 @@ export default {
           this.clear();
         })
         .catch((error) => {
-          let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            this.message = JSON.stringify(error.response.data);
           }
-          this.message = str;
           this.isForbidden = false;
         });
     }

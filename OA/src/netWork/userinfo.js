@@ -29,11 +29,56 @@ export function postData(formData, vm) {
   });
 }
 
-export function patchObj(id, patch, vm) {
+export function putPortrait(id, formData, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'put',
+    url: 'userinfo/' + id + '/portrait',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    data: formData,
+    params: {
+      ver: '1.0'
+    }
+  });
+}
+
+export function putPwd(id, dto, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'put',
+    url: 'userinfo/' + id + '/password',
+    headers: {
+      'content-type': 'application/json'
+    },
+    data: dto,
+    params: {
+      ver: '1.0'
+    }
+  });
+}
+
+export function patchUser(id, patch, vm) {
   const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
   return ajax({
     method: 'patch',
     url: 'userinfo/' + id,
+    headers: {
+      'content-type': 'application/json-patch+json'
+    },
+    data: patch,
+    params: {
+      ver: '1.0'
+    }
+  });
+}
+
+export function patchUserExt(id, patch, vm) {
+  const ajax = getAjaxInstanceWithDefaultInterceptor('userManager', vm);
+  return ajax({
+    method: 'patch',
+    url: 'userinfo/' + id + '/ext',
     headers: {
       'content-type': 'application/json-patch+json'
     },

@@ -17,7 +17,10 @@ const method_detail_edit = {
       let temp = deepClone(e);
       this.$store.dispatch('fileServer/setSelectedObj', trimInObj(temp));
       this.$router.push({
-        name: 'editFileServer'
+        name: 'editFileServer',
+        params: {
+          id: e.id
+        }
       });
     }
   }

@@ -56,19 +56,19 @@
 </template>
 
 <script>
+import store from 'store/index.js'; // import the store
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import { beforeRouteEnter_goto } from './mixins/beforeRouteEnter_goto.js';
 import Textbox from 'components/widgets/textbox.vue';
 import Btn from 'components/button/btn.vue';
 import SwitchBtn from 'components/button/switchBtn.vue';
 import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
-import { fillProps, getDifferent, deepClone } from 'common/helper/convertHelper';
+import { fillProps, getDifferent, toChainProps } from 'common/helper/convertHelper';
 import { patchObj } from 'netWork/fileServer.js';
 
 export default {
   name: 'EditFileServer',
-  mixins: [computedAssistanceBarItems, beforeRouteEnter_goto],
+  mixins: [computedAssistanceBarItems],
   data() {
     return {
       ipAddress: '',
@@ -87,9 +87,12 @@ export default {
     },
     selectedObj() {
       return this.$store.getters['fileServer/selectedObj'];
-    },
-    readOnlySelectedObj() {
-      return this.$store.getters['fileServer/readOnlySelectedObj'];
+    }
+  },
+  props: {
+    id: {
+      type: String,
+      required: true
     }
   },
   methods: {
@@ -138,7 +141,7 @@ export default {
         this.isAccomplished = true;
 
         //是否发生了变化
-        let diff = getDifferent(this.readOnlySelectedObj, obj);
+        let diff = getDifferent(this.selectedObj, obj);
         if (Object.keys(diff).length > 0) {
           this.message = '正在提交数据';
           this.editItem(diff);
@@ -150,39 +153,55 @@ export default {
     },
     editItem(diff) {
       //构建patch document
-      let operations = [];
-      for (let prop in diff) {
-        let operation = { op: 'replace' };
-        operation.path = '/' + prop;
-        operation.value = diff[prop];
-        operations.push(operation);
+      let operations = toChainProps('', diff);
+      for (let item of operations) {
+        item.op = 'replace';
       }
       //提交修改
-      patchObj(this.readOnlySelectedObj.id, operations, this)
+      patchObj(this.selectedObj.id, operations, this)
         .then(() => {
           this.$store.dispatch('fileServer/getDataList', this.pageIndex + 1); //刷新当前页
           this.$toast.show({ type: 'success', text: '修改成功' });
           this.back();
         })
         .catch((error) => {
-          let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            this.message = JSON.stringify(error.response.data);
           }
-          this.message = str;
           this.isForbidden = false;
         });
     }
   },
   activated() {
     this.isAccomplished = false;
-    // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
-    if (this.selectedObj && typeof this.selectedObj == 'object') {
-      let ttls = ['ipAddress', 'path', 'description', 'isEnable', 'ord'];
-      fillProps(this.selectedObj, this, ttls);
+    if (this.$route.meta.fromList) {
+      // 激活该路由时，从vuex中将数据填入edit表单，用beforeRouteEnter此时不能访问vuex，因此不用！
+      if (this.selectedObj && typeof this.selectedObj == 'object') {
+        let ttls = ['ipAddress', 'path', 'description', 'isEnable', 'ord'];
+        fillProps(this.selectedObj, this, ttls);
+      }
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    //不能直接通过this访问$store
+    if (store.getters['fileServer/selectedObj']) {
+      let pages = ['fileServerList', 'searchFileServerResult', 'fileServerDetail'];
+      if (pages.indexOf(from.name) > -1) {
+        to.meta.fromList = true; //使用meta中变量标识是否从搜索控件跳转过来
+      }
+      next();
+    } else {
+      //导航到列表
+      let currentNode = store.getters.siteNodes.find((val) => to.name == val.routeName);
+      if (currentNode.substitutionTagSiteNodeId) {
+        let subNode = store.getters.siteNodes.find((val) => val.id == currentNode.substitutionTagSiteNodeId); //获取当前节点的替代节点
+        next({ name: subNode.routeName });
+      }
     }
   },
   beforeRouteLeave(to, from, next) {
+    from.meta.fromList = false; //重置meta fromSearch设置
+
     let arr = ['fileServerList', 'createFileServer'];
 
     if (this.isAccomplished) {
@@ -205,16 +224,6 @@ export default {
     }
     //保存修改状态，确保再来时的数据不丢失
     else {
-      if (this.readOnlySelectedObj) {
-        let temp = deepClone(this.readOnlySelectedObj); //克隆新的对象，不在引用的对象上修改
-        for (let prop in this.readOnlySelectedObj) {
-          //根据表单中内容重新赋值
-          if (Reflect.get(this, prop) != undefined) {
-            temp[prop] = Reflect.get(this, prop);
-          }
-        }
-        this.$store.commit('fileServer/SetSelectedObj', temp);
-      }
       next();
     }
   },

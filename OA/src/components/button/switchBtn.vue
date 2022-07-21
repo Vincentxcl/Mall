@@ -74,10 +74,10 @@ export default {
 <style scoped>
 .switch {
   position: relative;
-  width: 80px;
 }
 
 label {
+  position: relative;
   display: block;
   width: 100%;
   overflow: hidden;

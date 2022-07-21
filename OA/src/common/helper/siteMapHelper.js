@@ -19,18 +19,28 @@ function siteNodesBuilder(template, type, props) {
 
 //#region 工具方法
 //创建站点元素列表，其中用到了递归 children子节点
-//objs appsettings节点 jwtClaim声明 props从appsettings节点中取出的属性
+//objs appsettings节点
+//jwtClaim声明
+//props从appsettings节点中取出的属性
 function siteItemsBuilder(objs, jwtClaim, props) {
   let arr = [];
   for (let obj of objs) {
-    //验证是否需要动态添加菜单项
-    if (Reflect.get(obj, 'claim')) {
-      let claim = Reflect.get(obj, 'claim');
-      let type = claim.type;
-      let value = claim.value;
-      // 判断令牌中claim是否满足该claim，如果不满足 直接过
-      let jwtClaimValue = Reflect.get(jwtClaim, type);
-      if (jwtClaimValue == undefined || jwtClaimValue.split('/')[0] != value) {
+    //验证是否需要动态添加菜单项，如果没有claims项，默认为不需要后端权限就可以访问的节点，直接添加到站点地图中
+    if (Reflect.get(obj, 'claims')) {
+      const claims = Reflect.get(obj, 'claims'); //claims为一个数组[{"type": "UserInfo.GetUser","value": "0"}],判断每一个claim是否都能在令牌中找到
+      //遍历
+      let flag = true;
+      for (const claim of claims) {
+        let type = claim.type;
+        let value = claim.value;
+        let jwtClaimValue = Reflect.get(jwtClaim, type);
+        if (jwtClaimValue == undefined || jwtClaimValue.split('/')[0] != value) {
+          flag = false;
+          break; //只要有一个不满足就跳出循环
+        }
+      }
+      // 判断令牌中claim是否满足该claims，如果不满足 直接过
+      if (!flag) {
         continue;
       }
     }

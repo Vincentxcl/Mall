@@ -26,12 +26,8 @@ export default {
     };
   },
   props: {
-    //是否显示当前日期
-    loadCurrent: {
-      type: Boolean,
-      default() {
-        return false;
-      }
+    value: {
+      type: Date | Object
     }
   },
   computed: {
@@ -39,7 +35,7 @@ export default {
       let list = [];
       const year = new Date().getFullYear();
       //以今年为准，前90年
-      for (let i = year-1; i > year - 91; i--) {
+      for (let i = year ; i > year - 91; i--) {
         list.push(i);
       }
       return list;
@@ -79,7 +75,7 @@ export default {
     },
     change() {
       if (this.isNumber(this.year) && this.isNumber(this.month) && this.isNumber(this.day)) {
-        let str = new Date(this.year + ',' + this.month + ',' + this.day);
+        let str = this.year + ',' + this.month + ',' + this.day;
         this.$emit('change', new Date(str));
       }
     },
@@ -87,15 +83,23 @@ export default {
       this.year = this.month = this.day = '';
     },
     check() {
-      return this.year > 0 && this.month > 0 && this.day > 0;
+      return this.isNumber(this.year) && this.isNumber(this.month) && this.isNumber(this.day);
     }
   },
-  mounted() {
-    if (this.loadCurrent) {
-      this.year = new Date().getFullYear();
-      this.month = new Date().getMonth() + 1;
-      this.day = new Date().getDate();
+  watch: {
+    value: {
+      handler(cur) {
+        if (cur) {
+          this.year = cur.getFullYear();
+          this.month = cur.getMonth() + 1;
+          this.day = cur.getDate();
+        }
+      }
     }
+  },
+  model: {
+    prop: 'value',
+    event: 'change'
   }
 };
 </script>

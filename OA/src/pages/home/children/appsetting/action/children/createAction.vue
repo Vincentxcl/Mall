@@ -1,79 +1,87 @@
 <template>
   <div class="createAction">
-    <div class="grid">
-      <table>
-        <tr>
-          <td class="ttl">名称:</td>
-          <td>
-            <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[\u4e00-\u9fa5A-Za-z0-9_]{1,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">控制器:</td>
-          <td>
-            <textbox ref="controllerTtl" v-model="controllerTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/g">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">方法:</td>
-          <td>
-            <textbox ref="actionTtl" v-model="actionTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">请求方式:</td>
-          <td>
-            <selectbox ref="httpMethod" v-model="httpMethod" :options="httpMethodList">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </selectbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">排序:</td>
-          <td>
-            <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-        <tr>
-          <td class="ttl">说明:</td>
-          <td>
-            <textbox ref="description" type="textarea" v-model="description" :maxlength="64" :required="false" pattern="/^.{0,64}$/">
-              <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-            </textbox>
-          </td>
-        </tr>
-      </table>
+    <div class="workbench">
+      <div class="grid">
+        <table>
+          <tr>
+            <td class="ttl">名称:</td>
+            <td>
+              <textbox ref="name" v-model="name" :maxlength="32" pattern="/^[\u4e00-\u9fa5A-Za-z0-9_]{1,32}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">控制器:</td>
+            <td>
+              <textbox ref="controllerTtl" v-model="controllerTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/g">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">方法:</td>
+            <td>
+              <textbox ref="actionTtl" v-model="actionTtl" :maxlength="32" pattern="/^[A-Za-z0-9_]{1,32}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">请求方式:</td>
+            <td>
+              <selectbox ref="httpMethod" v-model="httpMethod" :options="httpMethodList">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </selectbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">排序:</td>
+            <td>
+              <textbox ref="ord" v-model="ord" :required="false" pattern="/^\d{1,3}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+          <tr>
+            <td class="ttl">说明:</td>
+            <td>
+              <textbox ref="description" type="textarea" v-model="description" :maxlength="64" :required="false" pattern="/^.{0,64}$/">
+                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+              </textbox>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="ctrl">
+        <div>
+          <div class="message">{{ message }}</div>
+          <btn type="brand" :isForbidden="isForbidden" @click="submit">提交</btn>
+        </div>
+        <div>
+          <btn type="normal" @click="back">返回</btn>
+        </div>
+      </div>
     </div>
-    <div class="ctrl">
-      <div>
-        <div class="message">{{ message }}</div>
-        <btn type="brand" :isForbidden="isForbidden" @click="submit">提交</btn>
-      </div>
-      <div>
-        <btn type="normal" @click="back">返回</btn>
-      </div>
+    <div class="assistance">
+      <assistance-tool-bar :items="assistanceBarItems" @click="toolItemsClick"></assistance-tool-bar>
     </div>
   </div>
 </template>
 
 <script>
-import appsetting from 'config/appsettings.json';
+import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
 import Textbox from 'components/widgets/textbox.vue';
 import Selectbox from 'components/widgets/selectbox.vue';
 import Btn from 'components/button/btn.vue';
+import AssistanceToolBar from 'components/navigation/stl.v1/assistanceToolBar.vue';
 
 import { postData } from 'netWork/action.js';
+import appsetting from 'config/appsettings.json';
 
 export default {
-  name: 'CreateSettingItem',
+  name: 'CreateAction',
+  mixins: [computedAssistanceBarItems],
   data() {
     return {
       name: '',
@@ -92,6 +100,17 @@ export default {
     }
   },
   methods: {
+    toolItemsClick(e) {
+      switch (e.id) {
+        case 6251:
+          {
+            this.clear();
+          }
+          break;
+        default:
+          break;
+      }
+    },
     clear() {
       this.$refs.name.clear();
       this.$refs.controllerTtl.clear();
@@ -137,11 +156,9 @@ export default {
           this.clear();
         })
         .catch((error) => {
-          let str;
           if (error.response.data) {
-            str = JSON.stringify(error.response.data.errors);
+            this.message = JSON.stringify(error.response.data);
           }
-          this.message = str;
           this.isForbidden = false;
         });
     }
@@ -149,7 +166,8 @@ export default {
   components: {
     Textbox,
     Selectbox,
-    Btn
+    Btn,
+    AssistanceToolBar
   }
 };
 </script>
@@ -157,6 +175,12 @@ export default {
 <style>
 div.createAction {
   height: calc(100% - 40px);
+  overflow: auto;
+}
+
+div.createAction div.workbench {
+  height: calc(100% - 25px);
+  overflow: auto;
 }
 
 div.createAction div.grid {
@@ -256,5 +280,13 @@ div.createAction div.message {
   height: 30px;
   line-height: 30px;
   color: var(--color-danger);
+}
+
+div.createAction div.assistance {
+  display: flex;
+  background: #ebebeb;
+  width: 100%;
+  min-width: 600px;
+  height: 25px;
 }
 </style>

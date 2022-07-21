@@ -21,6 +21,8 @@ const searchUserResult = () => import('../pages/home/children/userManagement/use
 const userDetail = () => import('../pages/home/children/userManagement/user/children/userDetail.vue');
 const createUser = () => import('../pages/home/children/userManagement/user/children/createUser.vue');
 const editUser = () => import('../pages/home/children/userManagement/user/children/editUser.vue');
+const editUserRoles = () => import('../pages/home/children/userManagement/user/children/editUserRoles.vue');
+const editUserActions = () => import('../pages/home/children/userManagement/user/children/editUserActions.vue');
 //#endregion
 
 //#region  当前用户信息
@@ -189,7 +191,11 @@ const routes = [
             component: searchUserResult,
             props($route) {
               return {
-                search: $route.query.search //////////////////////////////////////////////////////////
+                name: $route.query.name,
+                gender: $route.query.gender,
+                phone: $route.query.phone,
+                email: $route.query.email,
+                search: $route.query.search
               };
             },
             meta: {
@@ -213,9 +219,30 @@ const routes = [
           },
           {
             name: 'editUser',
-            path: 'edit',
+            path: 'edit/:id',
             component: editUser,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
+          },
+          {
+            name: 'editUserRoles',
+            path: 'edit/:id/userRoles',
+            component: editUserRoles,
+            props: true,
+            meta: {
+              fromList: false
+            }
+          },
+          {
+            name: 'editUserActions',
+            path: 'edit/:id/userActions',
+            component: editUserActions,
+            props: true,
+            meta: {
+              fromList: false
+            }
           }
         ]
       },
@@ -271,15 +298,21 @@ const routes = [
           },
           {
             name: 'editAction',
-            path: 'edit',
+            path: 'edit/:id',
             component: editAction,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
           },
           {
             name: 'editActionRoles',
-            path: 'ActionRoles',
+            path: 'edit/:id/actionRoles',
             component: editActionRoles,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
           }
         ]
       },
@@ -335,9 +368,12 @@ const routes = [
           },
           {
             name: 'editFileServer',
-            path: 'edit',
+            path: 'edit/:id',
             component: editFileServer,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
           }
         ]
       },
@@ -391,9 +427,12 @@ const routes = [
           },
           {
             name: 'editFileType',
-            path: 'edit',
+            path: 'edit/:id',
             component: editFileType,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
           }
         ]
       },
@@ -445,9 +484,12 @@ const routes = [
           },
           {
             name: 'editRole',
-            path: 'edit',
+            path: 'edit/:id',
             component: editRole,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
           }
         ]
       },
@@ -499,9 +541,12 @@ const routes = [
           },
           {
             name: 'editSysParams',
-            path: 'edit',
+            path: 'edit/:id',
             component: editSysParams,
-            meta: {}
+            props: true,
+            meta: {
+              fromList: false
+            }
           }
         ]
       },

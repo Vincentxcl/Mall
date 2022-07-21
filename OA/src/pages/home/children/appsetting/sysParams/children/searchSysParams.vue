@@ -2,16 +2,12 @@
   <div class="searchSysParams">
     <div class="workbench">
       <div class="grid">
-        <table>
-          <tr>
-            <td class="ttl">内容:</td>
-            <td>
-              <textbox ref="search" v-model="search" :maxlength="64" pattern="/^.{0,64}$/">
-                <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
-              </textbox>
-            </td>
-          </tr>
-        </table>
+        <div>
+          <div class="ttl">内容:</div>
+          <textbox ref="search" v-model="search" :maxlength="64" pattern="/^.{0,64}$/">
+            <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
+          </textbox>
+        </div>
       </div>
       <div class="ctrl">
         <div>
@@ -114,47 +110,18 @@ div.searchSysParams div.grid {
   margin: auto;
 }
 
-/* #region table圆角 */
-div.searchSysParams table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-div.searchSysParams table td {
+div.searchSysParams div.grid > div {
+  display: grid;
+  grid-template-columns: 15% 85%;
+  row-gap: 5px;
+  padding: 10px;
   border: 1px solid rgb(226, 226, 226);
-  border-left: none;
-  border-bottom: none;
-  padding: 5px 10px;
+  border-radius: 5px;
 }
 
-div.searchSysParams table tr:first-child td:first-child {
-  border-top-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.searchSysParams table tr:first-child td:last-child {
-  border-top-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.searchSysParams table tr:last-child td:first-child {
-  border-bottom-left-radius: 5px; /* 设置table左下圆角 */
-}
-
-div.searchSysParams table tr:last-child td:last-child {
-  border-bottom-right-radius: 5px; /* 设置table右下圆角 */
-}
-
-div.searchSysParams table tr td:first-child {
-  border-left: 1px solid rgb(226, 226, 226);
-}
-
-div.searchSysParams table tr:last-child td {
-  border-bottom: 1px solid rgb(226, 226, 226);
-}
-/* #endregion */
-
-div.searchSysParams table tr td:first-child {
-  width: 100px;
+div.searchSysParams div.grid div.ttl {
+  height: 30px;
+  line-height: 30px;
 }
 
 div.searchSysParams div.grid .textBox {

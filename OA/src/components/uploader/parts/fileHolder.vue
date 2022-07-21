@@ -28,6 +28,7 @@
           <slot name="file" :files="dataURLArray"></slot>
         </div>
         <div class="ctrl">
+          <div class="message">{{ message }}</div>
           <btn type="brand" class="confirm" title="上传" @click.native="submit">上传</btn>
           <btn class="cancel" title="取消" @click.native="cancel">取消</btn>
         </div>
@@ -48,7 +49,8 @@ export default {
       isShowField: false,
       fileArray: [],
       dataURLArray: [],
-      tips: ''
+      tips: '',
+      message: ''
     };
   },
   props: {
@@ -130,6 +132,7 @@ export default {
       this.fileArray = [];
       this.dataURLArray = [];
       this.tips = '';
+      this.message = '';
       //取出上传的文件。ps:这个files是一个对象，其中有个属性是length，所以不用单独设变量保存length
       let files = event.target.files;
       for (let i = 0; i < files.length; i++) {
@@ -152,6 +155,7 @@ export default {
     submit() {
       if (this.fileArray.length > 0) {
         this.$emit('submit', { fileArray: this.fileArray, dataURLArray: this.dataURLArray });
+        this.message = '正在提交数据';
       }
     },
     cancel() {
@@ -170,6 +174,7 @@ export default {
           this.fileArray = [];
           this.dataURLArray = [];
           this.tips = '';
+          this.message = '';
           //清空上传input，防止前后两次都是相同的文件，不触发change事件
           this.$refs.input.value = '';
         }
@@ -243,6 +248,14 @@ div.view_preview div.ctrl {
   justify-content: flex-end;
   align-items: center;
   background-color: #f3f3f3;
+}
+
+div.view_preview div.ctrl div.message {
+  flex: 1;
+  height: 30px;
+  line-height: 30px;
+  color: var(--color-danger);
+  padding-left: 5px;
 }
 
 div.view_preview button {

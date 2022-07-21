@@ -5,7 +5,7 @@
     </div>
 
     <textarea v-if="type == 'textarea'" v-model="valueField" :name="name" :maxlength="maxlength" :placeholder="placeholder" @click="echoClick" @focus="echoFocus" @blur="echoBlur" @keydown.tab="echoTab"></textarea>
-    <input v-else ref="input" :style="inputStyle" v-model="valueField" :type="type" :name="name" :maxlength="maxlength" :placeholder="placeholder" :autocomplete="autocomplete" :title="title" @click="echoClick" @focus="echoFocus" @blur="echoBlur" @keydown.tab="echoTab" />
+    <input v-else ref="input" :style="inputStyle" v-model="valueField" :type="type" :name="name" :maxlength="maxlength" :placeholder="placeholder" :autocomplete="autocomplete" :title="title" :disabled="disabled" @click="echoClick" @focus="echoFocus" @blur="echoBlur" @keydown.tab="echoTab" @keydown.enter="echoEnter" />
 
     <span v-if="required" class="ext" :style="iconStyle">
       <icon icon="icon-bitian" title="必填"></icon>
@@ -75,6 +75,12 @@ export default {
         return '';
       }
     },
+    disabled: {
+      type: Boolean,
+      default() {
+        return false;
+      }
+    },
     required: {
       type: Boolean,
       default() {
@@ -121,6 +127,9 @@ export default {
     echoTab(event) {
       this.$emit('tab', event);
     },
+    echoEnter(event) {
+      this.$emit('enter', event);
+    },
     //验证是否为空和是否匹配正则
     regTest() {
       // 1.做正则验证
@@ -144,10 +153,11 @@ export default {
       }
     },
     check() {
+      this.tips = '';
       // 1.必填
       if (this.required) {
         //非空
-        if (this.valueField.toString().trim() != '') {
+        if (this.valueField && this.valueField.toString().trim() != '') {
           return this.regTest();
         }
         //为空
@@ -159,7 +169,7 @@ export default {
       // 2.非必填
       else {
         // 非空
-        if (this.valueField.toString().trim() != '') {
+        if (this.valueField && this.valueField.toString().trim() != '') {
           return this.regTest();
         }
         // 为空
@@ -175,6 +185,9 @@ export default {
       this.tips = '';
     }
   },
+  mounted() {
+    this.valueField = this.value;
+  },
   watch: {
     value: {
       handler(current) {
@@ -189,6 +202,10 @@ export default {
   },
   components: {
     Icon
+  },
+  model: {
+    prop: 'value',
+    event: 'input'
   }
 };
 </script>

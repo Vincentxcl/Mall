@@ -11,13 +11,13 @@
           <icon v-if="showDel" :icon="iconDel" title="删除" @click.native="deleteItem(item.scope.row)"></icon>
         </template>
       </grid-field>
-      <grid-field label="配置" width="70" align="center">
+      <grid-field v-if="showAllRole" label="配置" width="70" align="center">
         <template slot-scope="item">
           <span class="btn" title="配置角色" @click="editActionRoles(item.scope.row)">角色</span>
         </template>
       </grid-field>
       <!-- content -->
-      <grid-field v-for="item in headItem" :key="item.field" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
+      <grid-field v-for="item in headItem" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width" :align="item.align" :sortable="item.sort" :show-overflow-tooltip="true"></grid-field>
       <!-- state -->
       <grid-field v-if="showEdit" label="状态" width="65" align="center">
         <template slot-scope="item">
@@ -217,6 +217,8 @@ export default {
   watch: {
     pageIndex: {
       handler(current) {
+        this.$refs.gridview.resetScroll(); //翻页后重置滚动条位置
+
         let props = ['search', 'name', 'controllerTtl', 'actionTtl', 'httpMethod'];
         let queryParams = extractProps(this, props);
         let queryObj = {

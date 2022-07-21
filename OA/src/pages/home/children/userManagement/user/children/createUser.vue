@@ -2,8 +2,8 @@
   <div class="createUser">
     <div class="workbench">
       <div class="grid">
-        <row>
-          <column :span="20" class="form">
+        <div>
+          <div class="form">
             <div class="ttl">姓名:</div>
             <text-box ref="name" v-model="name" :maxlength="16" title="姓名" pattern="/^[0-9a-zA-Z\u4e00-\u9fa5]{1,16}$/g">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
@@ -23,7 +23,7 @@
             </text-box>
 
             <div class="ttl">密码:</div>
-            <text-box ref="password" v-model="password" type="password" :maxlength="20" title="密码" pattern="/^((?!<|>).){1,16}$/" @input="checkPwd()">
+            <text-box ref="password" v-model="password" type="password" :maxlength="16" title="密码" pattern="/^((?!<|>|[\s\u4e00-\u9fa5]).){1,16}$/" @input="checkPwd()">
               <div class="tip" slot="tips" slot-scope="textbox">
                 <p class="fl">{{ textbox.tips }}</p>
                 <p class="fr" v-show="isShowPwdLevel">
@@ -48,17 +48,17 @@
             </text-box>
 
             <div class="ttl">生日:</div>
-            <calender ref="calender" @change="getDate"></calender>
+            <calender ref="calender" v-model="birthday"></calender>
 
             <div class="ttl">QQ:</div>
             <text-box ref="qq" v-model="qq" :maxlength="32" title="QQ" :required="false" pattern="/^[0-9]{1,32}$/">
               <div class="tip" slot="tips" slot-scope="slot">{{ slot.tips }}</div>
             </text-box>
-          </column>
-          <column :span="4" class="side">
+          </div>
+          <div class="side">
             <avatar :key="phone" :url="dataUrl" @click="showUploader"></avatar>
-          </column>
-        </row>
+          </div>
+        </div>
       </div>
       <div class="ctrl">
         <div>
@@ -81,8 +81,6 @@
 <script>
 import { dateFormat } from 'common/helper/convertHelper.js';
 import { computedAssistanceBarItems } from 'common/mixins/computedAssistanceBarItems';
-import Column from 'components/layout/column.vue';
-import Row from 'components/layout/row.vue';
 import Avatar from 'components/avatar/index.vue';
 import ImgUploader from 'components/uploader/v2/imgUploader.vue';
 import TextBox from 'components/widgets/textbox.vue';
@@ -105,7 +103,7 @@ export default {
       password: '',
       passwordConfirm: '',
       email: '',
-      birthday: '',
+      birthday: undefined,
       qq: '',
 
       isShowUpload: false,
@@ -186,11 +184,13 @@ export default {
     },
     //验证密码格式-->密码强度
     checkPwd() {
-      if (this.$refs.password.check()) {
-        this.isShowPwdLevel = true;
-        this.checkPwdLevel(this.password);
-      } else {
-        this.isShowPwdLevel = false;
+      if (this.password.trim() != '') {
+        if (this.$refs.password.check()) {
+          this.isShowPwdLevel = true;
+          this.checkPwdLevel(this.password);
+        } else {
+          this.isShowPwdLevel = false;
+        }
       }
     },
     //验证密码强度
@@ -254,9 +254,6 @@ export default {
             this.$refs.email.tips = JSON.stringify(error.response);
           });
       }
-    },
-    getDate(e) {
-      this.birthday = e;
     },
     clear() {
       this.uploadfileTtl = '';
@@ -353,8 +350,6 @@ export default {
     }
   },
   components: {
-    Column,
-    Row,
     Avatar,
     ImgUploader,
     TextBox,
@@ -381,6 +376,8 @@ div.createUser div.grid {
 }
 
 div.createUser div.grid > div {
+  display: grid;
+  grid-template-columns: 80% 20%;
   border: 1px solid rgb(226, 226, 226);
   border-radius: 5px;
 }

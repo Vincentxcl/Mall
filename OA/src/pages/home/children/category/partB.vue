@@ -5,14 +5,12 @@
     <button @click="upload()">XXXXXXX</button>
 
     <input type="button" value="Test" @click="onClick" />
-
-    <img-uploader v-model="isShow" @submit="submit"></img-uploader>
   </div>
 </template>
 
 <script>
 import { imgUpload } from 'netWork/demo.js';
-import ImgUploader from 'components/uploader/v2/imgUploader.vue';
+import { toChainProps } from 'common/helper/convertHelper.js';
 
 export default {
   name: 'PartB',
@@ -23,12 +21,52 @@ export default {
     };
   },
   methods: {
-    submit(e) {
-      console.log(e);
-    },
     onClick() {
-      this.isShow = !this.isShow;
+      const a = {
+        name: 'vin',
+        age: 18,
+        body: {
+          height: 170,
+          weight: 75
+        },
+        family: {
+          address: 'streetA1',
+          components: {
+            mon: 'lily',
+            dad: {
+              name: 'chen',
+              age: 30
+            }
+          }
+        }
+      };
+      const b = {
+        name: 'vin',
+        age: 19,
+        body: {
+          height: 170,
+          weight: 70
+        },
+        company: {
+          name: 'microsoft'
+        },
+        family: {
+          address: 'streetb',
+          components: {
+            mon: 'alice',
+            dad: {
+              name: 'chen',
+              age: 27
+            }
+          }
+        }
+      };
+
+      let result = toChainProps('', b);
+
+      console.log(result);
     },
+
     get() {
       this.uploadfiles = this.$refs.file.files;
     },
@@ -47,9 +85,7 @@ export default {
         .catch();
     }
   },
-  components: {
-    ImgUploader
-  }
+  components: {}
 };
 </script>
 
